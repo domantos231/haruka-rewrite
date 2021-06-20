@@ -1,5 +1,3 @@
-# haruka-rewrite
-A Discord Python bot.
 # Haruka
 A Discord bot written in Python 3.8.10 and designed to host on [Heroku](https://dashboard.heroku.com/apps/haruka39)
 
