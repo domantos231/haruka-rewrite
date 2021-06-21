@@ -16,11 +16,7 @@ async def daily(cmd):
                 data[3] = str(datetime.now().year)
                 data[4] = str(datetime.now().month)
                 data[5] = str(datetime.now().day)
-                dat = ""
-                for i in range(59):
-                    dat += data[i] + "/"
-                dat += data[59]
-                await message.edit(content=dat)
+                await message.edit(content="/".join(data))
                 await cmd.send("Claimed `💲500` as daily reward")
             else:
                 await cmd.send("You have claimed today's daily reward.")

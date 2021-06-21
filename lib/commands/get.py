@@ -5,7 +5,7 @@ from lib.settings import *
 
 @bot.command()
 async def get(cmd, arg, user: discord.User = None):
-    if not cmd.author.id == int(ADMIN):
+    if not await bot.is_owner(cmd.author):
         await cmd.send("This command is available for developers only.")
         return
     if user == None:
@@ -28,11 +28,7 @@ async def get(cmd, arg, user: discord.User = None):
                     amt = float(data[1])
                     amt += arg
                     data[1] = str(amt)
-                    dat = ""
-                    for i in range(59):
-                        dat += data[i] + "/"
-                    dat += data[59]
-                    await message.edit(content=dat)
+                    await message.edit(content="/".join(data))
                     await cmd.send(embed=discord.Embed(title="Request accepted", description="Successfully generated `💲{:.1f}`".format(arg) + f" for <@!{id}>", color=0x2ECC71))
                     break
             if null:

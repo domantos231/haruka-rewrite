@@ -4,7 +4,6 @@ import os
 
 
 TOKEN = os.environ["TOKEN"]
-ADMIN = os.environ["ADMIN"]
 CHANNEL_ID = os.environ["CHANNEL_ID"]
 ECONOMY_ID = os.environ["ECONOMY_ID"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]

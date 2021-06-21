@@ -56,11 +56,7 @@ async def gacha(cmd, n: int = 1):
                     for i in range(5):
                         if len(value[i]) > 0:
                             gacha_em.add_field(name=name[i] + " units", value=value[i], inline=True)
-                    dat = ""
-                    for i in range(59):
-                        dat += data[i] + "/"
-                    dat += data[59]
-                    await message.edit(content=dat)
+                    await message.edit(content="/".join(data))
                     await cmd.send(embed=gacha_em)
                 break
 
