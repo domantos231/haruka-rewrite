@@ -38,4 +38,4 @@ async def get(cmd, arg, user: discord.User = None):
 @get.error
 async def get_error(cmd, error):
     if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check yout input again.")
+        await cmd.send("Please check your input again.")

@@ -52,4 +52,4 @@ async def account(cmd, user: discord.Member = None):
 @account.error
 async def account_error(cmd, error):
     if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check yout input again.")
+        await cmd.send("Please check your input again.")

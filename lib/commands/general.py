@@ -29,7 +29,7 @@ async def info(cmd, *, user: discord.User = None):
 @info.error
 async def info_error(cmd, error):
     if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check yout input again.")
+        await cmd.send("Please check your input again.")
 
 
 @bot.command()
