@@ -1,15 +1,14 @@
 ﻿import discord
 import math
+import asyncio
 from discord.ext import commands
 from lib.settings import *
 
 
 @bot.command()
-async def pet(cmd, page: int = 1, user: discord.Member = None):
-    if page < 1:
-        raise commands.UserInputError
+async def pet(cmd, user: discord.Member = None):
     if user == None:
-        user = cmd.author
+       user = cmd.author
     if user == bot.user:
         await cmd.send(
             embed=discord.Embed(
@@ -37,20 +36,56 @@ async def pet(cmd, page: int = 1, user: discord.Member = None):
                         r = p - 2 * lv * (lv + 1)
                         lv += 1
                         stat = stats(i-6, lv)
-                        name.append(petimg[i-6])
+                        name.append(f"{petimg[i-6]} ID *{i-6}*")
                         value.append(f"**[{stat.type}]**\nLv. `{lv}` EXP. `{r}/{4*lv}`\nHP `{stat.hp}` ATK `{stat.atk}`")
                 pages = 1 + int((len(name)) / 20)
                 em = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71)
-                if page > pages:
-                    await cmd.send(f"This pet list only has {pages} page(s) in total!")
-                else:
-                    for i in range(20*page-20, 20*page):
-                        try:
-                            em.add_field(name=name[i], value=value[i])
-                        except:
+                for i in range(20):
+                    try:
+                        em.add_field(name=name[i], value=value[i])
+                    except:
+                        break
+                em.set_footer(text=f"Showing page 1/{pages}")
+                message = await cmd.send(embed=em)
+                for emoji in choices[:pages]:
+                    await message.add_reaction(emoji)
+                active = {}
+                active[message] = True
+
+
+                async def delete():
+                    await asyncio.sleep(60)
+                    active[message] = False
+                    await message.edit(embed = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71))
+                    await message.clear_reactions()
+
+
+                def check(reaction, user):
+                    return reaction.message == message and str(reaction) in choices and not user.bot
+
+
+                async def react(message):
+                    while active[message]:
+                        done, pending = await asyncio.wait([bot.wait_for("reaction_add", check=check),
+                                                            bot.wait_for("reaction_remove", check=check)],
+                                                           return_when = asyncio.FIRST_COMPLETED)
+                        if not active[message]:
                             break
-                    em.set_footer(text=f"Showing page {page}/{pages}")
-                    await cmd.send(embed=em)
+                        reaction, user = done.pop().result()
+                        if not str(reaction) in choices[:pages]:
+                            continue
+                        page = choices.index(str(reaction)) + 1
+                        em = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71)
+                        for i in range(20*page-20, 20*page):
+                            try:
+                                em.add_field(name=name[i], value=value[i])
+                            except:
+                                break
+                        em.set_footer(text=f"Showing page {page}/{pages}")
+                        await message.edit(embed = em)
+
+
+                await asyncio.gather(delete(), react(message))
         if null:
             await cmd.send("This user has no data in my database.")
 
