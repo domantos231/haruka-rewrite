@@ -8,7 +8,7 @@ from lib.settings import *
 @bot.command()
 async def pet(cmd, user: discord.Member = None):
     if user == None:
-       user = cmd.author
+        user = cmd.author
     if user == bot.user:
         await cmd.send(
             embed=discord.Embed(
