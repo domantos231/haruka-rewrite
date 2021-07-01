@@ -44,13 +44,17 @@ async def battle(cmd, mem: discord.Member = None):
             lst = cur.fetchall()
             id_lst = [str(cmd.author.id), str(mem.id)]
             info = {}
+            count = 0
             for data in lst:
                 if data[0] in id_lst:
+                    count += 1
                     info[id_lst.index(data[0])] = data
                     if sum(data[5:57]) == 0:
                         await cmd.send("Both players must have at least 1 pet to perform battle.")
                         return
-                    continue
+            if count < 2:
+                await cmd.send("Both players must have at least 1 pet to perform battle.")
+                return
             await cmd.send(f"<@!{mem.id}> accepted the challenge.\nChoose at most 3 pets to battle by entering `select <id> <id> <id>`.\nEg. `select 2 43 13`, `select 0 14`")
             pending = [True, True]
             _team = {}
