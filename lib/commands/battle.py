@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import discord
 import math
 from threading import Thread
@@ -176,7 +176,8 @@ async def battle(cmd, mem: discord.Member = None):
                             value = "\n".join(f"`{j+1}`{petimg[team.pet[j]]} Lv.`{team.lv[j]}` HP `{team.hp[j]}/{team.hp_max[j]}`" for j in range(n))
                             em.add_field(name=f"{team.user}'s team", value=value)
                         em.set_footer(text = f"Turn {_team[id_lst[1-i]].user}")
-                        await msg.edit(embed = em)
+                        await msg.delete()
+                        msg = await cmd.send(embed = em)
                     except:
                         warning = await cmd.send(f"Invalid attack (argument error). <@!{message.author.id}> lost this turn.")
                         thread = Thread(target = await delete(message, warning))
