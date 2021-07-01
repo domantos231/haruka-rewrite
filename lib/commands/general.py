@@ -35,34 +35,27 @@ async def info_error(cmd, error):
 @bot.command()
 @commands.cooldown(1, 2, commands.BucketType.user)
 async def prefix(cmd, *, arg = None):
-    db = bot.get_channel(int(CHANNEL_ID))
-    if arg == None:
-        if str(cmd.message.channel.type) == "private":
-            id = str(cmd.message.channel.id)
-        if str(cmd.message.channel.type) == "text":
-            id = str(cmd.message.guild.id)
-        async for message in db.history(limit=200):
-            if message.author == bot.user and message.content.split("=")[0] == id:
-                await cmd.send(
-                    "My current prefix is: {0}".format(message.content.split("=")[1])
-                )
-        return
-    if "=" in arg:
-        await cmd.send("Prefixes cannot contain `=`")
-        return
+    cur.execute("SELECT * FROM prefix;")
+    lst = cur.fetchall()
+    if str(cmd.message.channel.type) == "private":
+        id = str(cmd.message.channel.id)
+    elif str(cmd.message.channel.type) == "text":
+        id = str(cmd.message.guild.id)
     else:
-        if str(cmd.message.channel.type) == "private":
-            id = cmd.message.channel.id
-        elif str(cmd.message.channel.type) == "text":
-            id = cmd.message.guild.id
-        else:
-            await cmd.send("Unsupported channel")
-            return
-        async for message in db.history(limit=200):
-            if message.author == bot.user and message.content.split("=")[0] == str(id):
-                await message.edit(content=f"{id}={arg}")
-                await cmd.send(f"Prefix has been set to `{arg}`")
-                break
+        await cmd.send("Unsupported channel.")
+        return
+    if arg == None:
+        for data in lst:
+            if data[0] == id:
+                await cmd.send(f"My current prefix is: {data[1]}")
+    else:
+        cur.execute(f"""
+        UPDATE prefix
+        SET pref = '{arg}'
+        WHERE id = '{id}';
+        """)
+        conn.commit()
+        await cmd.send(f"Prefix has been set to `{arg}`")
 
 
 @bot.command()

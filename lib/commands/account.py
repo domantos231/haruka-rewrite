@@ -18,20 +18,17 @@ async def account(cmd, user: discord.Member = None):
         await cmd.send(f"<@!{user.id}> is a bot user!")
         return
     else:
-        ecodb = bot.get_channel(int(ECONOMY_ID))
-        id = user.id
+        cur.execute("SELECT * FROM economy;")
+        lst = cur.fetchall()
+        id = str(user.id)
         s = 0
         null = True
-        async for message in ecodb.history(limit=200):
-            data = message.content.split("/")
+        for data in lst:
             if data[0] == str(id):
                 null = False
-                for i in range(6, 58):
-                    s += int(data[i])
-                amt = float(data[1])
-                amt = int(amt)
-                win = int(data[58])
-                total = int(data[59])
+                amt = data[1]
+                win = data[57]
+                total = data[58]
                 if total == 0:
                     rate = "--"
                 else:

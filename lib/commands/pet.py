@@ -20,27 +20,27 @@ async def pet(cmd, user: discord.Member = None):
     elif user.bot:
         await cmd.send("<@!{0.id}> is a bot user!".format(user))
     else:
-        id = user.id
-        ecodb = bot.get_channel(int(ECONOMY_ID))
+        id = str(user.id)
+        cur.execute("SELECT * FROM economy;")
+        lst = cur.fetchall()
         null = True
-        async for message in ecodb.history(limit=200):
-            data = message.content.split("/")
-            if data[0] == str(id):
+        for data in lst:
+            if data[0] == id:
                 null = False
                 name = []
                 value = []
-                for i in range(6, 58):
-                    if int(data[i]) > 0:
-                        p = int(data[i])
+                for i in range(5, 57):
+                    if data[i] > 0:
+                        p = data[i]
                         lv = int((-1 + math.sqrt(1 + 2 * p)) / 2)
                         r = p - 2 * lv * (lv + 1)
                         lv += 1
-                        stat = stats(i-6, lv)
-                        name.append(f"{petimg[i-6]} ID *{i-6}*")
+                        stat = stats(i-5, lv)
+                        name.append(f"{petimg[i-5]} ID *{i-5}*")
                         value.append(f"**[{stat.type}]**\nLv. `{lv}` EXP. `{r}/{4*lv}`\nHP `{stat.hp}` ATK `{stat.atk}`")
-                pages = 1 + int((len(name)) / 20)
+                pages = 1 + int((len(name)) / 12)
                 em = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71)
-                for i in range(20):
+                for i in range(12):
                     try:
                         em.add_field(name=name[i], value=value[i])
                     except:
@@ -49,14 +49,11 @@ async def pet(cmd, user: discord.Member = None):
                 message = await cmd.send(embed=em)
                 for emoji in choices[:pages]:
                     await message.add_reaction(emoji)
-                active = {}
-                active[message] = True
 
 
                 async def delete():
                     await asyncio.sleep(60)
-                    active[message] = False
-                    await message.edit(embed = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71))
+                    await message.edit(embed = discord.Embed(title=f"{cmd.author}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71))
                     await message.clear_reactions()
 
 
@@ -64,19 +61,17 @@ async def pet(cmd, user: discord.Member = None):
                     return reaction.message == message and str(reaction) in choices and not user.bot
 
 
-                async def react(message):
-                    while active[message]:
+                async def react():
+                    while True:
                         done, pending = await asyncio.wait([bot.wait_for("reaction_add", check=check),
                                                             bot.wait_for("reaction_remove", check=check)],
                                                            return_when = asyncio.FIRST_COMPLETED)
-                        if not active[message]:
-                            break
                         reaction, user = done.pop().result()
                         if not str(reaction) in choices[:pages]:
                             continue
                         page = choices.index(str(reaction)) + 1
-                        em = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71)
-                        for i in range(20*page-20, 20*page):
+                        em = discord.Embed(title=f"{cmd.author}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71)
+                        for i in range(12*page-12, 12*page):
                             try:
                                 em.add_field(name=name[i], value=value[i])
                             except:
@@ -85,7 +80,7 @@ async def pet(cmd, user: discord.Member = None):
                         await message.edit(embed = em)
 
 
-                await asyncio.gather(delete(), react(message))
+                await asyncio.wait([delete(), react()], return_when = asyncio.FIRST_COMPLETED)
         if null:
             await cmd.send("This user has no data in my database.")
 

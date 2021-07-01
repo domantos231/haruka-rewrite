@@ -1,10 +1,13 @@
 from lib.settings import *
 
 
+add = ", 1, 1, 1"
+for i in range(54):
+    add += ", 0"
+
+
 @bot.event
 async def on_message(message):
-    db = bot.get_channel(int(CHANNEL_ID))
-    ecodb = bot.get_channel(int(ECONOMY_ID))
     if message.author.bot:
         return
     if bot.user.mentioned_in(message):
@@ -12,29 +15,40 @@ async def on_message(message):
             id = str(message.channel.id)
         if str(message.channel.type) == "text":
             id = str(message.guild.id)
-        async for msg in db.history(limit=200):
-            if msg.author == bot.user and msg.content.split("=")[0] == id:
-                await message.channel.send(
-                    "My current prefix is: {0}".format(msg.content.split("=")[1])
-                )
+        cur.execute("SELECT * FROM prefix;")
+        lst = cur.fetchall()
+        for obj in lst:
+            if obj[0] == id:
+                await message.channel.send(f"My current prefix is: {obj[1]}")
+                break
     if str(message.channel.type) == "private":
         existed = False
         id = str(message.channel.id)
-        async for msg in db.history(limit=200):
-            if msg.author == bot.user and msg.content.split("=")[0] == id:
+        cur.execute("SELECT id FROM prefix;")
+        lst = cur.fetchall()
+        for obj in lst:
+            if obj[0] == id:
                 existed = True
                 break
         if not existed:
-            await db.send(id + "=$")
+            cur.execute(f"""
+            INSERT INTO prefix (id, pref)
+            VALUES ('{id}', '$');
+            """)
+            conn.commit()
     existed = False
-    async for msg in ecodb.history(limit=200):
-        if msg.content.split("/")[0] == str(message.author.id):
+    cur.execute("SELECT id FROM economy;")
+    lst = cur.fetchall()
+    id = str(message.author.id)
+    for obj in lst:
+        if obj[0] == id:
             existed = True
             break
     if not existed:
-        eco_str = str(message.author.id) + "/300/0/1/1/1"
-        for i in range(52):
-            eco_str += "/0"
-        eco_str += "/0/0"
-        await ecodb.send(eco_str)
+        eco_sql = f"""
+        INSERT INTO economy
+        VALUES ('{id}',300{add});
+        """
+        cur.execute(eco_sql)
+        conn.commit()
     await bot.process_commands(message)

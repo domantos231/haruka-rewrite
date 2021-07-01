@@ -1,23 +1,47 @@
 ﻿import discord
+from psycopg2 import *
 from discord.ext import commands
 import os
 
 
 TOKEN = os.environ["TOKEN"]
-CHANNEL_ID = os.environ["CHANNEL_ID"]
-ECONOMY_ID = os.environ["ECONOMY_ID"]
-choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 
-async def prefix(bot, message):
+conn = connect(DATABASE_URL)
+cur = conn.cursor()
+eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, year int, month int, day int,"
+add = []
+for i in range(52):
+    add.append(f" pet_{i} int")
+eco_sql += ",".join(add) + ", win int, total int);"
+pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
+try:
+    cur.execute(eco_sql)
+    cur.execute(pref_sql)
+    conn.commit()
+except Exception as ex:
+    print(f"An exception occured: {ex}")
+    print("Exiting program...")
+    cur.close()
+    conn.close()
+    exit()
+finally:
+    del eco_sql
+    del pref_sql
+    del add
+
+
+def prefix(bot, message):
     if str(message.channel.type) == "private":
         id = str(message.channel.id)
     if str(message.channel.type) == "text":
         id = str(message.guild.id)
-    async for message in db.history(limit=200):
-        if message.author == bot.user and message.content.split("=")[0] == id:
-            pref = [message.content.split("=")[1]]
-            return pref
+    cur.execute("SELECT * FROM prefix;")
+    lst = cur.fetchall()
+    for obj in lst:
+        if obj[0] == id:
+            return obj[1]
 
 
 
@@ -36,8 +60,9 @@ async def on_connect():
 async def on_ready():
     print(f"Logged in as {bot.user}")
     await bot.change_presence(activity=discord.Game(name="on heroku"))
-    global db
-    db = bot.get_channel(int(CHANNEL_ID))
+
+
+choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 
 
 class stats:

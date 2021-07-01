@@ -4,35 +4,34 @@ from lib.settings import *
 
 
 @bot.command()
-async def get(cmd, arg, user: discord.User = None):
+async def get(cmd, arg: int, user: discord.User = None):
     if not await bot.is_owner(cmd.author):
         await cmd.send("This command is available for developers only.")
         return
     if user == None:
         user = cmd.author
-    try:
-        arg = float(arg)
-    except:
-        await cmd.send("Please specify an amount of money!")
+    id = str(user.id)
+    if user.bot:
+        await cmd.send(f"<@!{id}> is a bot user!")
     else:
-        id = user.id
-        if user.bot:
-            await cmd.send(f"<@!{id}> is a bot user!")
-        else:
-            null = True
-            ecodb = bot.get_channel(int(ECONOMY_ID))
-            async for message in ecodb.history(limit=200):
-                data = message.content.split("/")
-                if data[0] == str(id):
-                    null = False
-                    amt = float(data[1])
-                    amt += arg
-                    data[1] = str(amt)
-                    await message.edit(content="/".join(data))
-                    await cmd.send(embed=discord.Embed(title="Request accepted", description="Successfully generated `💲{:.1f}`".format(arg) + f" for <@!{id}>", color=0x2ECC71))
-                    break
-            if null:
-                await cmd.send("This user has no data in my database.")
+        null = True
+        cur.execute("SELECT id, amt FROM economy;")
+        lst = cur.fetchall()
+        for data in lst:
+            if data[0] == id:
+                null = False
+                amt = data[1]
+                amt += arg
+                cur.execute(f"""
+                UPDATE economy
+                SET amt = {amt}
+                WHERE id = '{id}';
+                """)
+                conn.commit()
+                await cmd.send(embed=discord.Embed(title="Request accepted", description="Successfully generated `💲{:.1f}`".format(arg) + f" for <@!{id}>", color=0x2ECC71))
+                break
+        if null:
+            await cmd.send("This user has no data in my database.")
 
 
 @get.error
