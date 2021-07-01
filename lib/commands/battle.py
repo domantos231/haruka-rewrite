@@ -138,8 +138,8 @@ async def battle(cmd, mem: discord.Member = None):
                         thread = Thread(target = await delete(message, warning))
                         thread.start()
                         message = await bot.wait_for("message", check = attack_check)
-                    attacker, target = message.content.split(" ")[1:]
                     try:
+                        attacker, target = message.content.split(" ")[1:]
                         attacker = int(attacker) - 1
                         target = int(target) - 1
                         if attacker < 0 or target < 0:
