@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import discord
 import math
 from threading import Thread
@@ -116,67 +116,74 @@ async def battle(cmd, mem: discord.Member = None):
 
 
             def attack_check(message):
-                return str(message.author.id) in id_lst and message.content.startswith("attack")
+                id = str(message.author.id)
+                return id in id_lst and message.content.startswith("attack ") and message.channel.id == cmd.channel.id
 
 
-            turn = 1
+            async def recheck(message, warning):
+                await message.delete(delay=5.0)
+                await warning.delete(delay=5.0)
+                return await bot.wait_for("message", check = attack_check)
+
+
+            async def battle_checker(message, i):
+                attacker_id = str(message.author.id)
+                target_id = id_lst[1-i]
+                if not id_lst[i] == attacker_id:
+                    warning = await cmd.send(f"Chillax <@!{attacker_id}>, it's not your turn yet!")
+                    message = await recheck(message, warning)
+                    return await battle_checker(message, i)
+                try:
+                    attacker, target = message.content.split(" ")[1:]
+                    attacker = int(attacker) - 1
+                    target = int(target) - 1
+                    if _team[attacker_id].hp[attacker] == 0:
+                        warning = await cmd.send(f"<@!{attacker_id}>, this attacker isn't alive!")
+                        msg = await recheck(message, warning)
+                        return await battle_checker(msg, i)
+                    return attacker_id, target_id, attacker, target, message
+                except:
+                    warning = await cmd.send(f"<@!{attacker_id}>, please check your input again!")
+                    message = await recheck(message, warning)
+                    return await battle_checker(message, i)
+
+
             while ongoing:
                 for i in range(2):
                     message = await bot.wait_for("message", check = attack_check)
-                    while not id_lst.index(str(message.author.id)) == i:
-                        warning = await cmd.send(f"Chillax <@!{message.author.id}>, it's not your turn yet!")
-                        await message.delete(delay=5.0)
-                        await warning.delete(delay=5.0)
-                        message = await bot.wait_for("message", check = attack_check)
-                    try:
-                        attacker, target = message.content.split(" ")[1:]
-                        attacker = int(attacker) - 1
-                        target = int(target) - 1
-                        if attacker < 0 or target < 0:
-                            raise ValueError
-                        atk = _team[id_lst[i]].atk[attacker]
-                        if _team[id_lst[i]].hp[attacker] == 0:
-                            warning = await cmd.send(f"Invalid attack (attacker isn't alive). <@!{message.author.id}> lost this turn.")
-                            await message.delete(delay=5.0)
-                            await warning.delete(delay=5.0)
-                            continue
-                        _team[id_lst[1-i]].hp[target] -= atk
-                        em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
-                        if _team[id_lst[1-i]].hp[target] <= 0:
-                            _team[id_lst[1-i]].hp[target] = 0
-                            if sum(_team[id_lst[1-i]].hp) == 0:
-                                em = discord.Embed(title="Battle Status", description=f"**{_team[id_lst[i]].user}** won!", color=0x2ECC71)
-                                cur.execute(f"""
-                                UPDATE economy
-                                SET win = win + 1, total = total + 1
-                                WHERE id = '{id_lst[i]}';
-                                """)
-                                cur.execute(f"""
-                                UPDATE economy
-                                SET total = total + 1
-                                WHERE id = '{id_lst[1-i]}';
-                                """)
-                                conn.commit()
-                                data[id_lst[i]][56] += 1
-                                data[id_lst[i]][57] += 1
-                                data[id_lst[1-i]][57] += 1
-                                await cmd.send(f"<@!{id_lst[i]}> won!")
-                                await message.delete()
-                                ongoing = False
-                                continue
-                        for k in id_lst:
-                            n = len(_team[k].pet)
-                            team = _team[k]
-                            value = "\n".join(f"`{j+1}`{petimg[team.pet[j]]} Lv.`{team.lv[j]}` HP `{team.hp[j]}/{team.hp_max[j]}`" for j in range(n))
-                            em.add_field(name=f"{team.user}'s team", value=value)
-                        em.set_footer(text = f"Turn {_team[id_lst[1-i]].user}")
-                        await msg.delete()
-                        msg = await cmd.send(embed = em)
-                    except:
-                        warning = await cmd.send(f"Invalid attack (argument error). <@!{message.author.id}> lost this turn.")
-                        await message.delete(delay=5.0)
-                        await warning.delete(delay=5.0)
-                        continue
+                    attacker_id, target_id, attacker, target, message = await battle_checker(message, i)
+                    atk = _team[attacker_id].atk[attacker]
+                    _team[target_id].hp[target] -= atk
+                    em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
+                    if _team[target_id].hp[target] <= 0:
+                        _team[target_id].hp[target] = 0
+                        if sum(_team[target_id].hp) == 0:
+                            em = discord.Embed(title="Battle Status", description=f"**{_team[id_lst[i]].user}** won!", color=0x2ECC71)
+                            cur.execute(f"""
+                            UPDATE economy
+                            SET win = win + 1, total = total + 1
+                            WHERE id = '{id_lst[i]}';
+                            """)
+                            cur.execute(f"""
+                            UPDATE economy
+                            SET total = total + 1
+                            WHERE id = '{id_lst[1-i]}';
+                            """)
+                            conn.commit()
+                            data[attacker_id][56] += 1
+                            data[attacker_id][57] += 1
+                            data[target_id][57] += 1
+                            await cmd.send(f"Battle completed. <@!{id_lst[i]}> won!")
+                            await message.delete()
+                            ongoing = False
+                    for k in id_lst:
+                        n = len(_team[k].pet)
+                        team = _team[k]
+                        value = "\n".join(f"`{j+1}`{petimg[team.pet[j]]} Lv.`{team.lv[j]}` HP `{team.hp[j]}/{team.hp_max[j]}`" for j in range(n))
+                        em.add_field(name=f"{team.user}'s team", value=value)
+                    em.set_footer(text = f"Turn {_team[id_lst[1-i]].user}")
+                    await msg.delete()
+                    msg = await cmd.send(embed = em)
                     await message.delete()
 
 
