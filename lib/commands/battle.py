@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import discord
 import math
 from threading import Thread
@@ -9,18 +9,14 @@ from lib.settings import *
 checker = ["❎", "✅"]
 
 
-async def delete(message, warning):
-    await asyncio.sleep(3)
-    await message.delete()
-    await warning.delete()
-
-
 @bot.command()
 async def battle(cmd, mem: discord.Member = None):
     if mem == None or mem == cmd.author or mem.bot:
         await cmd.send("Please specify a valid opponent.")
     else:
-        message = await cmd.send(f"<@!{mem.id}> Do you accept <@!{cmd.author.id}>'s challenge?")
+        em = discord.Embed(title="Battle challenge", description=f"<@!{mem.id}> Do you accept <@!{cmd.author.id}>'s challenge?", color=0x2ECC71)
+        em.set_footer(text="This message will expire after 120 seconds")
+        message = await cmd.send(embed=em)
         for emoji in checker:
             await message.add_reaction(emoji)
 
@@ -30,7 +26,7 @@ async def battle(cmd, mem: discord.Member = None):
 
 
         try:
-            reaction, user = await bot.wait_for("reaction_add", check = check, timeout = 60.0)
+            reaction, user = await bot.wait_for("reaction_add", check = check, timeout = 120.0)
         except:
             await message.delete()
             await cmd.send(f"<@!{mem.id}> didn't respond to the battle challenge. Request timed out.")
@@ -40,19 +36,12 @@ async def battle(cmd, mem: discord.Member = None):
         if choice == 0:
             await cmd.send(f"<@!{mem.id}> refused to have a duel. What a noob!")
         elif choice == 1:
-            cur.execute("SELECT * FROM economy;")
-            lst = cur.fetchall()
             id_lst = [str(cmd.author.id), str(mem.id)]
-            info = {}
-            count = 0
-            for data in lst:
-                if data[0] in id_lst:
-                    count += 1
-                    info[id_lst.index(data[0])] = data
-                    if sum(data[5:57]) == 0:
-                        await cmd.send("Both players must have at least 1 pet to perform battle.")
-                        return
-            if count < 2:
+            try:
+                for id in id_lst:
+                    if sum(data[id][4:53]) == 0:
+                        raise ValueError
+            except:
                 await cmd.send("Both players must have at least 1 pet to perform battle.")
                 return
             await cmd.send(f"<@!{mem.id}> accepted the challenge.\nChoose at most 3 pets to battle by entering `select <id> <id> <id>`.\nEg. `select 2 43 13`, `select 0 14`")
@@ -74,27 +63,24 @@ async def battle(cmd, mem: discord.Member = None):
 
             while pending[0] or pending[1]:
                 message = await bot.wait_for("message", check = select)
-                p = id_lst.index(str(message.author.id))
+                id = str(message.author.id)
+                p = id_lst.index(id)
                 if not pending[p]:
                     await cmd.send(f"<@!{message.author.id}>, you have completed selecting!")
                     continue
                 choice = message.content.split(" ")[1:]
+                player_team = []
                 choices = []
                 for i in choice:
                     try:
                         i = int(i)
-                        choices.append(i)
+                        if data[id][i+4] == 0:
+                            raise ValueError
+                        else:
+                            choices.append(i)
+                            player_team.append(data[id][i+4])
                     except:
                         continue
-                player_team = []
-                choice = []
-                for i in choices:
-                    if i < 0 or i > 51:
-                        continue
-                    c = info[p][i + 5]
-                    if c > 0:
-                        choice.append(i)
-                        player_team.append(c)
                 n = len(player_team)
                 _lv = []
                 hp = []
@@ -106,15 +92,15 @@ async def battle(cmd, mem: discord.Member = None):
                     em = discord.Embed(title=f"{message.author} has completed selecting!",
                                        color=0x2ECC71)
                     for i in range(n):
-                        pet = petimg[choice[i]]
+                        pet = petimg[choices[i]]
                         cons = player_team[i]
                         lv = 1 + int((-1 + math.sqrt(1 + 2 * cons)) / 2)
-                        stat = stats(choice[i], lv)
+                        stat = stats(choices[i], lv)
                         _lv.append(lv)
                         hp.append(stat.hp)
                         atk.append(stat.atk)
                         em.add_field(name=f"{pet} Lv.`{lv}`", value=f"HP `{stat.hp}` ATK `{stat.atk}`")
-                    _team[str(message.author.id)] = Team(message.author, choice, _lv, hp, atk)
+                    _team[id] = Team(message.author, choices, _lv, hp, atk)
                     await cmd.send(embed=em)
                     pending[p] = False
             em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
@@ -139,8 +125,8 @@ async def battle(cmd, mem: discord.Member = None):
                     message = await bot.wait_for("message", check = attack_check)
                     while not id_lst.index(str(message.author.id)) == i:
                         warning = await cmd.send(f"Chillax <@!{message.author.id}>, it's not your turn yet!")
-                        thread = Thread(target = await delete(message, warning))
-                        thread.start()
+                        await message.delete(delay=5.0)
+                        await warning.delete(delay=5.0)
                         message = await bot.wait_for("message", check = attack_check)
                     try:
                         attacker, target = message.content.split(" ")[1:]
@@ -151,8 +137,8 @@ async def battle(cmd, mem: discord.Member = None):
                         atk = _team[id_lst[i]].atk[attacker]
                         if _team[id_lst[i]].hp[attacker] == 0:
                             warning = await cmd.send(f"Invalid attack (attacker isn't alive). <@!{message.author.id}> lost this turn.")
-                            thread = Thread(target = await delete(message, warning))
-                            thread.start()
+                            await message.delete(delay=5.0)
+                            await warning.delete(delay=5.0)
                             continue
                         _team[id_lst[1-i]].hp[target] -= atk
                         em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
@@ -171,9 +157,13 @@ async def battle(cmd, mem: discord.Member = None):
                                 WHERE id = '{id_lst[1-i]}';
                                 """)
                                 conn.commit()
+                                data[id_lst[i]][56] += 1
+                                data[id_lst[i]][57] += 1
+                                data[id_lst[1-i]][57] += 1
                                 await cmd.send(f"<@!{id_lst[i]}> won!")
                                 await message.delete()
                                 ongoing = False
+                                continue
                         for k in id_lst:
                             n = len(_team[k].pet)
                             team = _team[k]
@@ -184,8 +174,8 @@ async def battle(cmd, mem: discord.Member = None):
                         msg = await cmd.send(embed = em)
                     except:
                         warning = await cmd.send(f"Invalid attack (argument error). <@!{message.author.id}> lost this turn.")
-                        thread = Thread(target = await delete(message, warning))
-                        thread.start()
+                        await message.delete(delay=5.0)
+                        await warning.delete(delay=5.0)
                         continue
                     await message.delete()
 

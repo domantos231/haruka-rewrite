@@ -14,23 +14,16 @@ async def get(cmd, arg: int, user: discord.User = None):
     if user.bot:
         await cmd.send(f"<@!{id}> is a bot user!")
     else:
-        null = True
-        cur.execute("SELECT id, amt FROM economy;")
-        lst = cur.fetchall()
-        for data in lst:
-            if data[0] == id:
-                null = False
-                amt = data[1]
-                amt += arg
-                cur.execute(f"""
-                UPDATE economy
-                SET amt = {amt}
-                WHERE id = '{id}';
-                """)
-                conn.commit()
-                await cmd.send(embed=discord.Embed(title="Request accepted", description="Successfully generated `💲{:.1f}`".format(arg) + f" for <@!{id}>", color=0x2ECC71))
-                break
-        if null:
+        try:
+            data[id][0] += arg
+            cur.execute(f"""
+            UPDATE economy
+            SET amt = amt + {arg}
+            WHERE id = '{id}';
+            """)
+            conn.commit()
+            await cmd.send(embed=discord.Embed(title="Request accepted", description="Successfully generated `💲{:.1f}`".format(arg) + f" for <@!{id}>", color=0x2ECC71))
+        except:
             await cmd.send("This user has no data in my database.")
 
 

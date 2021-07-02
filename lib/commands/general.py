@@ -10,7 +10,7 @@ async def addbot(cmd):
 
 
 @bot.command()
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def info(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
@@ -19,6 +19,7 @@ async def info(cmd, *, user: discord.User = None):
         description=f"**Name** {user.name}\n**Ping** <@!{user.id}>\n**ID** {user.id}",
         color=0x2ECC71,
     )
+    info_em.set_thumbnail(url=user.avatar_url)
     if str(cmd.message.channel.type) == "private":
         info_em.set_footer(text="From private channel")
     elif str(cmd.message.channel.type) == "text":
@@ -33,7 +34,7 @@ async def info_error(cmd, error):
 
 
 @bot.command()
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def prefix(cmd, *, arg = None):
     cur.execute("SELECT * FROM prefix;")
     lst = cur.fetchall()
@@ -59,13 +60,12 @@ async def prefix(cmd, *, arg = None):
 
 
 @bot.command()
-@commands.cooldown(1, 2, commands.BucketType.user)
 async def say(cmd, *, arg):
     await cmd.send(arg)
 
 
 @bot.command(aliases=["ava"])
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def avatar(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
@@ -83,7 +83,7 @@ async def avatar_error(cmd, error):
 
 
 @bot.command()
-@commands.cooldown(1, 2, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def svinfo(cmd):
     if str(cmd.message.channel.type) == "text":
         sv_em = discord.Embed(

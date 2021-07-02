@@ -36,19 +36,15 @@ async def on_message(message):
             VALUES ('{id}', '$');
             """)
             conn.commit()
-    existed = False
-    cur.execute("SELECT id FROM economy;")
-    lst = cur.fetchall()
     id = str(message.author.id)
-    for obj in lst:
-        if obj[0] == id:
-            existed = True
-            break
-    if not existed:
+    try:
+        data[id]
+    except:
         eco_sql = f"""
         INSERT INTO economy
-        VALUES ('{id}',300{add});
+        VALUES ('{id}', 300{add});
         """
         cur.execute(eco_sql)
         conn.commit()
+        data[id] = f"300{add}".split(", ")
     await bot.process_commands(message)
