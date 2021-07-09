@@ -1,3 +1,4 @@
+import discord
 from lib.settings import *
 
 
@@ -8,18 +9,19 @@ async def help(cmd):
         description=f"Ping <@!{bot.user.id}> for prefix",
         color=0x2ECC71,
     )
+    help_em.set_thumbnail(url=bot.user.avatar_url)
     help_em.add_field(
-        name="General",
-        value="```\naddbot, avatar, help, info, prefix, say, svinfo\n```",
+        name="💬 General",
+        value="```addbot, avatar, help, info, prefix, say, svinfo```",
         inline=False,
     )
     help_em.add_field(
-        name="Fun", value="```\n8ball, anime, math, roll\n```", inline=False
+        name="✨ Fun", value="```8ball, anime, math, roll```", inline=False
     )
     help_em.add_field(
-        name="Economy",
-        value="```\naccount, battle, daily, gacha, gamble, pet\n```",
+        name="💵 Economy",
+        value="```account, bank, battle, daily, gacha, gamble, pet```",
         inline=False,
     )
-    help_em.add_field(name="Developer tools", value="```\nget\n```", inline=False)
+    help_em.add_field(name="⚙️ Developer tools", value="```get, reset```", inline=False)
     await cmd.send(embed=help_em)

@@ -1,7 +1,7 @@
 from lib.settings import *
 
 
-add = ", 1, 1, 1"
+add = ", NULL, 0, 1.01"
 for i in range(54):
     add += ", 0"
 
@@ -46,5 +46,7 @@ async def on_message(message):
         """
         cur.execute(eco_sql)
         conn.commit()
-        data[id] = f"300{add}".split(", ")
+        data[id] = [300, None, 0, 1.01]
+        for i in range(54):
+            data[id].append(0)
     await bot.process_commands(message)
