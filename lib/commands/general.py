@@ -4,7 +4,7 @@ from lib.settings import *
 
 @bot.command()
 async def addbot(cmd):
-    em = discord.Embed(title="Invite me to your server", description="Invitation link: https://discord.com/oauth2/authorize?client_id=848178172536946708&scope=bot", color=0x2ECC71)
+    em = discord.Embed(title="Invite me to your server", description="Invitation link: https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2214979664&scope=bot", color=0x2ECC71)
     em.set_thumbnail(url=bot.user.avatar_url)
     await cmd.send(embed=em)
 
