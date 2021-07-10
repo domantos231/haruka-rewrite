@@ -103,7 +103,7 @@ async def get(id):
 
 
 @bot.command()
-async def anime(cmd, query):
+async def anime(cmd, *, query):
     if len(query) < 3:
         await cmd.send(f"Search query must have at least 3 characters")
         return
