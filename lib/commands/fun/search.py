@@ -68,3 +68,9 @@ async def search(cmd, *, query):
         await cmd.send(embed=em)
     else:
         await cmd.send("No matching result was found.")
+
+
+@search.error
+async def search_error(cmd, error):
+    if isinstance(error, commands.UserInputError):
+        await cmd.send("Please check your input again")
