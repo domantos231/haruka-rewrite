@@ -16,7 +16,7 @@ async def help(cmd):
         inline=False,
     )
     help_em.add_field(
-        name="✨ Fun", value="```8ball, anime, math, roll```", inline=False
+        name="✨ Fun", value="```8ball, anime, math, search, roll```", inline=False
     )
     help_em.add_field(
         name="💵 Economy",

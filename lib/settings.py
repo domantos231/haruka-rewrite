@@ -1,4 +1,5 @@
-﻿import discord
+﻿import aiohttp
+import discord
 from psycopg2 import *
 from discord.ext import commands
 import os
@@ -8,6 +9,7 @@ TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 
+session = aiohttp.ClientSession()
 conn = connect(DATABASE_URL)
 cur = conn.cursor()
 eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float,"
