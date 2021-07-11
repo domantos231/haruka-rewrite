@@ -6,9 +6,6 @@ from bs4 import BeautifulSoup
 from lib.settings import *
 
 
-session = aiohttp.ClientSession()
-
-
 class SearchResult:
     def __init__(self, title, id, url):
         self._title = title
