@@ -157,4 +157,4 @@ async def anime(cmd, *, query):
 @anime.error
 async def anime_error(cmd, error):
     if isinstance(error, commands.UserInputError):
-        await cmd.send("Please chack your input again")
+        await cmd.send("Please check your input again")
