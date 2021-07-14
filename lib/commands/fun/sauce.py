@@ -40,12 +40,13 @@ async def get(src):
 
 
 @bot.command()
-async def sauce(cmd):
-    try:
-        src = cmd.message.attachments[0].url
-    except:
-        await cmd.send("Please attach an image")
-        return
+async def sauce(cmd, src = None):
+    if src is None:
+        try:
+            src = cmd.message.attachments[0].url
+        except:
+            await cmd.send("Please attach or provide a URL to the image.")
+            return
     results = await get(src)
     n = len(results)
     if n > 0:
