@@ -33,7 +33,7 @@ async def pet(cmd, user: discord.Member=None):
                     lv += 1
                     stat = stats(i - 4, lv)
                     name.append(f"{petimg[i-4]} ID *{i-4}*")
-                    value.append(f"**[{stat.type}]**\nLv. `{lv}` EXP. `{r}/{4*lv}`\nHP `{stat.hp}` ATK `{stat.atk}`\nEffect `{stat.eff}`")
+                    value.append(f"**[{stat.type}]**\nLv. `{lv}` EXP. `{r}/{4*lv}`\nHP `{stat.hp}` ATK `{stat.atk}`")
             pages = 1 + int((len(name)) / pets_per_page)
             em = discord.Embed(title=f"{user}'s pet list", description=f"Currently has {len(name)} pet(s)", color=0x2ECC71)
             for i in range(pets_per_page):
