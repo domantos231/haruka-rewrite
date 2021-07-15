@@ -2,7 +2,6 @@
 import discord
 import math
 from random import randint
-from threading import Thread
 from discord.ext import commands
 from lib.settings import *
 
