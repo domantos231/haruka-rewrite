@@ -147,14 +147,6 @@ async def battle(cmd, mem: discord.Member=None):
                     while _team[target_id].hp[target] == 0:
                         target = randint(0, len(_team[target_id].pet) - 1)
                     dmg = _team[attacker_id].atk[attacker]
-                    if _team[target_id].pet[target] == 0:
-                        stat = stats(0, _team[target_id].lv[target])
-                        if proc(stat.eff_rate):
-                            dmg -= stat.eff_value
-                    if _team[target_id].pet[target] == 6:
-                        stat = stats(6, _team[target_id].lv[target])
-                        dmg += _team[target_id].hp[target] * stat.eff_rate / 100
-                        dmg = int(dmg)
                     if dmg < 0:
                         dmg = 0
                     else:
@@ -162,42 +154,12 @@ async def battle(cmd, mem: discord.Member=None):
                     em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
                     if _team[target_id].hp[target] <= 0:
                         _team[target_id].hp[target] = 0
-                        if _team[target_id].pet[target] == 5:
-                            stat = stats(5, _team[target_id].lv[target])
-                            if proc(stat.eff_rate):
-                                _team[target_id].hp[target] = stat.eff_value
                         if sum(_team[target_id].hp) == 0:
                             em = discord.Embed(title="Battle Status", description=f"**{_team[id_lst[i]].user.name}** won!", color=0x2ECC71)
                             win(attacker_id, target_id)
                             ongoing = False
                     for k in id_lst:
                         n = len(_team[k].pet)
-                        if ongoing:
-                            for i in range(n):
-                                if _team[k].pet[i] == 1 and _team[k].hp[i] > 0:
-                                    stat = stats(1, _team[k].lv[i])
-                                    _team[k].hp[i] += stat.eff_value
-                                    if _team[k].hp[i] > _team[k].hp_max[i]:
-                                        _team[k].hp[i] = _team[k].hp_max[i]
-                                if _team[k].pet[i] == 2 and _team[k].hp[i] > 0:
-                                    stat = stats(2, _team[k].lv[i])
-                                    if proc(stat.eff_rate):
-                                        _team[k].hp[i] += stat.eff_value
-                                        if _team[k].hp[i] > _team[k].hp_max[i]:
-                                            _team[k].hp[i] = _team[k].hp_max[i]
-                                if _team[k].pet[i] == 3 and _team[k].hp[i] > 0:
-                                    stat = stats(3, _team[k].lv[i])
-                                    if proc(stat.eff_rate):
-                                        for j in range(n):
-                                            _team[k].hp[j] += stat.eff_value
-                                            if _team[k].hp[j] > _team[k].hp_max[j]:
-                                                _team[k].hp[j] = _team[k].hp_max[j]
-                                if _team[k].pet[i] == 4 and _team[k].hp[i] > 0:
-                                    stat = stats(4, _team[k].lv[i])
-                                    for j in range(n):
-                                        _team[k].hp[j] += stat.eff_value
-                                        if _team[k].hp[j] > _team[k].hp_max[j]:
-                                            _team[k].hp[j] = _team[k].hp_max[j]
                         value = "\n".join(f"`{j+1}`{petimg[_team[k].pet[j]]} Lv.`{_team[k].lv[j]}` HP `{_team[k].hp[j]}/{_team[k].hp_max[j]}` ATK `{_team[k].atk[j]}`" for j in range(n))
                         em.add_field(name=f"{_team[k].user.name}'s team", value=value)
                     em.set_footer(text = f"Turn {turn} - {_team[attacker_id].user.name}")
