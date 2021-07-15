@@ -1,14 +1,16 @@
 ﻿import aiohttp
 import discord
+import logging
+import os
 from psycopg2 import *
 from discord.ext import commands
-import os
 
 
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 
+logging.basicConfig(level=logging.INFO)
 session = aiohttp.ClientSession()
 conn = connect(DATABASE_URL)
 cur = conn.cursor()
