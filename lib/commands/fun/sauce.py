@@ -56,7 +56,7 @@ async def sauce(cmd, src = None):
 
 
         def check(reaction, user):
-            return str(reaction) in choices[:n] and not user.bot
+            return str(reaction) in choices[:n] and reaction.message.id == message.id and not user.bot
         
 
         async def active():
