@@ -39,10 +39,9 @@ async def bank(cmd, *args):
         if deposit > data[id][0]:
             await cmd.send(f"<@!{id}> You don't have enough money!")
         else:
-            data[id][1] = dt.now()
-            data[id][2] = money
             data[id][0] -= deposit
-            data[id][2] += deposit
+            data[id][1] = dt.now()
+            data[id][2] = money + deposit
             cur.execute(f"""
             UPDATE economy
             SET amt = amt - {deposit}, time = '{dt.now()}', bank = {data[id][2]}
@@ -64,13 +63,12 @@ async def bank(cmd, *args):
         if withdraw > money:
             await cmd.send(f"<@!{id}> Your bank account doesn't have enough money!")
         else:
-            data[id][1] = dt.now()
-            data[id][2] = money
             data[id][0] += withdraw
-            data[id][2] -= withdraw
+            data[id][1] = dt.now()
+            data[id][2] = money - withdraw
             cur.execute(f"""
             UPDATE economy
-            SET amt = amt - {withdraw}, time = '{dt.now()}', bank = {data[id][2]}
+            SET amt = amt + {withdraw}, time = '{dt.now()}', bank = {data[id][2]}
             WHERE id = '{id}';
             """)
             conn.commit()
