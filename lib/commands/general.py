@@ -35,6 +35,7 @@ async def info_error(cmd, error):
 
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
+@commands.has_permissions(administrator=True)
 async def prefix(cmd, *, arg = None):
     cur.execute("SELECT * FROM prefix;")
     lst = cur.fetchall()
@@ -46,9 +47,7 @@ async def prefix(cmd, *, arg = None):
         await cmd.send("Unsupported channel.")
         return
     if arg == None:
-        for data in lst:
-            if data[0] == id:
-                await cmd.send(f"My current prefix is: {data[1]}")
+        await cmd.send("Please specify a prefix to change to!")
     else:
         cur.execute(f"""
         UPDATE prefix
@@ -57,6 +56,11 @@ async def prefix(cmd, *, arg = None):
         """)
         conn.commit()
         await cmd.send(f"Prefix has been set to `{arg}`")
+
+
+@prefix.error
+async def prefix_error(cmd, error):
+    await cmd.send("You can ping me to get prefix anytime! Changing prefix in a server requires `Administrator` permission.")
 
 
 @bot.command()
