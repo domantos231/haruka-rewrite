@@ -39,8 +39,8 @@ async def get(src):
             return lst
 
 
-@bot.command()
-async def sauce(cmd, src = None):
+@bot.command(name="sauce")
+async def _sauce(cmd, src = None):
     if src is None:
         try:
             src = cmd.message.attachments[0].url

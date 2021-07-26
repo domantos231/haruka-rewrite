@@ -2,8 +2,8 @@ import discord
 from lib.settings import *
 
 
-@bot.command()
-async def help(cmd):
+@bot.command(name="help")
+async def _help(cmd):
     help_em = discord.Embed(
         title=f"{bot.user} command list",
         description=f"Ping <@!{bot.user.id}> for prefix",
@@ -21,6 +21,11 @@ async def help(cmd):
     help_em.add_field(
         name="💵 Economy",
         value="```account, bank, battle, daily, gacha, gamble, pet```",
+        inline=False,
+    )
+    help_em.add_field(
+        name="🎶 Music",
+        value="```pause, play, queue, remove, resume```",
         inline=False,
     )
     help_em.add_field(name="⚙️ Developer tools", value="```get, reset```", inline=False)

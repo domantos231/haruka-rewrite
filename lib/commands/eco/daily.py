@@ -2,9 +2,9 @@
 from lib.settings import *
 
 
-@bot.command()
+@bot.command(name="daily")
 @commands.cooldown(1, 86400, commands.BucketType.user)
-async def daily(cmd):
+async def _daily(cmd):
     id = str(cmd.author.id)
     data[id][0] += 500
     cur.execute(f"""

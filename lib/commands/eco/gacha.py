@@ -4,8 +4,8 @@ from random import randint
 from lib.settings import *
 
 
-@bot.command()
-async def gacha(cmd, n: int = 1):
+@bot.command(name="gacha")
+async def _gacha(cmd, n: int = 1):
     if n < 1:
         raise commands.UserInputError
     elif n > 100:
@@ -59,7 +59,7 @@ async def gacha(cmd, n: int = 1):
             await cmd.send(embed=gacha_em)
 
 
-@gacha.error
+@_gacha.error
 async def gacha_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")

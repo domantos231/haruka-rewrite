@@ -3,9 +3,9 @@ from random import randint
 from lib.settings import *
 
 
-@bot.command()
+@bot.command(name="roll")
 @commands.cooldown(1, 5, commands.BucketType.user)
-async def roll(cmd, *arg):
+async def _roll(cmd, *arg):
     if not len(arg) == 2:
         await cmd.send("Please enter 2 integers only!")
     else:

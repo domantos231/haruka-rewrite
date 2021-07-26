@@ -4,8 +4,8 @@ from datetime import datetime as dt
 from lib.settings import *
 
 
-@bot.command()
-async def bank(cmd, *args):
+@bot.command(name="bank")
+async def _bank(cmd, *args):
     id = str(cmd.author.id)
     if data[id][1] is None:
         data[id][1] = dt.now()

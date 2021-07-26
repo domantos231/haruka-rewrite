@@ -4,9 +4,9 @@ from random import randint
 from lib.settings import *
 
 
-@bot.command()
+@bot.command(name="gamble")
 @commands.cooldown(1, 6, commands.BucketType.user)
-async def gamble(cmd, arg: int):
+async def _gamble(cmd, arg: int):
     if arg < 0:
         raise commands.UserInputError
     else:
@@ -34,7 +34,7 @@ async def gamble(cmd, arg: int):
             conn.commit()
 
 
-@gamble.error
+@_gamble.error
 async def gamble_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")

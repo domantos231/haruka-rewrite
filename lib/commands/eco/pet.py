@@ -9,9 +9,9 @@ pets_per_page = 9
 inline = True
 
 
-@bot.command()
+@bot.command(name="pet")
 @commands.cooldown(1, 30, commands.BucketType.user)
-async def pet(cmd, user: discord.Member=None):
+async def _pet(cmd, user: discord.Member=None):
     if user == None:
         user = cmd.author
     if user == bot.user:
@@ -78,7 +78,7 @@ async def pet(cmd, user: discord.Member=None):
             await cmd.send("This user has no data in my database.")
 
 
-@pet.error
+@_pet.error
 async def pet_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")

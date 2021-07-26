@@ -9,8 +9,8 @@ from lib.settings import *
 checker = ["❎", "✅"]
 
 
-@bot.command()
-async def battle(cmd, mem: discord.Member=None):
+@bot.command(name="battle")
+async def _battle(cmd, mem: discord.Member=None):
     if mem == None or mem == cmd.author or mem.bot:
         await cmd.send("Please specify a valid opponent.")
     else:
@@ -206,7 +206,7 @@ async def battle(cmd, mem: discord.Member=None):
                 return
 
 
-@battle.error
+@_battle.error
 async def battle_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")

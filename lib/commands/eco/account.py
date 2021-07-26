@@ -3,8 +3,8 @@ from discord.ext import commands
 from lib.settings import *
 
 
-@bot.command(aliases=["acc"])
-async def account(cmd, user: discord.Member = None):
+@bot.command(name="account", aliases=["acc"])
+async def _account(cmd, user: discord.Member = None):
     if user == None:
         user = cmd.author
     if user == bot.user:
@@ -40,7 +40,7 @@ async def account(cmd, user: discord.Member = None):
             await cmd.send("This user has no data in my database!")
 
 
-@account.error
+@_account.error
 async def account_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")

@@ -1,7 +1,7 @@
 # Haruka
 A Discord bot written in Python 3.9.6 and designed to host on [Heroku](https://dashboard.heroku.com/apps/haruka39)
 
-[Invite](https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2214979664&scope=bot) Haruka to your server and ping the bot to get prefix.
+[Invite](https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2151018320&scope=bot) Haruka to your server and ping the bot to get prefix.
 ## Bot commands
 ### General
 `addbot` Get the bot's invitation link
@@ -42,4 +42,16 @@ A Discord bot written in Python 3.9.6 and designed to host on [Heroku](https://d
 
 `gamble` Spend some money for gambling
 
-`pet` See your or another user's pet
+`pet` See your or another user's pets
+### Music
+You must be in a voice channel to use these commands
+
+`pause` Pause the playing audio
+
+`play` Start playing a queue
+
+`queue` View the current music queue or add a new track
+
+`remove` Remove a track from queue
+
+`resume` Resume the paused audio

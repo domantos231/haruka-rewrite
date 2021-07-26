@@ -3,8 +3,8 @@ from discord.ext import commands
 from lib.settings import *
 
 
-@bot.command()
-async def reset(cmd, user: discord.User):
+@bot.command(name="reset")
+async def _reset(cmd, user: discord.User):
     if await bot.is_owner(cmd.author):
         id = str(user.id)
         try:
@@ -23,7 +23,7 @@ async def reset(cmd, user: discord.User):
         await cmd.send("This command is available for developers only.")
 
 
-@reset.error
+@_reset.error
 async def reset_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")

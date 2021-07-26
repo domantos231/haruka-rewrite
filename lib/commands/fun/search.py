@@ -58,8 +58,8 @@ async def main(word):
             return None
 
 
-@bot.command()
-async def search(cmd, *, query):
+@bot.command(name="search")
+async def _search(cmd, *, query):
     result = await main(query)
     if result is not None:
         desc = f"{result.meaning}\n---------------\n{result.example}"
@@ -71,7 +71,7 @@ async def search(cmd, *, query):
         await cmd.send("No matching result was found.")
 
 
-@search.error
+@_search.error
 async def search_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again")

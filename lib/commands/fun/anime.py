@@ -99,8 +99,8 @@ async def get(id):
         return id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
 
 
-@bot.command()
-async def anime(cmd, *, query):
+@bot.command(name="anime")
+async def _anime(cmd, *, query):
     if len(query) < 3:
         await cmd.send(f"Search query must have at least 3 characters")
         return
@@ -151,7 +151,7 @@ async def anime(cmd, *, query):
         await cmd.send(embed=em)
 
 
-@anime.error
+@_anime.error
 async def anime_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again")

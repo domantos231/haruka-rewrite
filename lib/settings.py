@@ -12,6 +12,7 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 
 logging.basicConfig(level=logging.INFO)
 session = aiohttp.ClientSession()
+root = os.getcwd()
 conn = connect(DATABASE_URL)
 cur = conn.cursor()
 eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float,"
@@ -20,9 +21,11 @@ for i in range(52):
     add.append(f" pet_{i} int")
 eco_sql += ",".join(add) + ", win int, total int);"
 pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
+music_sql = "CREATE TABLE IF NOT EXISTS queue (id text, url text[]);"
 try:
     cur.execute(eco_sql)
     cur.execute(pref_sql)
+    cur.execute(music_sql)
     conn.commit()
 except Exception as ex:
     print(f"An exception occured: {ex}")

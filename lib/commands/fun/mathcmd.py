@@ -5,7 +5,7 @@ from lib.settings import *
 
 
 @bot.command(name="math")
-async def mathcmd(cmd):
+async def _math(cmd):
     type = randint(1, 2)
     if type == 1:
         a = randint(1, 20)
