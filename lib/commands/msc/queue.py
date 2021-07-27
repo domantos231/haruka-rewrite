@@ -6,11 +6,58 @@ import os
 import platform
 import re
 from discord.ext import commands
+from bs4 import BeautifulSoup as bs
 from lib.settings import *
 
 
 class BusyQueueError(Exception):
     pass
+
+
+class YouTubeVideo:
+    def __init__(self, title, description, thumbnail):
+        self._title = title
+        self._description = description
+        self._thumbnail = thumbnail
+    
+
+    @property
+    def title(self):
+        return self._title
+    
+
+    @property
+    def description(self):
+        return self._description
+
+
+    @property
+    def thumbnail(self):
+        return self._thumbnail
+
+
+async def youtube_leech(url):
+    async with session.get(url) as response:
+        if response.status == 200:
+            html = await response.text()
+            soup = bs(html, "html.parser")
+            try:
+                title = soup.find("title").get_text()
+            except:
+                title = "Unknown"
+            try:
+                description = soup.find(name="meta", attrs={"name": "description"}).get("content")
+            except:
+                description = "Unknown"
+            try:
+                soup.find(name="link", attrs={"itemprop": "thumbnailUrl"}).get("href")
+            except:
+                thumbnail = None
+        else:
+            title = "Unknown"
+            description = "Unknown"
+            thumbnail = None
+        return YouTubeVideo(title, description, thumbnail)
 
 
 EmptyArray = r"{}"
@@ -82,8 +129,10 @@ async def _queue(cmd, url = None):
                     WHERE id = '{channel.id}';
                     """)
                     conn.commit()
-                    add_em = discord.Embed(title=f"Channel **{channel}**", description=url, color=0x2ECC71)
-                    add_em.set_author(name=f"{cmd.author.name} added 1 song to queue", icon_url=cmd.author.avatar_url)
+                    video = await youtube_leech(url)
+                    add_em = discord.Embed(title=video.title, description=video.description, color=0x2ECC71)
+                    add_em.set_thumbnail(url=video.thumbnail)
+                    add_em.set_author(name=f"{cmd.author.name} added 1 song to {channel}", icon_url=cmd.author.avatar_url)
                     await cmd.send(embed=add_em)
                 else:
                     os.chdir(root)
