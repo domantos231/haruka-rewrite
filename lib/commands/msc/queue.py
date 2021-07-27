@@ -50,7 +50,7 @@ async def youtube_leech(url):
             except:
                 description = "Unknown"
             try:
-                soup.find(name="link", attrs={"itemprop": "thumbnailUrl"}).get("href")
+                thumbnail = soup.find(name="link", attrs={"itemprop": "thumbnailUrl"}).get("href")
             except:
                 thumbnail = None
         else:
