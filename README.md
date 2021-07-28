@@ -22,6 +22,8 @@ A Discord bot written in Python 3.9.6 and designed to host on [Heroku](https://d
 
 `anime` Search for an anime from MyAnimeList
 
+`hangman` Play hangman
+
 `math` Answer some math questions
 
 `sauce` Search for the source of images (from pixiv, for example)
