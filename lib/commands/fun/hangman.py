@@ -2,6 +2,7 @@ import asyncio
 import aiohttp
 import discord
 from bs4 import BeautifulSoup as bs
+from discord.ext import commands
 from random import choice
 from lib.settings import *
 
@@ -39,6 +40,9 @@ wordlist = asyncio.run(get_wordlist())
 
 @bot.command()
 async def hangman(cmd, n: int = 5):
+    if n < 1:
+        await cmd.send("Initial number of lives must be greater than 0.")
+        return
     if cmd.author.id not in HangmanInProgress:
         word = choice(wordlist)
         while len(word) < 3:
@@ -132,3 +136,9 @@ async def hangman(cmd, n: int = 5):
                 if display == word:
                     await message.channel.send(f"<@!{cmd.author.id}> won Hangman Game! ✨✨")
                     del HangmanInProgress[cmd.author.id]
+
+
+@hangman.error
+async def hangman_error(cmd, error):
+    if isinstance(error, commands.UserInputError):
+        await cmd.send("Please check your input again.")
