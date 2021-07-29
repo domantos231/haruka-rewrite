@@ -50,7 +50,7 @@ async def hangman(cmd, n: int = 5):
         length = len(word)
         HangmanInProgress[cmd.author.id] = HangmanProgress(word, [], n)
         em = discord.Embed(
-            name="Hangman Game",
+            title="Hangman Game",
             description="".join("-" for i in range(length)) + "\nSend any character or send the entire word to guess!",
             color=0x2ECC71
         )
@@ -83,7 +83,7 @@ async def hangman(cmd, n: int = 5):
                         else:
                             display += char
                     em = discord.Embed(
-                        name="Hangman Game",
+                        title="Hangman Game",
                         description=f"{display}\nSend any character or send the entire word to guess!",
                         color=0x2ECC71
                     )
@@ -98,7 +98,7 @@ async def hangman(cmd, n: int = 5):
                         else:
                             display += char
                     em = discord.Embed(
-                        name="Hangman Game",
+                        title="Hangman Game",
                         description=f"{display}\nSend any character or send the entire word to guess!",
                         color=0x2ECC71
                     )
@@ -108,7 +108,7 @@ async def hangman(cmd, n: int = 5):
                 elif guess == game.word:
                     display = word
                     em = discord.Embed(
-                        name="Hangman Game",
+                        title="Hangman Game",
                         description=f"{display}\nSend any character or send the entire word to guess!",
                         color=0x2ECC71
                     )
@@ -123,7 +123,7 @@ async def hangman(cmd, n: int = 5):
                         else:
                             display += char
                     em = discord.Embed(
-                        name="Hangman Game",
+                        title="Hangman Game",
                         description=f"{display}\nSend any character or send the entire word to guess!",
                         color=0x2ECC71
                     )
