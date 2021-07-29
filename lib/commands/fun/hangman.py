@@ -73,6 +73,7 @@ async def hangman(cmd, n: int = 5):
                 message = await bot.wait_for("message", check=check, timeout=300.0)
             except asyncio.TimeoutError:
                 await cmd.send(f"<@!{cmd.author.id}> timed out for Hangman Game! The answer is **{word}**")
+                del HangmanInProgress[cmd.author.id]
                 return
             else:
                 await msg.delete()
