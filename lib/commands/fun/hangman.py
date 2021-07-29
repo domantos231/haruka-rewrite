@@ -32,10 +32,13 @@ async def get_wordlist():
                 return obj.get_text(separator=r"%").split(r"%")
             else:
                 print(f"Wordlist site retured status code {response.status}")
-                return []
+                return ["pneumonoultramicroscopicsilicovolcanoconiosis"]
 
 
-wordlist = asyncio.run(get_wordlist())
+prelist = asyncio.run(get_wordlist())
+wordlist = []
+for word in prelist:
+    wordlist.append(word.lower())
 
 
 @bot.command()
@@ -57,11 +60,10 @@ async def hangman(cmd, n: int = 5):
         em.set_author(name=f"{cmd.author.name} started Hangman Game!", icon_url=cmd.author.avatar_url)
         em.set_footer(text=f"💖 {n} left")
         msg = await cmd.send(embed=em)
-        print(word)
 
 
         def check(message):
-            return message.author.id == cmd.author.id
+            return message.author.id == cmd.author.id and message.channel.id == cmd.channel.id
         
 
         while cmd.author.id in HangmanInProgress:
