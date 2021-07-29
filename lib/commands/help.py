@@ -28,5 +28,4 @@ async def _help(cmd):
         value="```pause, play, queue, remove, resume```",
         inline=False,
     )
-    help_em.add_field(name="⚙️ Developer tools", value="```get, reset```", inline=False)
     await cmd.send(embed=help_em)
