@@ -145,6 +145,42 @@ class pet(HelpEmbed):
     syntax = "pet <user|None>"
 
 
+class cry(HelpEmbed):
+    title = "cry"
+    description = "When you wants to cry a lot..."
+    syntax = "cry"
+
+
+class girl(HelpEmbed):
+    title = "girl"
+    description = "Send you a 2D animated girl. Really, go get a real girlfriend!"
+    syntax = "girl"
+
+
+class hug(HelpEmbed):
+    title = "hug"
+    description = "Hug someone"
+    syntax = "hug <user>"
+
+
+class kiss(HelpEmbed):
+    title = "kiss"
+    description = "Kiss someone"
+    syntax = "kiss <user>"
+
+
+class loli(HelpEmbed):
+    title = "loli"
+    description = "Send you a 2D loli. There's also a chance that you will be arrested by the FBI."
+    syntax = "loli"
+
+
+class punch(HelpEmbed):
+    title = "punch"
+    description = "Punch someone"
+    syntax = "punch <user>"
+
+
 class pause(HelpEmbed):
     title = "pause"
     description = "Pause the audio of the voice channel you're in"
@@ -175,7 +211,7 @@ class resume(HelpEmbed):
     syntax = "resume"
 
 
-command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "math", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "pause", "play", "queue", "remove", "resume"]
+command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "math", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume"]
 embed_class_list = HelpEmbed.__subclasses__()
 
 
@@ -199,6 +235,11 @@ async def _help(cmd, help_request = None):
         help_em.add_field(
             name="💵 Economy",
             value="```account, bank, battle, daily, gacha, gamble, pet```",
+            inline=False,
+        )
+        help_em.add_field(
+            name="🖼️ GIFs",
+            value="```cry, girl, hug, kiss, loli, punch```",
             inline=False,
         )
         help_em.add_field(

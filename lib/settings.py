@@ -1,8 +1,11 @@
+import asyncio
 import aiohttp
 import discord
 import logging
 import os
 import psycopg2
+import re
+from bs4 import BeautifulSoup as bs
 from discord.ext import commands
 from load import *
 
@@ -61,6 +64,32 @@ for player in lst:
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 navigate = ["⬅️", "➡️"]
+
+
+# Load all action commands' GIFs from giphy
+giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
+class GIF:
+    def __init__(self, query):
+        self.query = query
+
+
+    async def giphy_leech(self):
+        url = f"https://giphy.com/search/{self.query}"
+        lst = []
+        async with session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                obj = str(soup.find(name="body"))
+                matches = re.finditer(giphy_pattern_regex, obj)
+                for match in matches:
+                    if match.group() not in lst:
+                        lst.append(match.group())
+                    if len(lst) == 15:
+                        break
+                return lst
+            else:
+                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
 
 def prefix(bot, message):
