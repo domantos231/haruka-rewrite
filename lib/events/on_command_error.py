@@ -1,5 +1,5 @@
 from discord.ext import commands
-from lib.settings import *
+from settings import *
 
 
 @bot.event

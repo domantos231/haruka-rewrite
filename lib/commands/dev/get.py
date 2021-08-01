@@ -1,6 +1,6 @@
 ﻿import discord
 from discord.ext import commands
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="get")
@@ -11,11 +11,12 @@ async def _get(cmd, arg: int, user: discord.User = None):
     if user == None:
         user = cmd.author
     id = str(user.id)
+    player = data[id]
     if user.bot:
         await cmd.send(f"<@!{id}> is a bot user!")
     else:
         try:
-            data[id][0] += arg
+            player.amt += arg
             cur.execute(f"""
             UPDATE economy
             SET amt = amt + {arg}

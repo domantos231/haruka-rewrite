@@ -7,7 +7,7 @@ import platform
 import re
 from discord.ext import commands
 from bs4 import BeautifulSoup as bs
-from lib.settings import *
+from settings import *
 
 
 class BusyQueueError(Exception):
@@ -52,11 +52,11 @@ async def youtube_leech(url):
             try:
                 thumbnail = soup.find(name="link", attrs={"itemprop": "thumbnailUrl"}).get("href")
             except:
-                thumbnail = None
+                thumbnail = discord.Embed.Empty
         else:
             title = "Unknown"
             description = "Unknown"
-            thumbnail = None
+            thumbnail = discord.Embed.Empty
         return YouTubeVideo(title, description, thumbnail)
 
 
@@ -69,6 +69,7 @@ async def _queue(cmd, url = None):
         await cmd.send("Please join a voice channel first.")
     else:
         channel = cmd.author.voice.channel
+        channel_path = f"{root}/music/{channel.id}-music"
         cur.execute("SELECT * FROM queue;")
         lst = cur.fetchall()
         existed = False
@@ -93,15 +94,16 @@ async def _queue(cmd, url = None):
             if ";" in url or re.match(r"^((https://|http://)?(www.)?(youtube.com|youtu.be))", url) is None:
                 await cmd.send("It seems like your URL is invalid. Maybe check it again?")
             else:
+                url = url.split(r"&")[0]
                 config = configparser.ConfigParser()
                 try:
-                    os.chdir(f"{root}/music/{channel.id}-music")
+                    os.chdir(channel_path)
                     config.read("config.ini")
                     if config["general"]["status"] == "busy":
                         raise BusyQueueError
                 except OSError:
-                    os.mkdir(f"{root}/music/{channel.id}-music")
-                    os.chdir(f"{root}/music/{channel.id}-music")
+                    os.mkdir(channel_path)
+                    os.chdir(channel_path)
                     config["general"] = {"status": "busy"}
                     with open("config.ini", "w") as inifile:
                         config.write(inifile)
@@ -109,19 +111,19 @@ async def _queue(cmd, url = None):
                     await cmd.send("This voice channel queue is currently busy.")
                     return
                 config["general"] = {"status": "busy"}
-                with open("config.ini", "w") as inifile:
+                with open(f"{channel_path}/config.ini", "w") as inifile:
                     config.write(inifile)
                 msg = await cmd.send("Processing queue...")
                 if platform.system() == "Windows":
-                    process = await asyncio.create_subprocess_shell(f"youtube-dl --no-playlist --extract-audio --audio-format \"opus\" --match-filter \"!is_live\" --force-ipv4 --rm-cache-dir -o \"song{n + 1}.%(ext)s\" {url}")
+                    process = await asyncio.create_subprocess_shell(f"youtube-dl --no-playlist --extract-audio --audio-format \"opus\" --match-filter \"!is_live\" --force-ipv4 --rm-cache-dir -o \"{channel_path}\\song{n + 1}.%(ext)s\" {url}")
                 else:
-                    process = await asyncio.create_subprocess_shell(f"youtube-dl --no-playlist --extract-audio --audio-format 'opus' --match-filter '!is_live' --force-ipv4 --rm-cache-dir -o 'song{n + 1}.%(ext)s\' {url}")
+                    process = await asyncio.create_subprocess_shell(f"youtube-dl --no-playlist --extract-audio --audio-format 'opus' --match-filter '!is_live' --force-ipv4 --rm-cache-dir -o '{channel_path}/song{n + 1}.%(ext)s\' {url}")
                 code = await process.wait()
                 config["general"] = {"status": "ready"}
                 with open("config.ini", "w") as inifile:
                     config.write(inifile)
                 await msg.delete()
-                if os.path.isfile(f"./song{n + 1}.opus"):
+                if os.path.isfile(f"{channel_path}/song{n + 1}.opus"):
                     os.chdir(root)
                     cur.execute(f"""
                     UPDATE queue

@@ -1,6 +1,6 @@
 ﻿import discord
 from discord.ext import commands
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="account", aliases=["acc"])
@@ -9,7 +9,7 @@ async def _account(cmd, user: discord.Member = None):
         user = cmd.author
     if user == bot.user:
         em = discord.Embed(
-            title="Information about **{0.name}**".format(user),
+            title=f"Information about **{user.name}**",
             description=f"**Player** <@!{user.id}>\n**Money** `💲9000000000`\nTotal number of gacha rolls: `-1`",
             color=0x2ECC71,
         )
@@ -20,10 +20,11 @@ async def _account(cmd, user: discord.Member = None):
     else:
         id = str(user.id)
         try:
-            s = sum(data[id][4:53])
-            amt = data[id][0]
-            win = data[id][56]
-            total = data[id][57]
+            player = data[id]
+            s = sum(pet.amt for pet in player.pet)
+            amt = player.amt
+            win = player.win
+            total = player.total
             if total == 0:
                 rate = "--"
             else:
@@ -36,7 +37,7 @@ async def _account(cmd, user: discord.Member = None):
             )
             em.set_footer(text="This command does not show pet list")
             await cmd.send(embed=em)
-        except:
+        except KeyError:
             await cmd.send("This user has no data in my database!")
 
 

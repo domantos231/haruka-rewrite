@@ -1,6 +1,6 @@
 import asyncio
 import discord
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="tree")

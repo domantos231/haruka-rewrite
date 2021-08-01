@@ -1,7 +1,7 @@
 import discord
 from random import randint
 from decimal import Decimal
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="math")

@@ -3,17 +3,32 @@ import discord
 import math
 from random import randint
 from discord.ext import commands
-from lib.settings import *
+from settings import *
 
 
-checker = ["❎", "✅"]
+class NoPet(Exception):
+    pass
 
 
 @bot.command(name="battle")
+@commands.cooldown(1, 15, commands.BucketType.user)
 async def _battle(cmd, mem: discord.Member=None):
     if mem == None or mem == cmd.author or mem.bot:
         await cmd.send("Please specify a valid opponent.")
     else:
+        # Check if both players have pets to battle
+        id_lst = [str(cmd.author.id), str(mem.id)]
+        name_lst = [cmd.author.name, mem.name]
+        try:
+            for id in id_lst:
+                if sum(pet.amt for pet in data[id].pet) == 0:
+                    raise NoPet
+        except (NoPet, KeyError):
+            await cmd.send("Both players must have at least 1 pet to perform battle.")
+            return
+        
+
+        # Send battle invite
         em = discord.Embed(title="Battle challenge", description=f"<@!{mem.id}> Do you accept <@!{cmd.author.id}>'s challenge?", color=0x2ECC71)
         em.set_footer(text="This message will expire after 5 minutes")
         message = await cmd.send(embed=em)
@@ -36,25 +51,9 @@ async def _battle(cmd, mem: discord.Member=None):
         if choice == 0:
             await cmd.send(f"<@!{mem.id}> refused to have a duel. What a noob!")
         elif choice == 1:
-            id_lst = [str(cmd.author.id), str(mem.id)]
-            try:
-                for id in id_lst:
-                    if sum(data[id][4:53]) == 0:
-                        raise ValueError
-            except:
-                await cmd.send("Both players must have at least 1 pet to perform battle.")
-                return
             await cmd.send(f"<@!{mem.id}> accepted the challenge.\nChoose at most 3 pets to battle by entering `select <id> <id> <id>`.\nEg. `select 2 43 13`, `select 0 14`")
             pending = [True, True]
-            _team = {}
-            class Team:
-                def __init__(self, user, pet, lv, hp, atk):
-                    self.user = user
-                    self.pet = pet
-                    self.lv = lv
-                    self.hp = hp
-                    self.atk = atk
-                    self.hp_max = hp.copy()
+            team = {}
 
 
             def select(message):
@@ -74,42 +73,34 @@ async def _battle(cmd, mem: discord.Member=None):
                     continue
                 choice = message.content.split(" ")[1:]
                 player_team = []
-                choices = []
                 for i in choice:
                     try:
                         i = int(i)
-                        if data[id][i + 4] == 0:
+                        if data[id].pet[i].amt == 0:
                             raise ValueError
                         else:
-                            choices.append(i)
-                            player_team.append(data[id][i + 4])
+                            player_team.append(data[id].pet[i])
                     except:
                         continue
                 n = len(player_team)
-                _lv = []
-                hp = []
-                atk = []
                 if n == 0 or n > 3:
                     await cmd.send("Please perform a valid selection.")
                     continue
                 else:
-                    em = discord.Embed(title=f"{message.author} has completed selecting!",
+                    team[id] = player_team
+                    em = discord.Embed(title=f"{message.author.name} has completed selecting!",
                                        color=0x2ECC71)
-                    for i in range(n):
-                        pet = petimg[choices[i]]
-                        cons = player_team[i]
-                        lv = 1 + int((-1 + math.sqrt(1 + 2 * cons)) / 2)
-                        stat = stats(choices[i], lv)
-                        _lv.append(lv)
-                        hp.append(stat.hp)
-                        atk.append(stat.atk)
-                        em.add_field(name=f"{pet} Lv.`{lv}`", value=f"HP `{stat.hp}` ATK `{stat.atk}`")
-                    _team[id] = Team(message.author, choices, _lv, hp, atk)
+                    for pet in player_team:
+                        pet.load()
+                        pet.battle_init()
+                        em.add_field(
+                            name=f"{pet.img} Lv.`{pet.lv}`",
+                            value=f"HP `{pet.hp_max}` ATK `{pet.atk}`",
+                            inline=True
+                        )
                     await cmd.send(embed=em)
                     await message.delete()
                     pending[p] = False
-            lst = []
-            ongoing = True
 
 
             def win(attacker_id, target_id):
@@ -124,44 +115,34 @@ async def _battle(cmd, mem: discord.Member=None):
                 WHERE id = '{target_id}';
                 """)
                 conn.commit()
-                data[attacker_id][56] += 1
-                data[attacker_id][57] += 1
-                data[target_id][57] += 1
-
-
-            def proc(rate):
-                proc = randint(1, 100000)
-                return proc <= 1000 * rate
+                data[attacker_id].win += 1
+                data[attacker_id].total += 1
+                data[target_id].total += 1
 
 
             turn = 1
+            ongoing = True
+            lst = [] # Embed list for battle status
             while ongoing:
                 for i in range(2):
                     attacker_id = id_lst[i]
                     target_id = id_lst[1 - i]
-                    attacker = randint(0, len(_team[attacker_id].pet) - 1)
-                    while _team[attacker_id].hp[attacker] == 0:
-                        attacker = randint(0, len(_team[attacker_id].pet) - 1)
-                    target = randint(0, len(_team[target_id].pet) - 1)
-                    while _team[target_id].hp[target] == 0:
-                        target = randint(0, len(_team[target_id].pet) - 1)
-                    dmg = _team[attacker_id].atk[attacker]
-                    if dmg < 0:
-                        dmg = 0
-                    else:
-                        _team[target_id].hp[target] -= dmg
+                    attacker = randint(0, len(team[attacker_id]) - 1)
+                    while team[attacker_id][attacker].hp == 0:
+                        attacker = randint(0, len(team[attacker_id]) - 1)
+                    target = randint(0, len(team[target_id]) - 1)
+                    while team[target_id][target].hp == 0:
+                        target = randint(0, len(team[target_id]) - 1)
+                    team[attacker_id][attacker].attack(team[target_id][target])
                     em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
-                    if _team[target_id].hp[target] <= 0:
-                        _team[target_id].hp[target] = 0
-                        if sum(_team[target_id].hp) == 0:
-                            em = discord.Embed(title="Battle Status", description=f"**{_team[id_lst[i]].user.name}** won!", color=0x2ECC71)
-                            win(attacker_id, target_id)
-                            ongoing = False
-                    for k in id_lst:
-                        n = len(_team[k].pet)
-                        value = "\n".join(f"`{j+1}`{petimg[_team[k].pet[j]]} Lv.`{_team[k].lv[j]}` HP `{_team[k].hp[j]}/{_team[k].hp_max[j]}` ATK `{_team[k].atk[j]}`" for j in range(n))
-                        em.add_field(name=f"{_team[k].user.name}'s team", value=value)
-                    em.set_footer(text = f"Turn {turn} - {_team[attacker_id].user.name}")
+                    if sum(pet.hp for pet in team[target_id]) == 0:
+                        em = discord.Embed(title="Battle Status", description=f"{name_lst[i]} won!", color=0x2ECC71)
+                        win(attacker_id, target_id)
+                        ongoing = False
+                    for k in enumerate(id_lst):
+                        value = "\n".join(f"`{obj[0] + 1}`{obj[1].img} Lv.`{obj[1].lv}` HP `{obj[1].hp}/{obj[1].hp_max}` ATK `{obj[1].atk}`" for obj in enumerate(team[k[1]]))
+                        em.add_field(name=f"{name_lst[k[0]]}'s team", value=value, inline=True)
+                    em.set_footer(text = f"Turn {turn} - {name_lst[i]}")
                     turn += 1
                     lst.append(em)
                     if not ongoing:
@@ -169,7 +150,6 @@ async def _battle(cmd, mem: discord.Member=None):
             obj = lst.pop()
             lst.insert(0, obj)
             msg = await cmd.send(embed=lst[0])
-            navigate = ["⬅️", "➡️"]
             for emoji in navigate:
                 await msg.add_reaction(emoji)
 

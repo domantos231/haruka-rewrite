@@ -4,7 +4,7 @@ import discord
 from bs4 import BeautifulSoup as bs
 from discord.ext import commands
 from random import choice
-from lib.settings import *
+from settings import *
 
 
 HangmanInProgress = {}
@@ -36,7 +36,7 @@ async def get_wordlist():
 
 
 prelist = asyncio.run(get_wordlist())
-wordlist = []
+wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
 for word in prelist:
     wordlist.append(word.lower())
 
@@ -45,6 +45,9 @@ for word in prelist:
 async def hangman(cmd, n: int = 5):
     if n < 1:
         await cmd.send("Initial number of lives must be greater than 0.")
+        return
+    if n > 15:
+        await cmd.send("Initial number of lives must not exceed 15.")
         return
     if cmd.author.id not in HangmanInProgress:
         word = choice(wordlist)

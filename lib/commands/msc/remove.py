@@ -4,7 +4,7 @@ import discord
 import os
 import platform
 from discord.ext import commands
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="remove")

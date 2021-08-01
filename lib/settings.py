@@ -1,25 +1,29 @@
-﻿import aiohttp
+import aiohttp
 import discord
 import logging
 import os
-from psycopg2 import *
+import psycopg2
 from discord.ext import commands
+from load import *
 
 
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
+
+# Initialize database connection, cursor, root path, side session and max number of processes
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
-
-
-logging.basicConfig(level=logging.INFO)
 session = aiohttp.ClientSession()
 root = os.getcwd()
-conn = connect(DATABASE_URL)
+conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
+max_processes = 100
+
+
+# Initialize database
 eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float,"
-add = []
-for i in range(52):
-    add.append(f" pet_{i} int")
-eco_sql += ",".join(add) + ", win int, total int);"
+eco_sql += ",".join(f" pet_{i} int" for i in range(52)) + ", win int, total int);"
 pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
 music_sql = "CREATE TABLE IF NOT EXISTS queue (id text, url text[]);"
 try:
@@ -34,16 +38,29 @@ except Exception as ex:
     conn.close()
     exit()
 else:
-    print("Successfully connected to database!")
-    del eco_sql
-    del pref_sql
-    del add
-    cur.execute("SELECT * FROM economy;")
-    lst = cur.fetchall()
-    data = {}
-    for i in lst:
-        data[i[0]] = list(i[1:])
-    del lst
+    print("Successfully initialized database!")
+
+
+# Load all existing economy data
+cur.execute("SELECT * FROM economy;")
+lst = cur.fetchall()
+data = {}
+for player in lst:
+    id = player[0]
+    amt = player[1]
+    bank_date = player[2]
+    bank = player[3]
+    interest = player[4]
+    pet = [add_pet_data(i - 5, player[i]) for i in range(5, 57)]
+    win = player[57]
+    total = player[58]
+    data[id] = Player(amt, bank_date, bank, interest, pet, win, total)
+
+
+# Define frequently used emoji lists
+checker = ["❌", "✔️"]
+choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
+navigate = ["⬅️", "➡️"]
 
 
 def prefix(bot, message):
@@ -58,102 +75,9 @@ def prefix(bot, message):
             return obj[1]
 
 
+# Initialize bot
 intents = discord.Intents.default()
 intents.members = True
 activity = discord.Game(name="on Heroku")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
-
-
-@bot.event
-async def on_connect():
-    print("Connected to Discord!")
-
-
-@bot.event
-async def on_ready():
-    print(f"Logged in as {bot.user}")
-
-
-choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
-
-
-class stats:
-    def __init__(self, i, lv):
-        if i * (i - 15) <= 0:  # COMMON
-            type = "COMMON"
-            hp = 3000 + 50 * (i - 7) + 5 * (i + 1) * lv
-            atk = 1000 + 20 * (7 - i) + 5 * (16 - i) * lv
-        elif (i - 16) * (i - 33) <= 0:  # RARE
-            type = "RARE"
-            hp = 3200 + 50 * (i - 24) + 6 * (i - 14) * lv
-            atk = 1200 + 20 * (24 - i) + 6 * (35 - i) * lv
-        elif (i - 34) * (i - 47) <= 0:  # EPIC
-            type = "EPIC"
-            hp = 4000 + 60 * (i - 40) + 9 * (i - 40) * lv
-            atk = 1800 + 30 * (40 - i) + 8 * (50 - i) * lv
-        elif i == 51:  # ????
-            type = "????"
-            hp = 70000 + 2000 * lv
-            atk = 40000 + 1200 * lv
-        else:  # LEGENDARY
-            type = "LEGENDARY"
-            hp = 7000 + 180 * (i - 49) + 12 * (i - 49) * lv
-            atk = 3000 + 90 * (49 - i) + 12 * (52 - i) * lv
-        self.hp = hp
-        self.atk = atk
-        self.type = type
-
-
-petimg = ["🐕",
-    "🐈",
-    "🐂",
-    "🐃",
-    "🐄",
-    "🐖",
-    "🐪",
-    "🐁",
-    "🐇",
-    "🐓",
-    "🐦",
-    "🦆",
-    "🦎",
-    "🐟",
-    "🐌",
-    "🦀",
-    "🦮",
-    "🐕‍🦺",
-    "🐎",
-    "🐏",
-    "🐑",
-    "🐐",
-    "🐫",
-    "🦙",
-    "🦇",
-    "🦨",
-    "🐧",
-    "🕊️",
-    "🦢",
-    "🦜",
-    "🐢",
-    "🐍",
-    "🐡",
-    "🐝",
-    "🐩",
-    "🐈‍⬛",
-    "🐅",
-    "🐆",
-    "🐘",
-    "🦛",
-    "🦉",
-    "🦚",
-    "🐊",
-    "🐋",
-    "🐬",
-    "🦈",
-    "🐙",
-    "🦑",
-    "🐉",
-    "🦕",
-    "🦖",
-    "🛸",]

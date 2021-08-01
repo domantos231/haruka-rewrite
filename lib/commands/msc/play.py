@@ -1,6 +1,6 @@
 import asyncio
 import discord
-from lib.settings import *
+from settings import *
 
 
 voice_protocols = {}
@@ -19,15 +19,10 @@ async def _play(cmd):
             if i[0] == str(channel.id):
                 existed = True
                 queue = i[1]
-                desc = "\n".join(f"**#{obj[0] + 1}** {obj[1]}" for obj in enumerate(queue))
                 break
         if not existed:
-            queue = []
-            cur.execute(f"""
-            INSERT INTO queue
-            VALUES ('{channel.id}', NULL, NULL, NULL, NULL, NULL, NULL);
-            """)
-            conn.commit()
+            await cmd.send("Please add some songs to the queue first.")
+            return
         n = len(queue)
         if n == 0:
             await cmd.send("Please add a song to the queue.")

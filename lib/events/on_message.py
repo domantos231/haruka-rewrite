@@ -1,4 +1,5 @@
-from lib.settings import *
+from settings import *
+from load import *
 
 
 add = ", NULL, 0, 1.01"
@@ -39,14 +40,19 @@ async def on_message(message):
     id = str(message.author.id)
     try:
         data[id]
-    except:
+    except KeyError:
         eco_sql = f"""
         INSERT INTO economy
         VALUES ('{id}', 300{add});
         """
         cur.execute(eco_sql)
         conn.commit()
-        data[id] = [300, None, 0, 1.01]
-        for i in range(54):
-            data[id].append(0)
+        amt = 300
+        bank_date = None
+        bank = 0
+        interest = 1.01
+        pet = [add_pet_data(i, 0) for i in range(52)]
+        win = 0
+        total = 0
+        data[id] = Player(amt, bank_date, bank, interest, pet, win, total)
     await bot.process_commands(message)

@@ -1,6 +1,6 @@
 from discord.ext import commands
 from random import randint
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="roll")

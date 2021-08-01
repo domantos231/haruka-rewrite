@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="reset")
@@ -18,7 +18,7 @@ async def _reset(cmd, user: discord.User):
             """)
             conn.commit()
             del data[id]
-            await cmd.send(embed=discord.Embed(title="Request accepted", description=f"Successfully removed <@!{id}> from database", color=0x2ECC71))
+            await cmd.send(embed=discord.Embed(title="Request accepted", description=f"Successfully removed <@!{id}> from economy database", color=0x2ECC71))
     else:
         await cmd.send("This command is available for developers only.")
 

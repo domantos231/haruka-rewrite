@@ -1,28 +1,28 @@
 ﻿import datetime
 import discord
 from datetime import datetime as dt
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="bank")
 async def _bank(cmd, *args):
     id = str(cmd.author.id)
-    if data[id][1] is None:
-        data[id][1] = dt.now()
+    player = data[id]
+    if player.bank_date is None:
+        player.bank_date = dt.now()
         cur.execute(f"""
         UPDATE economy
-        SET time = '{dt.now()}'
+        SET time = '{player.bank_date}'
         WHERE id = '{id}';
         """)
         conn.commit()
         money = 0
     else:
-        i = data[id][3]
-        delta = dt.now() - data[id][1]
-        n = 24 * delta.days + int(delta.seconds / 3600)
-        money = int(data[id][2] * pow(1 + i/100, n))
+        delta = dt.now() - player.bank_date
+        hours = 24 * delta.days + int(delta.seconds / 3600)
+        money = int(player.bank * pow(1 + player.interest/100, hours))
     if len(args) == 0:
-        em = discord.Embed(title="🏦 WELCOME TO THE BANK", description=f"Your bank account `💲{money}`\nInterest `{data[id][3]}%/h`", color=0x2ECC71)
+        em = discord.Embed(title="🏦 WELCOME TO THE BANK", description=f"Your bank account `💲{money}`\nInterest `{player.interest}%/h`", color=0x2ECC71)
         em.set_author(name=cmd.author.name, icon_url=cmd.author.avatar_url)
         await cmd.send(embed=em)
     elif args[0].lower() == "deposit":
@@ -30,21 +30,24 @@ async def _bank(cmd, *args):
             deposit = int(args[1])
             if deposit < 0:
                 raise ValueError
-        except:
+        except KeyError:
+            await cmd.send("Please specify a deposit amount")
+            return
+        except ValueError:
             if args[1].lower() == "all":
-                deposit = data[id][0]
+                deposit = player.amt
             else:
                 await cmd.send("Please check your input again.")
                 return
-        if deposit > data[id][0]:
+        if deposit > player.amt:
             await cmd.send(f"<@!{id}> You don't have enough money!")
         else:
-            data[id][0] -= deposit
-            data[id][1] = dt.now()
-            data[id][2] = money + deposit
+            player.amt -= deposit
+            player.bank_date = dt.now()
+            player.bank = money + deposit
             cur.execute(f"""
             UPDATE economy
-            SET amt = amt - {deposit}, time = '{dt.now()}', bank = {data[id][2]}
+            SET amt = amt - {deposit}, time = '{player.bank_date}', bank = {player.bank}
             WHERE id = '{id}';
             """)
             conn.commit()
@@ -54,21 +57,24 @@ async def _bank(cmd, *args):
             withdraw = int(args[1])
             if withdraw < 0:
                 raise ValueError
-        except:
+        except KeyError:
+            await cmd.send("Please specify a withdraw amount")
+            return
+        except ValueError:
             if args[1].lower() == "all":
-                withdraw = data[id][2]
+                withdraw = player.bank
             else:
                 await cmd.send("Please check your input again.")
                 return
         if withdraw > money:
             await cmd.send(f"<@!{id}> Your bank account doesn't have enough money!")
         else:
-            data[id][0] += withdraw
-            data[id][1] = dt.now()
-            data[id][2] = money - withdraw
+            player.amt += withdraw
+            player.bank_date = dt.now()
+            player.bank = money - withdraw
             cur.execute(f"""
             UPDATE economy
-            SET amt = amt + {withdraw}, time = '{dt.now()}', bank = {data[id][2]}
+            SET amt = amt + {withdraw}, time = '{player.bank_date}', bank = {player.bank}
             WHERE id = '{id}';
             """)
             conn.commit()

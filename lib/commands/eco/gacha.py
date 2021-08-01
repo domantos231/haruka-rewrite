@@ -1,21 +1,23 @@
 ﻿import discord
 from discord.ext import commands
 from random import randint
-from lib.settings import *
+from settings import *
 
 
 @bot.command(name="gacha")
+@commands.cooldown(1, 15, commands.BucketType.user)
 async def _gacha(cmd, n: int = 1):
     if n < 1:
         raise commands.UserInputError
-    elif n > 100:
-        await cmd.send("The maximum number of rolls you can gacha at a time is 100.")
+    elif n > 10:
+        await cmd.send("The maximum number of rolls you can gacha at a time is 10.")
     else:
         id = str(cmd.author.id)
-        if data[id][0] < n * 300:
+        player = data[id]
+        if player.amt < n * 300:
             await cmd.send("Not enough money. Gacha costs `💲300`/turn")
         else:
-            data[id][0] -= n * 300
+            player.amt -= n * 300
             pet_add = []
             for i in range(52):
                 pet_add.append(0)
@@ -35,27 +37,31 @@ async def _gacha(cmd, n: int = 1):
                     pet_add[k] += 1
                 else:
                     pet_add[51] += 1
-            gacha_em = discord.Embed(title=f"Gacha results for {cmd.author}",
+            gacha_em = discord.Embed(
+                title=f"Gacha results for {cmd.author}",
                 description=f"Total number of rolls: {n}",
-                color=0x2ECC71,)
-            name = ["COMMON","RARE","EPIC","LEGENDARY","????"]
-            value = ["","","","","",""]
-            add = ""
-            for i in range(52):
-                if pet_add[i] > 0:
-                    p = name.index(stats(i, 1).type)
-                    value[p] += petimg[i] + f"[{stats(i, 1).type}] +{pet_add[i]}\n"
-                    add += f", pet_{i} = pet_{i} + {pet_add[i]}"
-                    data[id][i + 4] += pet_add[i]
+                color=0x2ECC71,
+            )
+            display = {}
+            sql_query = ""
+            for obj in enumerate(pet_add):
+                pet_id = obj[0]
+                add = obj[1]
+                if add > 0:
+                    player.pet[pet_id].amt += add
+                    sql_query += f", pet_{pet_id} = pet_{pet_id} + {add}"
+                    if player.pet[pet_id].rarity not in display:
+                        display[player.pet[pet_id].rarity] = f"{player.pet[pet_id].img} +{add}"
+                    else:
+                        display[player.pet[pet_id].rarity] += f", {player.pet[pet_id].img} +{add}"
             cur.execute(f"""
             UPDATE economy
-            SET amt = {data[id][0]}{add}
+            SET amt = {player.amt}{sql_query}
             WHERE id = '{id}';
             """)
             conn.commit()
-            for i in range(5):
-                if len(value[i]) > 0:
-                    gacha_em.add_field(name=name[i] + " units", value=value[i], inline=True)
+            for key in display.keys():
+                gacha_em.add_field(name=f"{key} units", value=display[key], inline=False)
             await cmd.send(embed=gacha_em)
 
 
