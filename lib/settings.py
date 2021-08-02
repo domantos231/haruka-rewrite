@@ -5,6 +5,7 @@ import logging
 import os
 import psycopg2
 import re
+import wavelink
 from bs4 import BeautifulSoup as bs
 from discord.ext import commands
 from load import *
@@ -28,11 +29,9 @@ max_processes = 100
 eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float,"
 eco_sql += ",".join(f" pet_{i} int" for i in range(52)) + ", win int, total int);"
 pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
-music_sql = "CREATE TABLE IF NOT EXISTS queue (id text, url text[]);"
 try:
     cur.execute(eco_sql)
     cur.execute(pref_sql)
-    cur.execute(music_sql)
     conn.commit()
 except Exception as ex:
     print(f"An exception occured: {ex}")
@@ -110,3 +109,19 @@ intents.members = True
 activity = discord.Game(name="on Heroku")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
+if not hasattr(bot, "wavelink"):
+    bot.wavelink = wavelink.Client(bot=bot)
+
+
+# Initialize wavelink nodes
+async def start_nodes():
+    await bot.wait_until_ready()
+    await bot.wavelink.initiate_node(
+        host = os.environ["IP"],
+        port = 2333,
+        rest_uri = f"http://{os.environ['IP']}:2333/",
+        password = os.environ["PASSWORD"],
+        identifier = "Haruka Wavelink Client",
+        region = "hongkong",
+    )
+bot.loop.create_task(start_nodes())
