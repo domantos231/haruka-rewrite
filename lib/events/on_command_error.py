@@ -25,3 +25,5 @@ async def on_command_error(cmd, error):
             time += " {:.2f}s".format(seconds)
         msg = await cmd.send(f"⏱️ <@!{cmd.author.id}> This command is on cooldown!\nYou can use it after**{time}**!")
         await msg.delete(delay = error.retry_after)
+    else:
+        print(error)
