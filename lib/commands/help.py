@@ -195,14 +195,14 @@ class play(HelpEmbed):
 
 class queue(HelpEmbed):
     title = "queue"
-    description = "View the current music queue or add a new track"
-    syntax = "queue <YouTube URL|None>"
+    description = "View the current music queue"
+    syntax = "queue"
 
 
 class remove(HelpEmbed):
     title = "remove"
-    description = "Remove track number <i> from queue"
-    syntax = "remove <i>"
+    description = "Remove next track from queue"
+    syntax = "remove"
 
 
 class resume(HelpEmbed):
@@ -211,7 +211,19 @@ class resume(HelpEmbed):
     syntax = "resume"
 
 
-command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "math", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume"]
+class stop(HelpEmbed):
+    title = "stop"
+    description = "Stop the playing audio and disconnect from voice channel"
+    syntax = "stop"
+
+
+class add(HelpEmbed):
+    title = "add"
+    description = "Add a song to queue"
+    syntax = "add <searching query>"
+
+
+command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "math", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume", "stop", "add"]
 embed_class_list = HelpEmbed.__subclasses__()
 
 
@@ -244,7 +256,7 @@ async def _help(cmd, help_request = None):
         )
         help_em.add_field(
             name="🎶 Music",
-            value="```pause, play, queue, remove, resume```",
+            value="```pause, play, queue, remove, resume, stop, add```",
             inline=False,
         )
         await cmd.send(embed=help_em)

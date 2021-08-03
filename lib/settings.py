@@ -103,6 +103,10 @@ def prefix(bot, message):
             return obj[1]
 
 
+# Initialize music queue
+queue = {}
+
+
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True

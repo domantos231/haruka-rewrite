@@ -1,26 +1,19 @@
-import asyncio
-import discord
 from settings import *
-from discord.ext import commands
 
 
 @bot.command(name="play")
-async def _play(cmd, *, query):
-    if cmd.author.voice is None:
+async def _play(cmd):
+    if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")
     else:
-        tracks = await bot.wavelink.get_tracks(f"ytsearch:{query}")
-        if not tracks:
-            return await cmd.send(f"No matching query for {query}")
-        player = bot.wavelink.get_player(cmd.guild.id)
         channel = cmd.author.voice.channel
-        if not player.is_connected:
+        if queue[channel.id].empty():
+            return await cmd.send("Please add at least one song to the queue.")
+        player = await bot.wavelink.get_player(guild_id=cmd.guild.id)
+        if not player.channel_id:
             await player.connect(channel.id)
-            await cmd.send(f"Connected to {channel}")
-        await player.play(tracks[0])
-        
-
-@_play.error
-async def play_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
+            await cmd.send(f"Connected to **{channel}**")
+        elif not player.channel_id == channel.id:
+            return await cmd.send(f"I'm currently playing in another voice channel! Consider using `{cmd.prefix}stop`.")
+        track = await queue[channel.id].get()
+        await player.play(track)
