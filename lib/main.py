@@ -5,7 +5,7 @@ from time import sleep
 
 
 def lavalink_start():
-    subprocess.call("java -jar Lavalink.jar", shell=True)
+    subprocess.call("java -jar ./lavalink/Lavalink.jar", shell=True)
 
 
 if __name__ == "__main__":

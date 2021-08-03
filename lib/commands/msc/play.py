@@ -9,11 +9,12 @@ async def _play(cmd):
         channel = cmd.author.voice.channel
         if queue[channel.id].empty():
             return await cmd.send("Please add at least one song to the queue.")
-        player = await bot.wavelink.get_player(guild_id=cmd.guild.id)
+        player = bot.wavelink.get_player(guild_id=cmd.guild.id)
         if not player.channel_id:
             await player.connect(channel.id)
             await cmd.send(f"Connected to **{channel}**")
         elif not player.channel_id == channel.id:
             return await cmd.send(f"I'm currently playing in another voice channel! Consider using `{cmd.prefix}stop`.")
-        track = await queue[channel.id].get()
-        await player.play(track)
+        while not queue[channel.id].empty():
+            track = await queue[channel.id].get()
+            await player.play(track)
