@@ -18,3 +18,4 @@ async def _play(cmd):
         while not queue[channel.id].empty():
             track = await queue[channel.id].get()
             await player.play(track)
+        await player.disconnect()
