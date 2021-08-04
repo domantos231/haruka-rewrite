@@ -260,7 +260,7 @@ async def _help(cmd, help_request = None):
             inline=False,
         )
         await cmd.send(embed=help_em)
-    elif help_request in command_list:
+    elif help_request.lower() in command_list:
         index = command_list.index(help_request.lower())
         await cmd.send(embed=embed_class_list[index](cmd.prefix).display)
     else:

@@ -7,3 +7,5 @@ async def _pause(cmd):
     if player.is_playing:
         await player.set_pause(True)
         await cmd.send("Paused audio.")
+    else:
+        await cmd.send("No audio currently playing to pause.")

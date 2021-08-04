@@ -7,3 +7,5 @@ async def _resume(cmd):
     if player.is_paused:
         await player.set_pause(False)
         await cmd.send("Resumed audio.")
+    else:
+        await cmd.send("No audio currently being paused to resume.")

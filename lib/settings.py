@@ -7,7 +7,8 @@ import psycopg2
 import re
 import wavelink
 from bs4 import BeautifulSoup as bs
-from discord.ext import commands
+from datetime import datetime as dt
+from discord.ext import tasks, commands
 from load import *
 
 
@@ -117,6 +118,13 @@ if not hasattr(bot, "wavelink"):
     bot.wavelink = wavelink.Client(bot=bot)
 
 
+# Keep lavalink server running (maybe?)
+@tasks.loop(seconds=1800.0)
+async def keep_alive():
+    tracks = await bot.wavelink.get_tracks(f"ytsearch:just some random stuff here")
+    print(f"Finished keep_alive task at {dt.now()}")
+
+
 # Initialize wavelink nodes
 async def start_nodes():
     await bot.wait_until_ready()
@@ -128,4 +136,8 @@ async def start_nodes():
         identifier = "Haruka Wavelink Client",
         region = "hongkong",
     )
+    try:
+        keep_alive.start()
+    except:
+        pass
 bot.loop.create_task(start_nodes())
