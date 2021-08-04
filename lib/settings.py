@@ -118,18 +118,13 @@ if not hasattr(bot, "wavelink"):
 
 
 # Initialize wavelink nodes
-lavalink = {
-    "host": os.environ["HOST"],
-    "port": os.environ["PORT"],
-    "password": os.environ["PASSWORD"],
-}
 async def start_nodes():
     await bot.wait_until_ready()
     await bot.wavelink.initiate_node(
-        host = lavalink["host"],
-        port = lavalink["port"],
-        rest_uri = f"http://{lavalink['host']}:{lavalink['port']}",
-        password = lavalink["password"],
+        host = "127.0.0.1",
+        port = 2333,
+        rest_uri = "http://127.0.0.1:2333",
+        password = os.environ["PASSWORD"],
         identifier = "Haruka Wavelink Client",
         region = "hongkong",
     )
