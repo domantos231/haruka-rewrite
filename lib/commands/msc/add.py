@@ -14,6 +14,7 @@ async def _add(cmd, *, query):
         if tracks:
             em = discord.Embed(title=f"Search results for {query}", color=0x2ECC71)
             em.set_author(name=f"{cmd.author.name}'s song request", icon_url=cmd.author.avatar_url)
+            em.set_footer(text="This messagge will expire after 5 minutes.")
             for obj in enumerate(tracks[:6]):
                 track = obj[1]
                 em.add_field(name=f"{choices[obj[0]]} {track.title}", value=track.author, inline=False)
@@ -32,7 +33,7 @@ async def _add(cmd, *, query):
         try:
             reaction, user = await bot.wait_for("reaction_add", check=check, timeout=300.0)
         except asyncio.TimeoutError:
-            return await cmd.send(f"<@!{cmd.author.id}> didn't respond to the queue. Request timed out")
+            return await msg.reply(f"<@!{cmd.author.id}> didn't respond to the queue. Request timed out")
         else:
             index = choices.index(str(reaction))
             if channel.id not in queue:
