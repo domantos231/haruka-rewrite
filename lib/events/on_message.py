@@ -16,22 +16,24 @@ async def on_message(message):
             id = str(message.channel.id)
         if str(message.channel.type) == "text":
             id = str(message.guild.id)
-        cur.execute("SELECT * FROM prefix;")
+        cur.execute(f"""
+        SELECT *
+        FROM prefix
+        WHERE id = '{id}';
+        """)
         lst = cur.fetchall()
-        for obj in lst:
-            if obj[0] == id:
-                await message.channel.send(f"My current prefix is: {obj[1]}")
-                break
+        obj = lst[0]
+        await message.channel.send(f"My current prefix is: {obj[1]}")
     if str(message.channel.type) == "private":
         existed = False
         id = str(message.channel.id)
-        cur.execute("SELECT id FROM prefix;")
+        cur.execute(f"""
+        SELECT id
+        FROM prefix
+        WHERE id = '{id}';
+        """)
         lst = cur.fetchall()
-        for obj in lst:
-            if obj[0] == id:
-                existed = True
-                break
-        if not existed:
+        if len(lst) == 0:
             cur.execute(f"""
             INSERT INTO prefix (id, pref)
             VALUES ('{id}', '$');

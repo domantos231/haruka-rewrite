@@ -41,8 +41,6 @@ async def info_error(cmd, error):
 @commands.cooldown(1, 3, commands.BucketType.user)
 @commands.has_permissions(administrator=True)
 async def prefix(cmd, *, arg = None):
-    cur.execute("SELECT * FROM prefix;")
-    lst = cur.fetchall()
     if str(cmd.message.channel.type) == "private":
         id = str(cmd.message.channel.id)
     elif str(cmd.message.channel.type) == "text":
