@@ -41,13 +41,7 @@ async def info_error(cmd, error):
 @commands.cooldown(1, 3, commands.BucketType.user)
 @commands.has_permissions(administrator=True)
 async def prefix(cmd, *, arg = None):
-    if str(cmd.message.channel.type) == "private":
-        id = str(cmd.message.channel.id)
-    elif str(cmd.message.channel.type) == "text":
-        id = str(cmd.message.guild.id)
-    else:
-        await cmd.send("Unsupported channel.")
-        return
+    id = cmd.guild.id
     if arg == None:
         await cmd.send("Please specify a prefix to change to!")
     else:

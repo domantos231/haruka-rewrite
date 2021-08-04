@@ -12,18 +12,18 @@ async def on_message(message):
     if message.author.bot:
         return
     if bot.user.mentioned_in(message):
-        if str(message.channel.type) == "private":
-            id = str(message.channel.id)
         if str(message.channel.type) == "text":
-            id = str(message.guild.id)
-        cur.execute(f"""
-        SELECT *
-        FROM prefix
-        WHERE id = '{id}';
-        """)
-        lst = cur.fetchall()
-        obj = lst[0]
-        await message.channel.send(f"My current prefix is: {obj[1]}")
+            id = message.guild.id
+            cur.execute(f"""
+            SELECT *
+            FROM prefix
+            WHERE id = '{id}';
+            """)
+            lst = cur.fetchall()
+            pref = lst[0][1]
+        else:
+            pref = "$"
+        await message.channel.send(f"My current prefix is: {pref}")
     if str(message.channel.type) == "private":
         existed = False
         id = str(message.channel.id)
