@@ -183,14 +183,14 @@ class punch(HelpEmbed):
 
 class pause(HelpEmbed):
     title = "pause"
-    description = "Pause the audio of the voice channel you're in"
+    description = "Pause the playing audio"
     syntax = "pause"
 
 
 class play(HelpEmbed):
     title = "play"
     description = "Start playing music in the queue"
-    syntax = "play"
+    syntax = "play <loop|None>"
 
 
 class queue(HelpEmbed):

@@ -1,10 +1,12 @@
 import asyncio
 import discord
+from discord.ext import commands
 from settings import *
 
 
 @bot.command(name="play")
-async def _play(cmd):
+async def _play(cmd, arg = None):
+    loop = False
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")
     else:
@@ -17,6 +19,13 @@ async def _play(cmd):
             await cmd.send(f"Connected to **{channel}**")
         elif not player.channel_id == channel.id:
             return await cmd.send(f"I'm currently playing in another voice channel! Consider using `{cmd.prefix}stop`.")
+        if not arg:
+            pass
+        elif arg.lower() == "loop":
+            await cmd.send("Playing the current queue in a loop, any completed songs will be added back to the queue.")
+            loop = True
+        else:
+            raise commands.UserInputError
         while not queue[channel.id].empty() and player.is_connected:
             track = await queue[channel.id].get()
             em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
@@ -26,4 +35,11 @@ async def _play(cmd):
             await player.play(track)
             while player.is_playing:
                 await asyncio.sleep(0.5)
+            await queue[channel.id].put(track)
         await player.disconnect()
+
+
+@_play.error
+async def play_error(cmd, error):
+    if isinstance(cmd, commands.UserInputError):
+        await cmd.send(f"Valid argument after `{cmd.prefix}play` is `loop`")
