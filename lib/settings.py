@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import discord
+import gc
 import logging
 import os
 import psycopg2
@@ -12,18 +13,18 @@ from discord.ext import tasks, commands
 from load import *
 
 
-# Set up logging
+# Set up logging and garbage collector
 logging.basicConfig(level=logging.INFO)
+gc.enable()
 
 
-# Initialize database connection, cursor, root path, side session and max number of processes
+# Initialize database connection, cursor, root path and side session
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 session = aiohttp.ClientSession()
 root = os.getcwd()
 conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
-max_processes = 100
 
 
 # Initialize database
@@ -122,6 +123,8 @@ if not hasattr(bot, "wavelink"):
 @tasks.loop(seconds=1800.0)
 async def keep_alive():
     tracks = await bot.wavelink.get_tracks(f"ytsearch:just some random stuff here")
+    del tracks
+    gc.collect()
     print(f"Finished keep_alive task at {dt.now()}")
 
 
