@@ -28,7 +28,8 @@ async def _play(cmd, arg = None):
             raise commands.UserInputError
         while not queue[channel.id].empty() and player.is_connected:
             track = await queue[channel.id].get()
-            await queue[channel.id].put(track)
+            if loop:
+                await queue[channel.id].put(track)
             em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
             em.set_author(name=f"Playing in {channel}")
             em.set_thumbnail(url=track.thumb)
