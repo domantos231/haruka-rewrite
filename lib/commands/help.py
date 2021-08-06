@@ -225,40 +225,40 @@ class add(HelpEmbed):
 
 command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "math", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume", "stop", "add"]
 embed_class_list = HelpEmbed.__subclasses__()
+help_em = discord.Embed(
+    title=f"{bot.user} command list",
+    description=f"Ping <@!{bot.user.id}> for prefix.\nTo get help on a command, type `{cmd.prefix}help <command>`",
+    color=0x2ECC71,
+)
+help_em.set_thumbnail(url=bot.user.avatar_url)
+help_em.add_field(
+    name="💬 General",
+    value="```addbot, avatar, help, info, prefix, say, svinfo```",
+    inline=False,
+)
+help_em.add_field(
+    name="✨ Fun", value="```8ball, anime, hangman, math, sauce, search, roll```", inline=False
+)
+help_em.add_field(
+    name="💵 Economy",
+    value="```account, bank, battle, daily, gacha, gamble, pet```",
+    inline=False,
+)
+help_em.add_field(
+    name="🖼️ GIFs",
+    value="```cry, girl, hug, kiss, loli, punch```",
+    inline=False,
+)
+help_em.add_field(
+    name="🎶 Music",
+    value="```pause, play, queue, remove, resume, stop, add```",
+    inline=False,
+)
 
 
 @bot.command(name="help")
 async def _help(cmd, help_request = None):
     if help_request is None:
-        help_em = discord.Embed(
-            title=f"{bot.user} command list",
-            description=f"Ping <@!{bot.user.id}> for prefix.\nTo get help on a command, type `{cmd.prefix}help <command>`",
-            color=0x2ECC71,
-        )
-        help_em.set_thumbnail(url=bot.user.avatar_url)
-        help_em.add_field(
-            name="💬 General",
-            value="```addbot, avatar, help, info, prefix, say, svinfo```",
-            inline=False,
-        )
-        help_em.add_field(
-            name="✨ Fun", value="```8ball, anime, hangman, math, sauce, search, roll```", inline=False
-        )
-        help_em.add_field(
-            name="💵 Economy",
-            value="```account, bank, battle, daily, gacha, gamble, pet```",
-            inline=False,
-        )
-        help_em.add_field(
-            name="🖼️ GIFs",
-            value="```cry, girl, hug, kiss, loli, punch```",
-            inline=False,
-        )
-        help_em.add_field(
-            name="🎶 Music",
-            value="```pause, play, queue, remove, resume, stop, add```",
-            inline=False,
-        )
         await cmd.send(embed=help_em)
     elif help_request.lower() in command_list:
         index = command_list.index(help_request.lower())

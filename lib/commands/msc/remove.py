@@ -1,8 +1,10 @@
 import discord
 from settings import *
+from discord.ext import commands
 
 
 @bot.command(name="remove")
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def _remove(cmd):
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")

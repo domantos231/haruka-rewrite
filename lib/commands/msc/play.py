@@ -5,6 +5,7 @@ from settings import *
 
 
 @bot.command(name="play")
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def _play(cmd, arg = None):
     loop = False
     if not cmd.author.voice:

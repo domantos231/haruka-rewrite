@@ -5,6 +5,7 @@ from discord.ext import commands
 
 
 @bot.command(name="add")
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def _add(cmd, *, query):
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")

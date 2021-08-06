@@ -1,9 +1,10 @@
 import discord
-from copy import deepcopy
 from settings import *
+from discord.ext import commands
 
 
 @bot.command(name="queue")
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def _queue(cmd):
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")
