@@ -2,9 +2,8 @@ from settings import *
 from load import *
 
 
-add = ", NULL, 0, 1.01"
-for i in range(54):
-    add += ", 0"
+pet_add = "array[" + ", ".join("0" for i in range(52)) + "]"
+add = f", NULL, 0, 1.01, {pet_add}, 0, 0"
 
 
 @bot.event
@@ -40,21 +39,11 @@ async def on_message(message):
             """)
             conn.commit()
     id = str(message.author.id)
-    try:
-        data[id]
-    except KeyError:
+    if not data(id).player():
         eco_sql = f"""
         INSERT INTO economy
         VALUES ('{id}', 300{add});
         """
         cur.execute(eco_sql)
         conn.commit()
-        amt = 300
-        bank_date = None
-        bank = 0
-        interest = 1.01
-        pet = [add_pet_data(i, 0) for i in range(52)]
-        win = 0
-        total = 0
-        data[id] = Player(amt, bank_date, bank, interest, pet, win, total)
     await bot.process_commands(message)

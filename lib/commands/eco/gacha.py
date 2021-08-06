@@ -13,7 +13,7 @@ async def _gacha(cmd, n: int = 1):
         await cmd.send("The maximum number of rolls you can gacha at a time is 10.")
     else:
         id = str(cmd.author.id)
-        player = data[id]
+        player = data(id).player()
         if player.amt < n * 300:
             await cmd.send("Not enough money. Gacha costs `💲300`/turn")
         else:
@@ -48,8 +48,7 @@ async def _gacha(cmd, n: int = 1):
                 pet_id = obj[0]
                 add = obj[1]
                 if add > 0:
-                    player.pet[pet_id].amt += add
-                    sql_query += f", pet_{pet_id} = pet_{pet_id} + {add}"
+                    sql_query += f", pet[{pet_id}] = pet[{pet_id}] + {add}"
                     if player.pet[pet_id].rarity not in display:
                         display[player.pet[pet_id].rarity] = f"{player.pet[pet_id].img} +{add}"
                     else:

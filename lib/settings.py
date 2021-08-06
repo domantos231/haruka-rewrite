@@ -28,8 +28,7 @@ cur = conn.cursor()
 
 
 # Initialize database
-eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float,"
-eco_sql += ",".join(f" pet_{i} int" for i in range(52)) + ", win int, total int);"
+eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float, pet int[], win int, total int);"
 pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
 try:
     cur.execute(eco_sql)
@@ -45,26 +44,35 @@ else:
     print("Successfully initialized database!")
 
 
-# Load all existing economy data
-cur.execute("SELECT * FROM economy;")
-lst = cur.fetchall()
-data = {}
-for player in lst:
-    id = player[0]
-    amt = player[1]
-    bank_date = player[2]
-    bank = player[3]
-    interest = player[4]
-    pet = [add_pet_data(i - 5, player[i]) for i in range(5, 57)]
-    win = player[57]
-    total = player[58]
-    data[id] = Player(amt, bank_date, bank, interest, pet, win, total)
-
-
 # Define frequently used emoji lists
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 navigate = ["⬅️", "➡️"]
+
+
+# Load economy data from database
+class data:
+    def __init__(self, id):
+        self.id = id
+    
+
+    def player(self):
+        cur.execute(f"SELECT * FROM economy WHERE id = '{self.id}';")
+        rows = cur.fetchall()
+        if len(rows) == 0:
+            return None
+        else:
+            row = rows[0]
+        amt = row[1]
+        time = row[2]
+        bank = row[3]
+        interest = row[4]
+        pet = []
+        for obj in enumerate(row[5]):
+            pet.append(add_pet_data(obj[0], obj[1]))
+        win = row[6]
+        total = row[7]
+        return Player(amt, time, bank, interest, pet, win, total)
 
 
 # Load all action commands' GIFs from giphy
@@ -98,11 +106,9 @@ def prefix(bot, message):
         id = str(message.channel.id)
     if str(message.channel.type) == "text":
         id = str(message.guild.id)
-    cur.execute("SELECT * FROM prefix;")
-    lst = cur.fetchall()
-    for obj in lst:
-        if obj[0] == id:
-            return obj[1]
+    cur.execute(f"SELECT * FROM prefix WHERE id = '{id}';")
+    row = cur.fetchall()
+    return row[0][1]
 
 
 # Initialize music queue

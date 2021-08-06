@@ -11,7 +11,7 @@ async def _get(cmd, arg: int, user: discord.User = None):
     if user == None:
         user = cmd.author
     id = str(user.id)
-    player = data[id]
+    player = data(id).player()
     if user.bot:
         await cmd.send(f"<@!{id}> is a bot user!")
     else:

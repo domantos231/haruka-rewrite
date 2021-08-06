@@ -21,7 +21,7 @@ async def _battle(cmd, mem: discord.Member=None):
         name_lst = [cmd.author.name, mem.name]
         try:
             for id in id_lst:
-                if sum(pet.amt for pet in data[id].pet) == 0:
+                if sum(pet.amt for pet in data(id).player().pet) == 0:
                     raise NoPet
         except (NoPet, KeyError):
             await cmd.send("Both players must have at least 1 pet to perform battle.")
@@ -76,10 +76,10 @@ async def _battle(cmd, mem: discord.Member=None):
                 for i in choice:
                     try:
                         i = int(i)
-                        if data[id].pet[i].amt == 0:
+                        if data(id).player().pet[i].amt == 0:
                             raise ValueError
                         else:
-                            player_team.append(data[id].pet[i])
+                            player_team.append(data(id).player().pet[i])
                     except:
                         continue
                 n = len(player_team)

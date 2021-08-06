@@ -7,9 +7,7 @@ from settings import *
 async def _reset(cmd, user: discord.User):
     if await bot.is_owner(cmd.author):
         id = str(user.id)
-        try:
-            data[id]
-        except:
+        if not data(id).player():
             await cmd.send("This user has no data in my database!")
         else:
             cur.execute(f"""
@@ -17,7 +15,6 @@ async def _reset(cmd, user: discord.User):
             WHERE id = '{id}';
             """)
             conn.commit()
-            del data[id]
             await cmd.send(embed=discord.Embed(title="Request accepted", description=f"Successfully removed <@!{id}> from economy database", color=0x2ECC71))
     else:
         await cmd.send("This command is available for developers only.")

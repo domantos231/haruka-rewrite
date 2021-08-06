@@ -24,7 +24,7 @@ async def _pet(cmd, user: discord.Member=None):
     else:
         id = str(user.id)
         try:
-            player = data[id]
+            player = data(id).player()
         except KeyError:
             await cmd.send("This user has no data in my database.")
             return

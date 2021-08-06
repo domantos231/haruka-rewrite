@@ -6,7 +6,7 @@ from settings import *
 @commands.cooldown(1, 86400, commands.BucketType.user)
 async def _daily(cmd):
     id = str(cmd.author.id)
-    player = data[id]
+    player = data(id).player()
     player.amt += 500
     cur.execute(f"""
     UPDATE economy

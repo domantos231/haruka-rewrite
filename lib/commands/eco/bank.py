@@ -8,7 +8,7 @@ from settings import *
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _bank(cmd, *args):
     id = str(cmd.author.id)
-    player = data[id]
+    player = data(id).player()
     if player.bank_date is None:
         player.bank_date = dt.now()
         cur.execute(f"""
