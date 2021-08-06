@@ -110,6 +110,8 @@ def prefix(bot, message):
         id = None
     cur.execute(f"SELECT * FROM prefix WHERE id = '{id}';")
     row = cur.fetchall()
+    if len(row) == 0:
+        return "$$$$$$$$$$"
     return row[0][1]
 
 
