@@ -22,7 +22,6 @@ async def _account(cmd, user: discord.Member = None):
         id = str(user.id)
         try:
             player = data(id).player()
-            print(player)
             s = sum(pet.amt for pet in player.pet)
             amt = player.amt
             win = player.win
