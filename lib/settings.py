@@ -103,9 +103,11 @@ class GIF:
 
 def prefix(bot, message):
     if str(message.channel.type) == "private":
-        id = str(message.channel.id)
-    if str(message.channel.type) == "text":
+        return "$"
+    elif str(message.channel.type) == "text":
         id = str(message.guild.id)
+    else:
+        id = None
     cur.execute(f"SELECT * FROM prefix WHERE id = '{id}';")
     row = cur.fetchall()
     return row[0][1]
@@ -118,7 +120,7 @@ queue = {}
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True
-activity = discord.Game(name="on Heroku")
+activity = discord.Game(name="nothing")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
 if not hasattr(bot, "wavelink"):
