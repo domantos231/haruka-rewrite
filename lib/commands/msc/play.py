@@ -36,6 +36,8 @@ async def _play(cmd, arg = None):
             await cmd.send(embed=em)
             start = dt.now()
             await player.play(track)
+            while player.is_playing or player.is_paused:
+                await asyncio.sleep(0.5)
             end = dt.now()
             if (end - start).seconds < 2:
                 await player.disconnect()
