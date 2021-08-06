@@ -21,11 +21,12 @@ async def _battle(cmd, mem: discord.Member=None):
         name_lst = [cmd.author.name, mem.name]
         try:
             for id in id_lst:
+                if not data(id).player():
+                    raise NoPet
                 if sum(pet.amt for pet in data(id).player().pet) == 0:
                     raise NoPet
-        except (NoPet, KeyError):
-            await cmd.send("Both players must have at least 1 pet to perform battle.")
-            return
+        except NoPet:
+            return await cmd.send("Both players must have at least 1 pet to perform battle.")
         
 
         # Send battle invite
@@ -90,7 +91,7 @@ async def _battle(cmd, mem: discord.Member=None):
                     team[id] = player_team
                     em = discord.Embed(title=f"{message.author.name} has completed selecting!",
                                        color=0x2ECC71)
-                    for pet in player_team:
+                    for pet in team[id]:
                         pet.load()
                         pet.battle_init()
                         em.add_field(
@@ -115,9 +116,6 @@ async def _battle(cmd, mem: discord.Member=None):
                 WHERE id = '{target_id}';
                 """)
                 conn.commit()
-                data[attacker_id].win += 1
-                data[attacker_id].total += 1
-                data[target_id].total += 1
 
 
             turn = 1
