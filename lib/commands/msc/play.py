@@ -16,11 +16,9 @@ async def _play(cmd, arg = None):
         if queue[channel.id].empty():
             return await cmd.send("Please add at least one song to the queue.")
         player = bot.wavelink.get_player(guild_id=cmd.guild.id)
-        if not player.channel_id:
+        if not player.channel_id == channel.id:
             await player.connect(channel.id)
             await cmd.send(f"Connected to **{channel}**")
-        elif not player.channel_id == channel.id:
-            return await cmd.send(f"I'm currently playing in another voice channel! Consider using `{cmd.prefix}stop`.")
         if not arg:
             pass
         elif arg.lower() == "loop":
@@ -38,8 +36,6 @@ async def _play(cmd, arg = None):
             await cmd.send(embed=em)
             start = dt.now()
             await player.play(track)
-            while player.is_playing:
-                await asyncio.sleep(0.5)
             end = dt.now()
             if (end - start).seconds < 2:
                 return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
