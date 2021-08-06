@@ -23,9 +23,11 @@ async def on_message(message):
         else:
             pref = "$"
         await message.channel.send(f"My current prefix is: {pref}")
-    if str(message.channel.type) == "private":
-        existed = False
-        id = str(message.channel.id)
+    if str(message.channel.type) == "text":
+        try:
+            id = str(message.guild.id)
+        except:
+            id = None
         cur.execute(f"""
         SELECT id
         FROM prefix
