@@ -1,6 +1,7 @@
 ﻿import discord
 import math
 import asyncio
+import gc
 from discord.ext import commands
 from settings import *
 
@@ -10,7 +11,7 @@ inline = True
 
 
 @bot.command(name="pet")
-@commands.cooldown(1, 30, commands.BucketType.user)
+@commands.cooldown(1, 15, commands.BucketType.user)
 async def _pet(cmd, user: discord.Member=None):
     if user == None:
         user = cmd.author
@@ -74,6 +75,8 @@ async def _pet(cmd, user: discord.Member=None):
         except asyncio.TimeoutError:
             await msg.edit(embed = discord.Embed(title=f"{user.name}'s pet list", description=f"Currently has {len(names)} pet(s)", color=0x2ECC71))
             await msg.clear_reactions()
+            del msg, names, values
+            gc.collect()
             return
 
 

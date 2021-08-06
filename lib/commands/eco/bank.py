@@ -5,6 +5,7 @@ from settings import *
 
 
 @bot.command(name="bank")
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def _bank(cmd, *args):
     id = str(cmd.author.id)
     player = data[id]

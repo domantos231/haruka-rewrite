@@ -1,10 +1,12 @@
 import discord
+import gc
 from random import choice
 from discord.ext import commands
 from settings import *
 
 
 @bot.command(name="punch")
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def _punch(cmd, user: discord.User = None):
     if user is None:
         await cmd.send(f"Who do you want to punch, {cmd.author.name}?")
@@ -15,6 +17,8 @@ async def _punch(cmd, user: discord.User = None):
         em = discord.Embed(description=f"**{cmd.author.name}** punched **{user.name}**!", color=0x2ECC71)
         em.set_image(url=choice(gifs))
         await cmd.send(embed=em)
+        del gifs, em
+        gc.collect()
 
 
 @_punch.error

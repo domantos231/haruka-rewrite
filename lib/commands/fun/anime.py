@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import discord
+import gc
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from settings import *
@@ -100,6 +101,7 @@ async def get(id):
 
 
 @bot.command(name="anime")
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def _anime(cmd, *, query):
     if len(query) < 3:
         await cmd.send(f"Search query must have at least 3 characters")
@@ -149,6 +151,8 @@ async def _anime(cmd, *, query):
         em.add_field(name="Broadcast", value=broadcast)
         em.add_field(name="Link reference", value=f"[MyAnimeList link]({url})", inline=False)
         await cmd.send(embed=em)
+        del em, id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
+        gc.collect()
 
 
 @_anime.error

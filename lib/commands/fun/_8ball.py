@@ -4,6 +4,7 @@ from settings import *
 
 
 @bot.command(name="8ball")
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def _8ball(cmd, *, arg):
     if arg.lower().startswith(("what", "which", "why", "when", "how", "where", "who")):
         await cmd.send("Please ask another question.")

@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import discord
+import gc
 from bs4 import BeautifulSoup as bs
 from settings import *
 
@@ -40,6 +41,7 @@ async def get(src):
 
 
 @bot.command(name="sauce")
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def _sauce(cmd, src = None):
     if src is None:
         try:
@@ -73,6 +75,8 @@ async def _sauce(cmd, src = None):
             await asyncio.wait_for(active(), timeout=300.0)
         except asyncio.TimeoutError:
             await message.clear_reactions()
+            del message, results
+            gc.collect()
             return
     else:
         await cmd.send("Cannot find the image sauce")

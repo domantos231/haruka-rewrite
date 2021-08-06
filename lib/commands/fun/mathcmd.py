@@ -5,6 +5,7 @@ from settings import *
 
 
 @bot.command(name="math")
+@commands.cooldown(1, 3, commands.BucketType.user)
 async def _math(cmd):
     type = randint(1, 2)
     if type == 1:
