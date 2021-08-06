@@ -73,7 +73,7 @@ async def _pet(cmd, user: discord.Member=None):
         except asyncio.TimeoutError:
             await msg.edit(embed = discord.Embed(title=f"{user.name}'s pet list", description=f"Currently has {len(names)} pet(s)", color=0x2ECC71))
             await msg.clear_reactions()
-            del msg, names, values
+            del names, values
             gc.collect()
             return
 
