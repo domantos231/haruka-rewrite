@@ -13,7 +13,7 @@ async def _play(cmd, arg = None):
         await cmd.send("Please join a voice channel first.")
     else:
         channel = cmd.author.voice.channel
-        if queue[channel.id].empty():
+        if channel.id not in queue or queue[channel.id].empty():
             return await cmd.send("Please add at least one song to the queue.")
         player = bot.wavelink.get_player(guild_id=cmd.guild.id)
         if not player.channel_id == channel.id:
