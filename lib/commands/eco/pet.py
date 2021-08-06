@@ -32,7 +32,7 @@ async def _pet(cmd, user: discord.Member=None):
             if obj[1].amt > 0:
                 pet_id = obj[0]
                 obj[1].load()
-                names.append(f"{obj[1].img} ID {pet_id}")
+                names.append(f"{obj[1].img} ID {pet_id}\n[{obj[1].rarity}]")
                 values.append(f"Lv.`{obj[1].lv}` EXP `{obj[1].exp}`/`{4 * obj[1].lv}`\nHP `{obj[1].hp_max}` ATK `{obj[1].atk}`")
         pages = 1 + int((len(names)) / pets_per_page)
         em = discord.Embed(title=f"{user.name}'s pet list", description=f"Currently has {len(names)} pet(s)", color=0x2ECC71)
