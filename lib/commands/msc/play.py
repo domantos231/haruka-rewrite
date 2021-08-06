@@ -1,5 +1,6 @@
 import asyncio
 import discord
+from datetime import datetime as dt
 from discord.ext import commands
 from settings import *
 
@@ -35,9 +36,13 @@ async def _play(cmd, arg = None):
             em.set_author(name=f"Playing in {channel}")
             em.set_thumbnail(url=track.thumb)
             await cmd.send(embed=em)
+            start = dt.now()
             await player.play(track)
             while player.is_playing:
                 await asyncio.sleep(0.5)
+            end = dt.now()
+            if (end - start).seconds < 2:
+                return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
         await player.disconnect()
 
 
