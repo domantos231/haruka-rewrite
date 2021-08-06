@@ -23,11 +23,9 @@ async def _pet(cmd, user: discord.Member=None):
         await cmd.send(f"<@!{user.id}> is a bot user!")
     else:
         id = str(user.id)
-        try:
-            player = data(id).player()
-        except KeyError:
-            await cmd.send("This user has no data in my database.")
-            return
+        player = data(id).player()
+        if not player:
+            return await cmd.send("This user has no data in my database!")
         names = []
         values = []
         for obj in enumerate(player.pet):

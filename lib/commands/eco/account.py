@@ -20,26 +20,25 @@ async def _account(cmd, user: discord.Member = None):
         return
     else:
         id = str(user.id)
-        try:
-            player = data(id).player()
-            s = sum(pet.amt for pet in player.pet)
-            amt = player.amt
-            win = player.win
-            total = player.total
-            if total == 0:
-                rate = "--"
-            else:
-                rate = 100 * win / total
-                rate = "{:.2f}".format(rate)
-            em = discord.Embed(
-                title=f"Information about {user.name}",
-                description=f"**Player** <@!{id}>\n**Money** `💲{amt}`\n**Total number of gacha rolls** `{s}`\n**Battles won** `{win}/{total}` (win rate `{rate}%`)",
-                color=0x2ECC71
-            )
-            em.set_footer(text="This command does not show pet list")
-            await cmd.send(embed=em)
-        except KeyError:
-            await cmd.send("This user has no data in my database!")
+        player = data(id).player()
+        if not player:
+            return await cmd.send("This user has no account in my database!")
+        s = sum(pet.amt for pet in player.pet)
+        amt = player.amt
+        win = player.win
+        total = player.total
+        if total == 0:
+            rate = "--"
+        else:
+            rate = 100 * win / total
+            rate = "{:.2f}".format(rate)
+        em = discord.Embed(
+            title=f"Information about {user.name}",
+            description=f"**Player** <@!{id}>\n**Money** `💲{amt}`\n**Total number of gacha rolls** `{s}`\n**Battles won** `{win}/{total}` (win rate `{rate}%`)",
+            color=0x2ECC71
+        )
+        em.set_footer(text="This command does not show pet list")
+        await cmd.send(embed=em)
 
 
 @_account.error

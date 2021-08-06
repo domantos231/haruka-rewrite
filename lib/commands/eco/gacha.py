@@ -38,7 +38,7 @@ async def _gacha(cmd, n: int = 1):
                 else:
                     pet_add[51] += 1
             gacha_em = discord.Embed(
-                title=f"Gacha results for {cmd.author}",
+                title=f"Gacha results for {cmd.author.name}",
                 description=f"Total number of rolls: {n}",
                 color=0x2ECC71,
             )
@@ -48,7 +48,7 @@ async def _gacha(cmd, n: int = 1):
                 pet_id = obj[0]
                 add = obj[1]
                 if add > 0:
-                    sql_query += f", pet[{pet_id}] = pet[{pet_id}] + {add}"
+                    sql_query += f", pet[{pet_id+1}] = pet[{pet_id+1}] + {add}"
                     if player.pet[pet_id].rarity not in display:
                         display[player.pet[pet_id].rarity] = f"{player.pet[pet_id].img} +{add}"
                     else:
