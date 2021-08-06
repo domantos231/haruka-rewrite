@@ -38,6 +38,7 @@ async def _play(cmd, arg = None):
             await player.play(track)
             end = dt.now()
             if (end - start).seconds < 2:
+                await player.disconnect()
                 return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
         await player.disconnect()
 
