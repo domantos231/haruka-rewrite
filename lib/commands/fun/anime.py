@@ -127,7 +127,6 @@ async def _anime(cmd, *, query):
     
 
     def check(reaction, user):
-        nonlocal msg
         return user.id == cmd.author.id and str(reaction) in choices[:n] and reaction.message.id == msg.id
 
 
@@ -151,6 +150,7 @@ async def _anime(cmd, *, query):
         em.add_field(name="Type", value=type)
         em.add_field(name="Broadcast", value=broadcast)
         em.add_field(name="Link reference", value=f"[MyAnimeList link]({url})", inline=False)
+        await msg.delete()
         await cmd.send(embed=em)
         del em, id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
         gc.collect()

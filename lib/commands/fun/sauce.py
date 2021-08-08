@@ -52,14 +52,13 @@ async def _sauce(cmd, src = None):
     results = await get(src)
     n = len(results)
     if n > 0:
-        message = await cmd.send(embed=results[0])
+        msg = await cmd.send(embed=results[0])
         for emoji in choices[:n]:
-            await message.add_reaction(emoji)
+            await msg.add_reaction(emoji)
 
 
         def check(reaction, user):
-            nonlocal message
-            return str(reaction) in choices[:n] and reaction.message.id == message.id and not user.bot
+            return str(reaction) in choices[:n] and reaction.message.id == msg.id and not user.bot
         
 
         async def active():
@@ -75,8 +74,8 @@ async def _sauce(cmd, src = None):
         try:
             await asyncio.wait_for(active(), timeout=300.0)
         except asyncio.TimeoutError:
-            await message.clear_reactions()
-            del message, results
+            await messmsgage.clear_reactions()
+            del msg, results
             gc.collect()
             return
     else:

@@ -146,7 +146,6 @@ async def _battle(cmd, mem: discord.Member=None):
 
 
             def check(reaction, user):
-                nonlocal msg
                 return str(reaction) in navigate and reaction.message.id == msg.id and not user.bot
 
 

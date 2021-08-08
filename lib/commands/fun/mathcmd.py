@@ -51,7 +51,7 @@ async def _math(cmd):
         for i in range(ans + 1, 7):
             md = Decimal(m + randint(1, 10))
             ans_str += "\n**" + str(i) + "** {:.2f}".format(md)
-        message = await cmd.send(
+        msg = await cmd.send(
             embed=discord.Embed(
                 title="Requested math problem",
                 description=f"Given the following system of equations:\n{a}**m**x + {b}y = {c}\n{d}y = {e}x - {f}\nFor which value of **m** is there no (x, y) solutions?" + ans_str,
@@ -59,12 +59,11 @@ async def _math(cmd):
             )
         )
     for emoji in choices:
-        await message.add_reaction(emoji)
+        await msg.add_reaction(emoji)
 
 
     def check(reaction, user):
-        nonlocal message
-        return reaction.message.id == message.id and not user.bot
+        return reaction.message.id == msg.id and not user.bot and str(reaction) in choices
 
 
     reaction, user = await bot.wait_for("reaction_add", check=check)
