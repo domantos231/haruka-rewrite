@@ -1,4 +1,5 @@
 import asyncio
+import asyncpg
 import aiohttp
 import discord
 import gc
@@ -30,9 +31,11 @@ cur = conn.cursor()
 # Initialize database
 eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float, pet int[], win int, total int);"
 pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
+music_sql = "CREATE TABLE IF NOT EXISTS music (id text, queue text[]);"
 try:
     cur.execute(eco_sql)
     cur.execute(pref_sql)
+    cur.execute(music_sql)
     conn.commit()
 except Exception as ex:
     print(f"An exception occured: {ex}")
@@ -56,22 +59,20 @@ class data:
         self.id = id
     
 
-    def player(self):
-        cur.execute(f"SELECT * FROM economy WHERE id = '{self.id}';")
-        rows = cur.fetchall()
-        if len(rows) == 0:
+    @property
+    async def player(self):
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{self.id}';")
+        if not row:
             return None
-        else:
-            row = rows[0]
-        amt = row[1]
-        time = row[2]
-        bank = row[3]
-        interest = row[4]
+        amt = row["amt"]
+        time = row["time"]
+        bank = row["bank"]
+        interest = row["interest"]
         pet = []
-        for obj in enumerate(row[5]):
+        for obj in enumerate(row["pet"]):
             pet.append(add_pet_data(obj[0], obj[1]))
-        win = row[6]
-        total = row[7]
+        win = row["win"]
+        total = row["total"]
         return Player(amt, time, bank, interest, pet, win, total)
 
 
@@ -101,22 +102,38 @@ class GIF:
                 return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
 
-def prefix(bot, message):
+# asyncpg class for database connection
+class db:
+    def __init__(self):
+        pass
+
+    
+    async def connect(self):
+        self._connection = await asyncpg.connect(DATABASE_URL)
+        print(f"asyncpg connected to database!\: {self._connection}")
+    
+
+    async def close(self):
+        await self._connection.close()
+    
+
+    @property
+    def conn(self):
+        return self._connection
+
+
+async def prefix(bot, message):
     if str(message.channel.type) == "private":
         return "$"
     elif str(message.channel.type) == "text":
         id = str(message.guild.id)
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM prefix WHERE id = '{id}';")
+        if not row:
+            return "$"
+        else:
+            return row["pref"]
     else:
-        id = None
-    cur.execute(f"SELECT * FROM prefix WHERE id = '{id}';")
-    row = cur.fetchall()
-    if len(row) == 0:
-        return "$$$$$$$$$$"
-    return row[0][1]
-
-
-# Initialize music queue
-queue = {}
+        return "$" # No command invoke from on_message
 
 
 # Initialize bot
@@ -127,6 +144,8 @@ bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, ca
 bot.remove_command("help")
 if not hasattr(bot, "wavelink"):
     bot.wavelink = wavelink.Client(bot=bot)
+if not hasattr(bot, "db"):
+    bot.db = db()
 
 
 # Keep lavalink server running (maybe?)

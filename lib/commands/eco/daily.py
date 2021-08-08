@@ -5,13 +5,11 @@ from settings import *
 @bot.command(name="daily")
 @commands.cooldown(1, 86400, commands.BucketType.user)
 async def _daily(cmd):
-    id = str(cmd.author.id)
-    player = data(id).player()
-    player.amt += 500
-    cur.execute(f"""
+    id = cmd.author.id
+    player = await data(id).player
+    await bot.db.conn.execute(f"""
     UPDATE economy
     SET amt = amt + 500
     WHERE id = '{id}';
     """)
-    conn.commit()
     await cmd.send(f"Claimed `💲500` as daily reward!")

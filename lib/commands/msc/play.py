@@ -13,8 +13,10 @@ async def _play(cmd, arg = None):
         await cmd.send("Please join a voice channel first.")
     else:
         channel = cmd.author.voice.channel
-        if channel.id not in queue or queue[channel.id].empty():
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
+        if not row or len(row["queue"]) == 0:
             return await cmd.send("Please add at least one song to the queue.")
+        queue = row["queue"]
         player = bot.wavelink.get_player(guild_id=cmd.guild.id)
         if not player.channel_id == channel.id:
             await player.connect(channel.id)
@@ -26,10 +28,12 @@ async def _play(cmd, arg = None):
             loop = True
         else:
             raise commands.UserInputError
-        while not queue[channel.id].empty() and player.is_connected:
-            track = await queue[channel.id].get()
+        while len(queue) > 0 and player.is_connected:
+            track_id = queue[0]
+            await bot.db.conn.execute(f"UPDATE music SET queue = queue[2:] WHERE id = '{channel.id}';")
             if loop:
-                await queue[channel.id].put(track)
+                await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track_id}') WHERE id = '{channel.id}';")
+            track = await bot.wavelink.build_track(track_id)
             em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
             em.set_author(name=f"Playing in {channel}")
             em.set_thumbnail(url=track.thumb)
@@ -39,7 +43,9 @@ async def _play(cmd, arg = None):
             while player.is_playing or player.is_paused:
                 await asyncio.sleep(0.5)
             end = dt.now()
-            if (end - start).seconds < 2:
+            row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
+            queue = row["queue"]
+            if (end - start).seconds < 3:
                 await player.disconnect()
                 return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
         await player.disconnect()

@@ -3,6 +3,15 @@ from settings import *
 from discord.ext import commands
 
 
+async def get_track(index, track_id):
+    track = await bot.wavelink.build_track(track_id)
+    return index, track_id
+
+
+def sort_by_index(obj):
+    return obj[0]
+
+
 @bot.command(name="queue")
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _queue(cmd):
@@ -10,18 +19,16 @@ async def _queue(cmd):
         await cmd.send("Please join a voice channel first.")
     else:
         channel = cmd.author.voice.channel
-        if channel.id not in queue:
-            await cmd.send("Please add a song to queue.")
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
+        if not row:
+            track_ids = []
         else:
-            em = discord.Embed(title=f"Music queue of channel {channel}", color=0x2ECC71)
-            counter = 0
-            tracks = []
-            queue[channel.id].task_done()
-            while not queue[channel.id].empty() and (track := queue[channel.id].get_nowait()) is not None:
-                counter += 1
-                em.add_field(name=f"**#{counter}** {track.title}", value=track.author, inline=False)
-                tracks.append(track)
-            for track in tracks:
-                queue[channel.id].put_nowait(track)
-            em.set_footer(text=f"Currently has {counter} song(s)")
-            await cmd.send(embed=em)
+            track_ids = row["queue"]
+        em = discord.Embed(title=f"Music queue of channel {channel}", color=0x2ECC71)
+        counter = 0
+        for track_id in track_ids:
+            track = await bot.wavelink.build_track(track_id)
+            counter += 1
+            em.add_field(name=f"**#{counter}** {track.title}", value=track.author, inline=False)
+        em.set_footer(text=f"Currently has {counter} song(s)")
+        await cmd.send(embed=em)

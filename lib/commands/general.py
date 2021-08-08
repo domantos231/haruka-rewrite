@@ -20,7 +20,7 @@ async def info(cmd, *, user: discord.User = None):
         user = cmd.author
     info_em = discord.Embed(
         title=f"{user} Info",
-        description=f"**Name** {user.name}\n**Ping** <@!{user.id}>\n**ID** {user.id}",
+        description=f"**Name** {user.name}\n**Nickname** {user.display_name}\n**ID** {user.id}",
         color=0x2ECC71,
     )
     info_em.set_thumbnail(url=user.avatar_url)
@@ -39,18 +39,17 @@ async def info_error(cmd, error):
 
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
-@commands.has_permissions(administrator=True)
+@commands.has_permissions(administrator=True) # This also blocks prefix changing in DM channels
 async def prefix(cmd, *, arg = None):
     id = cmd.guild.id
     if arg == None:
         await cmd.send("Please specify a prefix to change to!")
     else:
-        cur.execute(f"""
+        await bot.db.conn.execute(f"""
         UPDATE prefix
         SET pref = '{arg}'
         WHERE id = '{id}';
         """)
-        conn.commit()
         await cmd.send(f"Prefix has been set to `{arg}`")
 
 

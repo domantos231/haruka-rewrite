@@ -7,8 +7,8 @@ from settings import *
 @bot.command(name="gamble")
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _gamble(cmd, arg):
-    id = str(cmd.author.id)
-    player = data(id).player()
+    id = cmd.author.id
+    player = await data(id).player
     try:
         arg = int(arg)
     except ValueError:
@@ -34,12 +34,11 @@ async def _gamble(cmd, arg):
             else:
                 await cmd.send(embed=discord.Embed(title="You won!", description=f"Bot rolled a **{i}**\n{cmd.author} rolled a **{j}**\nResult: `+💲{arg}`", color=0x2ECC71))
                 player.amt += arg
-            cur.execute(f"""
+            await bot.db.conn.execute(f"""
             UPDATE economy
             SET amt = {player.amt}
             WHERE id = '{id}';
             """)
-            conn.commit()
 
 
 @_gamble.error

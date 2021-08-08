@@ -11,18 +11,16 @@ async def _get(cmd, arg: int, user: discord.User = None):
     if user == None:
         user = cmd.author
     id = str(user.id)
-    player = data(id).player()
+    player = await data(id).player
     if user.bot:
         await cmd.send(f"<@!{id}> is a bot user!")
     else:
         try:
-            player.amt += arg
-            cur.execute(f"""
+            await bot.db.conn.execute(f"""
             UPDATE economy
             SET amt = amt + {arg}
             WHERE id = '{id}';
             """)
-            conn.commit()
             await cmd.send(embed=discord.Embed(title="Request accepted", description="Successfully generated `💲{:.1f}`".format(arg) + f" for <@!{id}>", color=0x2ECC71))
         except:
             await cmd.send("This user has no data in my database.")

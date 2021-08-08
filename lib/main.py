@@ -18,7 +18,7 @@ if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
     p = multiprocessing.Process(target=lavalink_start)
     p.start()
-    waiting_time = 60.0
+    waiting_time = 10.0
     print(f"Bot will start after {waiting_time} seconds.")
     sleep(waiting_time)
     print("Starting bot...")
@@ -32,6 +32,10 @@ if __name__ == "__main__":
     @bot.event
     async def on_ready():
         print(f"Logged in as {bot.user}")
+        try:
+            bot.db._connection
+        except AttributeError:
+            await bot.db.connect()
 
 
     async def cancel():

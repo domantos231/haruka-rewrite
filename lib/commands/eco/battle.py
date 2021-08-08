@@ -21,9 +21,9 @@ async def _battle(cmd, mem: discord.Member=None):
         name_lst = [cmd.author.name, mem.name]
         try:
             for id in id_lst:
-                if not data(id).player():
+                if not await data(id).player:
                     raise NoPet
-                if sum(pet.amt for pet in data(id).player().pet) == 0:
+                if sum(pet.amt for pet in await data(id).player.pet) == 0:
                     raise NoPet
         except NoPet:
             return await cmd.send("Both players must have at least 1 pet to perform battle.")
@@ -38,7 +38,7 @@ async def _battle(cmd, mem: discord.Member=None):
 
 
         def check(reaction, user):
-            return user == mem and str(reaction) in checker
+            return user.id == mem.id and str(reaction) in checker and reaction.message.id == message.id
 
 
         try:
@@ -77,10 +77,10 @@ async def _battle(cmd, mem: discord.Member=None):
                 for i in choice:
                     try:
                         i = int(i)
-                        if data(id).player().pet[i].amt == 0:
+                        if await data(id).player.pet[i].amt == 0:
                             raise ValueError
                         else:
-                            player_team.append(data(id).player().pet[i])
+                            player_team.append(await data(id).player.pet[i])
                     except:
                         continue
                 n = len(player_team)
@@ -104,20 +104,6 @@ async def _battle(cmd, mem: discord.Member=None):
                     pending[p] = False
 
 
-            def win(attacker_id, target_id):
-                cur.execute(f"""
-                UPDATE economy
-                SET win = win + 1, total = total + 1
-                WHERE id = '{attacker_id}';
-                """)
-                cur.execute(f"""
-                UPDATE economy
-                SET total = total + 1
-                WHERE id = '{target_id}';
-                """)
-                conn.commit()
-
-
             turn = 1
             ongoing = True
             lst = [] # Embed list for battle status
@@ -135,7 +121,14 @@ async def _battle(cmd, mem: discord.Member=None):
                     em = discord.Embed(title="Battle Status", description="Ongoing battle", color=0x2ECC71)
                     if sum(pet.hp for pet in team[target_id]) == 0:
                         em = discord.Embed(title="Battle Status", description=f"{name_lst[i]} won!", color=0x2ECC71)
-                        win(attacker_id, target_id)
+                        await bot.db.conn.execute(f"""
+                        UPDATE economy
+                        SET win = win + 1, total = total + 1
+                        WHERE id = '{attacker_id}';
+                        UPDATE economy
+                        SET total = total + 1
+                        WHERE id = '{target_id}';
+                        """)
                         ongoing = False
                     for k in enumerate(id_lst):
                         value = "\n".join(f"`{obj[0] + 1}`{obj[1].img} Lv.`{obj[1].lv}` HP `{obj[1].hp}/{obj[1].hp_max}` ATK `{obj[1].atk}`" for obj in enumerate(team[k[1]]))

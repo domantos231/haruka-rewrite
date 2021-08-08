@@ -486,9 +486,9 @@ def add_pet_data(id, amt):
 
 
 class Player:
-    def __init__(self, amt, bank_date, bank, interest, pet, win, total):
+    def __init__(self, amt, time, bank, interest, pet, win, total):
         self.amt = amt
-        self.bank_date = bank_date
+        self.time = time
         self.bank = bank
         self.interest = interest
         self.pet = pet

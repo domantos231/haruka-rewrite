@@ -37,12 +37,15 @@ async def _add(cmd, *, query):
             return await msg.reply(f"<@!{cmd.author.id}> didn't respond to the queue. Request timed out")
         else:
             index = choices.index(str(reaction))
-            if channel.id not in queue:
-                queue[channel.id] = asyncio.Queue()
-            await queue[channel.id].put(tracks[index])
-            em = discord.Embed(title=tracks[index].title, description=tracks[index].author, color=0x2ECC71)
+            track = tracks[index]
+            row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
+            if not row:
+                await bot.db.conn.execute(f"INSERT INTO music VALUES ('{channel.id}', array['{track.id}']);")
+            else:
+                await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track.id}');")
+            em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
             em.set_author(name=f"{cmd.author.name} added 1 song to queue", icon_url=cmd.author.avatar_url)
-            em.set_thumbnail(url=tracks[index].thumb)
+            em.set_thumbnail(url=track.thumb)
             await msg.delete()
             await cmd.send(embed=em)
 

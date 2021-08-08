@@ -20,7 +20,7 @@ async def _account(cmd, user: discord.Member = None):
         return
     else:
         id = str(user.id)
-        player = data(id).player()
+        player = await data(id).player
         if not player:
             return await cmd.send("This user has no account in my database!")
         s = sum(pet.amt for pet in player.pet)
