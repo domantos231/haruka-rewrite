@@ -127,6 +127,7 @@ async def _anime(cmd, *, query):
     
 
     def check(reaction, user):
+        nonlocal msg
         return user.id == cmd.author.id and str(reaction) in choices[:n] and reaction.message.id == msg.id
 
 

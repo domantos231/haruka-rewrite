@@ -60,8 +60,13 @@ async def _math(cmd):
         )
     for emoji in choices:
         await message.add_reaction(emoji)
+
+
     def check(reaction, user):
+        nonlocal message
         return reaction.message.id == message.id and not user.bot
+
+
     reaction, user = await bot.wait_for("reaction_add", check=check)
     try:
         choice = 1 + choices.index(str(reaction))

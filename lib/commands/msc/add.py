@@ -28,6 +28,7 @@ async def _add(cmd, *, query):
         
 
         def check(reaction, user):
+            nonlocal msg
             return user.id == cmd.author.id and reaction.message.id == msg.id and str(reaction) in choices[:length]
         
 

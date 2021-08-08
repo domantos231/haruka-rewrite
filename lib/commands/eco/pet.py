@@ -48,6 +48,7 @@ async def _pet(cmd, user: discord.Member=None):
 
 
         def check(reaction, usr):
+            nonlocal msg
             return reaction.message.id == msg.id and str(reaction) in choices[:pages] and not usr.bot
 
 

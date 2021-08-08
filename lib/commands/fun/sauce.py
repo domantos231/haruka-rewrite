@@ -58,6 +58,7 @@ async def _sauce(cmd, src = None):
 
 
         def check(reaction, user):
+            nonlocal message
             return str(reaction) in choices[:n] and reaction.message.id == message.id and not user.bot
         
 
