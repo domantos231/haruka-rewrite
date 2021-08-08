@@ -42,7 +42,7 @@ async def _add(cmd, *, query):
             if not row:
                 await bot.db.conn.execute(f"INSERT INTO music VALUES ('{channel.id}', array['{track.id}']);")
             else:
-                await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track.id}');")
+                await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track.id}') WHERE id = '{channel.id}';")
             em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
             em.set_author(name=f"{cmd.author.name} added 1 song to queue", icon_url=cmd.author.avatar_url)
             em.set_thumbnail(url=track.thumb)
