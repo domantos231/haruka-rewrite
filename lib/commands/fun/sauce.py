@@ -68,13 +68,13 @@ async def _sauce(cmd, src = None):
                                                     return_when=asyncio.FIRST_COMPLETED)
                 reaction, user = done.pop().result()
                 no = choices.index(str(reaction))
-                await message.edit(embed=results[no])
+                await msg.edit(embed=results[no])
 
 
         try:
             await asyncio.wait_for(active(), timeout=300.0)
         except asyncio.TimeoutError:
-            await messmsgage.clear_reactions()
+            await msg.clear_reactions()
             del msg, results
             gc.collect()
             return
