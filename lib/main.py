@@ -32,9 +32,7 @@ if __name__ == "__main__":
     @bot.event
     async def on_ready():
         print(f"Logged in as {bot.user}")
-        try:
-            bot.db._connection
-        except AttributeError:
+        if not bot.db._connection:
             await bot.db.connect()
 
 

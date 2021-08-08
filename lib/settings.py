@@ -105,7 +105,7 @@ class GIF:
 # asyncpg class for database connection
 class db:
     def __init__(self):
-        pass
+        self._connection = None
 
     
     async def connect(self):
