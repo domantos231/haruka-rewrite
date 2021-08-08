@@ -110,7 +110,7 @@ class db:
     
     async def connect(self):
         self._connection = await asyncpg.connect(DATABASE_URL)
-        print(f"asyncpg connected to database!\: {self._connection}")
+        print(f"asyncpg connected to database: {self._connection}")
     
 
     async def close(self):
@@ -139,7 +139,7 @@ async def prefix(bot, message):
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True
-activity = discord.Game(name="nothing")
+activity = discord.Activity(type=discord.ActivityType.watching, name="animated 5-year-old girls")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
 if not hasattr(bot, "wavelink"):
