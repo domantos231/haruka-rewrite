@@ -10,7 +10,7 @@ async def _remove(cmd):
         await cmd.send("Please join a voice channel first.")
     else:
         channel = cmd.author.voice.channel
-        row = await bot.db.conn.execute(f"SELECT * FROM music WHERE id = '{channel.id}';")
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
         if not row or len(row["queue"]) == 0:
             await cmd.send("This channel does not have any songs in its queue to remove!")
         else:
