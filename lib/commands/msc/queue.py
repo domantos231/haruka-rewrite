@@ -3,15 +3,6 @@ from settings import *
 from discord.ext import commands
 
 
-async def get_track(index, track_id):
-    track = await bot.wavelink.build_track(track_id)
-    return index, track_id
-
-
-def sort_by_index(obj):
-    return obj[0]
-
-
 @bot.command(name="queue")
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _queue(cmd):
