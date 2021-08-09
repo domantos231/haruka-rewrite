@@ -139,7 +139,7 @@ async def prefix(bot, message):
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True
-activity = discord.Activity(type=discord.ActivityType.watching, name="animated 5-year-old girls")
+activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
 if not hasattr(bot, "wavelink"):
