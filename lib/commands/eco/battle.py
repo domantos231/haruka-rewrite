@@ -83,7 +83,7 @@ async def _battle(cmd, mem: discord.Member=None):
                             raise ValueError
                         else:
                             player_team.append(player.pet[i])
-                    except:
+                    except ValueError:
                         continue
                 n = len(player_team)
                 if n == 0 or n > 3:

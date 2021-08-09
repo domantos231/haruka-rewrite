@@ -32,13 +32,15 @@ if __name__ == "__main__":
     @bot.event
     async def on_ready():
         print(f"Logged in as {bot.user}")
-        if not bot.db._connection:
+        if len(bot.db._connection) == 0:
             await bot.db.connect()
 
 
     async def cancel():
         await session.close()
         print("Side session closed.")
+        await bot.db.close()
+        print("Closed all database connections.")
 
 
     # Run bot
@@ -47,7 +49,5 @@ if __name__ == "__main__":
     except:
         bot.loop.run_until_complete(bot.close())
     finally:
-        bot.loop.close()
         asyncio.run(cancel())
-        cur.close()
-        conn.close()
+        bot.loop.close()

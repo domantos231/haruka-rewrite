@@ -37,14 +37,14 @@ try:
     cur.execute(pref_sql)
     cur.execute(music_sql)
     conn.commit()
+    print("Successfully initialized database!")
 except Exception as ex:
     print(f"An exception occured: {ex}")
     print("Exiting program...")
-    cur.close()
-    conn.close()
     exit()
-else:
-    print("Successfully initialized database!")
+finally:
+    cur.close()
+    conn.close()    
 
 
 # Define frequently used emoji lists
@@ -105,21 +105,33 @@ class GIF:
 # asyncpg class for database connection
 class db:
     def __init__(self):
-        self._connection = None
+        self.count = -1
+        self._connection = []
 
     
     async def connect(self):
-        self._connection = await asyncpg.connect(DATABASE_URL)
-        print(f"asyncpg connected to database: {self._connection}")
+        for i in range(5):
+            try:
+                connection = await asyncpg.connect(DATABASE_URL)
+            except:
+                pass
+            else:
+                self._connection.append(connection)
+        print(f"Established {len(self._connection)} database connection(s):\n" + "\n".join(f"{connection}" for connection in self._connection))
     
 
     async def close(self):
-        await self._connection.close()
+        for connection in self._connection:
+            await connection.close()
     
 
     @property
     def conn(self):
-        return self._connection
+        if self.count == 4:
+            self.count = 0
+        else:
+            self.count += 1
+        return self._connection[self.count]
 
 
 async def prefix(bot, message):
