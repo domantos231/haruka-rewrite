@@ -21,10 +21,12 @@ async def _play(cmd, arg = None):
         if not player.channel_id == channel.id:
             await player.connect(channel.id)
             await cmd.send(f"Connected to **{channel}**")
+        elif player.is_connected:
+            await cmd.send("Skipping to next song...")
         if not arg:
             pass
         elif arg.lower() == "loop":
-            await cmd.send("Playing the current queue in a loop, any completed songs will be added back to the queue.")
+            await cmd.send("Playing the current queue in a loop, any completed/skipped songs will be added back to the queue.")
             loop = True
         else:
             raise commands.UserInputError
