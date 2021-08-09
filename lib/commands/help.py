@@ -201,8 +201,8 @@ class queue(HelpEmbed):
 
 class remove(HelpEmbed):
     title = "remove"
-    description = "Remove next track from queue"
-    syntax = "remove"
+    description = "Remove a track from queue"
+    syntax = "remove <index|None>"
 
 
 class resume(HelpEmbed):
