@@ -6,7 +6,6 @@ from settings import *
 @commands.cooldown(1, 86400, commands.BucketType.user)
 async def _daily(cmd):
     id = cmd.author.id
-    player = await data(id).player
     await bot.db.conn.execute(f"""
     UPDATE economy
     SET amt = amt + 500
