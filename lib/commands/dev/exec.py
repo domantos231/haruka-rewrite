@@ -13,10 +13,11 @@ async def _exec(cmd, *func):
             try:
                 await eval(f[6:])
             except Exception as ex:
-                display += f"Exception at {f}: {ex}\n"
+                display += f"Exception at '{f}': {ex}\n"
         else:
             try:
                 eval(f)
             except Exception as ex:
-                display += f"Exception at {f}: {ex}\n"
-    await cmd.send(display)
+                display += f"Exception at '{f}': {ex}\n"
+    if len(display) > 0:
+        await cmd.send(display)

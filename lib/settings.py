@@ -122,7 +122,10 @@ class db:
 
     async def close(self):
         for connection in self._connection:
-            await connection.close()
+            try:
+                await connection.close()
+            except:
+                pass
     
 
     @property
