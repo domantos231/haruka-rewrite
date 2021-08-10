@@ -11,12 +11,12 @@ async def _exec(cmd, *func):
     for f in func:
         if f.startswith("await"):
             try:
-                await eval(f[6:])
+                await exec(f[6:])
             except Exception as ex:
                 display += f"Exception at '{f}': {ex}\n"
         else:
             try:
-                eval(f)
+                exec(f)
             except Exception as ex:
                 display += f"Exception at '{f}': {ex}\n"
     if len(display) > 0:
