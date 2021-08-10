@@ -4,7 +4,7 @@ from settings import *
 
 @bot.event
 async def on_command_error(cmd, error):
-    if isinstance(error, commands.CommandNotFound):
+    if isinstance(error, commands.CommandNotFound) or hasattr(cmd.command, "on_error"):
         pass
     elif isinstance(error, commands.CommandOnCooldown):
         seconds = error.retry_after
