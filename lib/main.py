@@ -1,6 +1,7 @@
 ﻿import asyncio
 import subprocess
 import multiprocessing
+import sys
 from time import sleep
 
 
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
     p = multiprocessing.Process(target=lavalink_start)
     p.start()
-    waiting_time = 40.0
+    waiting_time = float(sys.argv[1])
     print(f"Bot will start after {waiting_time} seconds.")
     sleep(waiting_time)
     print("Starting bot...")

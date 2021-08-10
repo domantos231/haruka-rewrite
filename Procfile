@@ -1,1 +1,1 @@
-worker: python ./lib/main.py
+worker: python ./lib/main.py 40
