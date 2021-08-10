@@ -15,7 +15,10 @@ from load import *
 
 
 # Set up logging and garbage collector
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("discord")
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(filename="log.txt", mode="a")
+logger.addHandler(handler)
 gc.enable()
 
 
