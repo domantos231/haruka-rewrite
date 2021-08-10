@@ -46,7 +46,10 @@ async def _play(cmd, arg = None):
                 await asyncio.sleep(0.5)
             end = dt.now()
             row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
-            queue = row["queue"]
+            if len(row) == 0:
+                queue = []
+            else:
+                queue = row["queue"]
             if (end - start).seconds < 3:
                 await player.disconnect()
                 return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
