@@ -1,1 +1,1 @@
-worker: python ./lib/main.py 40
+worker: python ./lib/main.py 40 > log.txt
