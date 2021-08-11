@@ -8,3 +8,5 @@ async def _stop(cmd):
     if player.is_connected:
         await player.destroy()
         await cmd.send("Stopped player.")
+    else:
+        await cmd.send("No currently connected player.")

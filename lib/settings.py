@@ -15,10 +15,12 @@ from load import *
 
 
 # Set up logging and garbage collector
-logger = logging.getLogger("discord")
-logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename="log.txt", mode="a")
-logger.addHandler(handler)
+discord_logger = logging.getLogger("discord")
+discord_logger.setLevel(logging.INFO)
+discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
+wavelink_logger = logging.getLogger("wavelink")
+wavelink_logger.setLevel(logging.INFO)
+wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
 gc.enable()
 
 
