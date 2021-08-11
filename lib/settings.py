@@ -126,11 +126,14 @@ class db:
     
 
     async def close(self):
+        error = 0
         for connection in self._connection:
             try:
                 await connection.close()
             except:
-                pass
+                error += 1
+            finally:
+                print(f"Closed all database conenctions, {error} error(s) occured.")
     
 
     @property
