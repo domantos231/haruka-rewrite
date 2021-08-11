@@ -1,4 +1,5 @@
 import discord
+from settings import *
 
 
 @bot.command(name="log")
