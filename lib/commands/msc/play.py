@@ -18,11 +18,13 @@ async def _play(cmd, arg = None):
             return await cmd.send("Please add at least one song to the queue.")
         queue = row["queue"]
         player = bot.wavelink.get_player(guild_id=cmd.guild.id)
-        if not player.channel_id == channel.id:
+        if player.channel_id == channel.id:
+            await cmd.send("Skipping to next song...")
+        else:
+            await player.destroy()
+            player = bot.wavelink.get_player(guild_id=cmd.guild.id)
             await player.connect(channel.id)
             await cmd.send(f"Connected to **{channel}**")
-        elif player.is_connected:
-            await cmd.send("Skipping to next song...")
         if not arg:
             pass
         elif arg.lower() == "loop":
@@ -51,9 +53,9 @@ async def _play(cmd, arg = None):
             else:
                 queue = row["queue"]
             if (end - start).seconds < 3:
-                await player.disconnect()
+                await player.destroy()
                 return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
-        await player.disconnect()
+        await player.destroy()
 
 
 @_play.error
