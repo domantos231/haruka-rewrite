@@ -11,6 +11,11 @@ async def _add(cmd, *, query):
         await cmd.send("Please join a voice channel first.")
     else:
         channel = cmd.author.voice.channel
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
+        if row:
+            queue = row["queue"]
+            if len(queue) >= 30:
+                return await cmd.send("The maximum number of songs in a queue is 30. Please remove a song before adding another one.")
         tracks = await bot.wavelink.get_tracks(f"ytsearch:{query}")
         if tracks:
             em = discord.Embed(title=f"Search results for {query}", color=0x2ECC71)
