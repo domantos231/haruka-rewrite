@@ -129,7 +129,7 @@ class daily(HelpEmbed):
 
 class gacha(HelpEmbed):
     title = "gacha"
-    description = "Enjoy the gacha hell.\nRate up details:\nCOMMON `50%`\nRARE `30.33%`\nEPIC `15.33%`\nLEGENDARY `4.33%`\n???? `0.01%`"
+    description = "Enjoy the gacha hell.\n-----------------\nRate up details:\n**COMMON** `50%`\n**RARE** `30.33%`\n**EPIC** `15.33%`\n**LEGENDARY** `4.33%`\n**????** `0.01%`"
     syntax = "gacha <number of rolls|None>"
 
 
