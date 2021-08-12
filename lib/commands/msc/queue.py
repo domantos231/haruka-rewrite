@@ -23,9 +23,9 @@ async def _queue(cmd):
         name = []
         value = []
         embed = []
-        for track_id in track_ids:
-            track = await bot.wavelink.build_track(track_id)
-            name.append(f"**#{counter}** {track.title}")
+        for track_obj in enumerate(track_ids):
+            track = await bot.wavelink.build_track(track_obj[1])
+            name.append(f"**#{track_obj[0] + 1}** {track.title}")
             value.append(track.author)
         pages = 1 + int(len(track_ids)/songs_per_page)
         for page in range(pages):
@@ -35,7 +35,7 @@ async def _queue(cmd):
                 try:
                     embed[page].add_field(name=name[0], value=value[0], inline=inline)
                     del name[0], value[0]
-                except AttributeError:
+                except IndexError:
                     break
         msg = await cmd.send(embed=embed[0])
         for emoji in choices[:pages]:
