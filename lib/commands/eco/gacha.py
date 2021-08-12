@@ -9,7 +9,7 @@ from settings import *
 async def _gacha(cmd, n: int = 1):
     if n < 1:
         raise commands.UserInputError
-    elif n > 10:
+    elif n > 10 and not await bot.is_owner(cmd.author):
         await cmd.send("The maximum number of rolls you can gacha at a time is 10.")
     else:
         id = str(cmd.author.id)
@@ -20,18 +20,18 @@ async def _gacha(cmd, n: int = 1):
             player.amt -= n * 300
             pet_add = [0 for i in range(52)]
             for i in range(n):
-                j = randint(1, 1000000) - 1
-                if j < 484848:
-                    k = int(j / 30303)
+                j = randint(1, 10000) - 1
+                if j < 5000:
+                    k = randint(0, 15)
                     pet_add[k] += 1
-                elif j < 848484:
-                    k = int(j / 20202) - 8
+                elif j < 8033:
+                    k = randint(16, 33)
                     pet_add[k] += 1
-                elif j < 989898:
-                    k = int(j / 10101) - 50
+                elif j < 9566:
+                    k = randint(34, 47)
                     pet_add[k] += 1
-                elif j < 999999:
-                    k = int(j / 3367) - 246
+                elif j < 9999:
+                    k = randint(48, 50)
                     pet_add[k] += 1
                 else:
                     pet_add[51] += 1
