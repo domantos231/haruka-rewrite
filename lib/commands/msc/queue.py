@@ -4,8 +4,8 @@ from settings import *
 from discord.ext import commands
 
 
-songs_per_page = 10
-inline = True
+songs_per_page = 8
+inline = False
 
 
 @bot.command(name="queue")
