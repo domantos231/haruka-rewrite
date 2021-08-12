@@ -171,15 +171,6 @@ if not hasattr(bot, "db"):
     bot.db = db()
 
 
-# Keep lavalink server running (maybe?)
-@tasks.loop(seconds=1800.0)
-async def keep_alive():
-    tracks = await bot.wavelink.get_tracks(f"ytsearch:just some random stuff here")
-    del tracks
-    gc.collect()
-    print(f"Finished keep_alive task at {dt.now()}")
-
-
 # Initialize wavelink nodes
 async def start_nodes():
     await bot.wait_until_ready()
@@ -191,8 +182,4 @@ async def start_nodes():
         identifier = "Haruka Wavelink Client",
         region = "hongkong",
     )
-    try:
-        keep_alive.start()
-    except:
-        pass
 bot.loop.create_task(start_nodes())
