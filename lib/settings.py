@@ -133,7 +133,7 @@ class db:
             except:
                 error += 1
             finally:
-                print(f"Closed all database conenctions, {error} error(s) occured.")
+                print(f"Closed all database connections, {error} error(s) occured.")
     
 
     @property
