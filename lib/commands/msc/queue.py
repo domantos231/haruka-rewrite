@@ -43,7 +43,7 @@ async def _queue(cmd):
         
 
         def check(reaction, user):
-            return reaction.message.id == msg.id and str(reaction) in choices[:pages]
+            return reaction.message.id == msg.id and str(reaction) in choices[:pages] and not user.bot
         
 
         async def active():
