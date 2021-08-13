@@ -35,8 +35,6 @@ async def info(cmd, *, user: discord.Member = None):
 async def info_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")
-    elif isinstance(error, commands.ConversionError):
-        await cmd.send("The specified user is not a member of this server!")
 
 
 @bot.command()
