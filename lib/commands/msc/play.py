@@ -22,6 +22,7 @@ async def _play(cmd, arg = None):
             await cmd.send("Skipping to next song...")
         else:
             await player.destroy()
+            await asyncio.sleep(0.51)
             player = bot.wavelink.get_player(guild_id=cmd.guild.id)
             await player.connect(channel.id)
             await cmd.send(f"Connected to **{channel}**")
@@ -44,7 +45,7 @@ async def _play(cmd, arg = None):
             await cmd.send(embed=em)
             start = dt.now()
             await player.play(track)
-            while player.is_playing or player.is_paused:
+            while player.is_connected:
                 await asyncio.sleep(0.5)
             end = dt.now()
             row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
