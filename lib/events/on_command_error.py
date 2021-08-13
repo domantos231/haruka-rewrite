@@ -4,7 +4,7 @@ from settings import *
 
 @bot.event
 async def on_command_error(cmd, error):
-    if isinstance(error, commands.CommandNotFound) or hasattr(cmd.command, "on_error"):
+    if isinstance(error, commands.CommandNotFound):
         pass
     elif isinstance(error, commands.CommandOnCooldown):
         seconds = error.retry_after
@@ -25,5 +25,7 @@ async def on_command_error(cmd, error):
             time += " {:.2f}s".format(seconds)
         msg = await cmd.send(f"⏱️ <@!{cmd.author.id}> This command is on cooldown!\nYou can use it after**{time}**!")
         await msg.delete(delay = error.retry_after)
+    elif hasattr(cmd.command, "on_error"):
+        pass
     else:
         print(f"['{cmd.message.content}'] {error}")
