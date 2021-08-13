@@ -15,12 +15,12 @@ async def addbot(cmd):
 
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
-async def info(cmd, *, user: discord.User = None):
-    if user == None:
+async def info(cmd, *, user: discord.Member = None):
+    if user is None:
         user = cmd.author
     info_em = discord.Embed(
         title=f"{user} Info",
-        description=f"**Name** {user.name}\n**Nickname** {user.display_name}\n**ID** {user.id}",
+        description=f"**Name** {user.name}\n**Nickname** {user.nick}\n**ID** {user.id}",
         color=0x2ECC71,
     )
     info_em.set_thumbnail(url=user.avatar_url)
@@ -35,6 +35,8 @@ async def info(cmd, *, user: discord.User = None):
 async def info_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please check your input again.")
+    elif isinstance(error, commands.ConversionError):
+        await cmd.send("The specified user is not a member of this server!")
 
 
 @bot.command()
