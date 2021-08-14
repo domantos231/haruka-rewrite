@@ -8,8 +8,8 @@ from settings import *
 @bot.command(name="loli")
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _loli(cmd):
-    loli = await GIF("anime-loli").giphy_leech()
-    fbi = await GIF("fbi").giphy_leech()
+    loli = await giphy_leech("anime-loli")
+    fbi = await giphy_leech("fbi")
     url = choice([*loli, *fbi])
     if url in loli:
         em = discord.Embed(description=f"**{cmd.author.name}**, this is your loli!", color=0x2ECC71)

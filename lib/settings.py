@@ -5,7 +5,6 @@ import discord
 import gc
 import logging
 import os
-import psycopg2
 import re
 import wavelink
 from bs4 import BeautifulSoup as bs
@@ -24,32 +23,11 @@ wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
 gc.enable()
 
 
-# Initialize database connection, cursor, root path and side session
+# Initialize root path and side session
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 session = aiohttp.ClientSession()
 root = os.getcwd()
-conn = psycopg2.connect(DATABASE_URL)
-cur = conn.cursor()
-
-
-# Initialize database
-eco_sql = "CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float, pet int[], win int, total int);"
-pref_sql = "CREATE TABLE IF NOT EXISTS prefix (id text, pref text);"
-music_sql = "CREATE TABLE IF NOT EXISTS music (id text, queue text[]);"
-try:
-    cur.execute(eco_sql)
-    cur.execute(pref_sql)
-    cur.execute(music_sql)
-    conn.commit()
-    print("Successfully initialized database!")
-except Exception as ex:
-    print(f"An exception occured: {ex}")
-    print("Exiting program...")
-    exit()
-finally:
-    cur.close()
-    conn.close()    
 
 
 # Define frequently used emoji lists
@@ -83,28 +61,23 @@ class data:
 
 # Load all action commands' GIFs from giphy
 giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
-class GIF:
-    def __init__(self, query):
-        self.query = query
-
-
-    async def giphy_leech(self):
-        url = f"https://giphy.com/search/{self.query}"
-        lst = []
-        async with session.get(url) as response:
-            if response.status == 200:
-                html = await response.text()
-                soup = bs(html, "html.parser")
-                obj = str(soup.find(name="body"))
-                matches = re.finditer(giphy_pattern_regex, obj)
-                for match in matches:
-                    if match.group() not in lst:
-                        lst.append(match.group())
-                    if len(lst) == 15:
-                        break
-                return lst
-            else:
-                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
+async def giphy_leech(query):
+    url = f"https://giphy.com/search/{query}"
+    lst = []
+    async with session.get(url) as response:
+        if response.status == 200:
+            html = await response.text()
+            soup = bs(html, "html.parser")
+            obj = str(soup.find(name="body"))
+            matches = re.finditer(giphy_pattern_regex, obj)
+            for match in matches:
+                if match.group() not in lst:
+                    lst.append(match.group())
+                if len(lst) == 15:
+                    break
+            return lst
+        else:
+            return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
 
 # asyncpg class for database connection
@@ -122,8 +95,18 @@ class db:
                 pass
             else:
                 self._connection.append(connection)
-        print(f"Established {len(self._connection)} database connection(s):\n" + "\n".join(f"{connection}" for connection in self._connection))
+        print(f"Established {len(self._connection)} database connection(s)!")
+        await self.initialization()
     
+
+    async def initialization(self):
+        await self.conn.execute("""
+        CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float, pet int[], win int, total int);
+        CREATE TABLE IF NOT EXISTS prefix (id text, pref text);
+        CREATE TABLE IF NOT EXISTS music (id text, queue text[]);
+        """)
+        print("Successfully initialized database!")
+
 
     async def close(self):
         error = 0

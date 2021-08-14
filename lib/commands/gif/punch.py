@@ -13,7 +13,7 @@ async def _punch(cmd, user: discord.User = None):
     elif user.id == cmd.author.id:
         await cmd.send(f"Please don't punch yourself, {cmd.author.name}?")
     else:
-        gifs = await GIF("punch").giphy_leech()
+        gifs = await giphy_leech("punch")
         em = discord.Embed(description=f"**{cmd.author.name}** punched **{user.name}**!", color=0x2ECC71)
         em.set_image(url=choice(gifs))
         await cmd.send(embed=em)
