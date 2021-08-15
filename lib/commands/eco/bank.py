@@ -21,6 +21,7 @@ async def _bank(cmd):
         money = int(player.bank * pow(1 + player.interest/100, hours))
         em = discord.Embed(title="🏦 WELCOME TO THE BANK", description=f"Your bank account `💲{money}`\nInterest `{player.interest}%/h`", color=0x2ECC71)
         em.set_author(name=cmd.author.name, icon_url=cmd.author.avatar_url)
+        em.set_footer(text=f"{hours} hours since last transaction.")
         await cmd.send(embed=em)
 
 
@@ -49,9 +50,9 @@ async def _deposit(cmd, arg):
         money = int(player.bank * pow(1 + player.interest/100, hours))
         await bot.db.conn.execute(f"""
         UPDATE economy
-        SET amt = amt - {arg}, bank = bank + {arg}
+        SET amt = amt - {arg}, bank = {money} + {arg}, time = $1
         WHERE id = '{id}';
-        """)
+        """, dt.now())
         await cmd.send(f"<@!{id}> sent `💲{arg}` to the bank.")
 
 
@@ -80,7 +81,7 @@ async def _withdraw(cmd, arg):
         money = int(player.bank * pow(1 + player.interest/100, hours))
         await bot.db.conn.execute(f"""
         UPDATE economy
-        SET amt = amt + {arg}, bank = bank - {arg}
+        SET amt = amt + {arg}, bank = {money} - {arg}, time = $1
         WHERE id = '{id}';
-        """)
+        """, dt.now())
         await cmd.send(f"<@!{id}> withdrew `💲{arg}` from the bank.")
