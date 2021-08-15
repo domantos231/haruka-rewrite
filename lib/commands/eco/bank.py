@@ -42,12 +42,12 @@ async def _deposit(cmd, arg):
             arg = player.amt
         else:
             return await cmd.send("Please specify a valid amount of money to deposit")
+    delta = dt.now() - player.time
+    hours = 24 * delta.days + int(delta.seconds / 3600)
+    money = int(player.bank * pow(1 + player.interest/100, hours))
     if arg > player.amt:
         await cmd.send(f"<@!{id}> You don't have enough money!")
     else:
-        delta = dt.now() - player.time
-        hours = 24 * delta.days + int(delta.seconds / 3600)
-        money = int(player.bank * pow(1 + player.interest/100, hours))
         await bot.db.conn.execute(f"""
         UPDATE economy
         SET amt = amt - {arg}, bank = {money} + {arg}, time = $1
@@ -66,19 +66,19 @@ async def _withdraw(cmd, arg):
             f"UPDATE economy SET time = $1 WHERE id = '{id}';",
             dt.now()
         )
+    delta = dt.now() - player.time
+    hours = 24 * delta.days + int(delta.seconds / 3600)
+    money = int(player.bank * pow(1 + player.interest/100, hours))
     try:
         arg = int(arg)
     except ValueError:
         if arg.lower() == "all":
-            arg = player.bank
+            arg = money
         else:
             return await cmd.send("Please specify a valid amount of money to withdraw")
-    if arg > player.bank:
+    if arg > money:
         await cmd.send(f"<@!{id}> You don't have enough money in your bank account!")
     else:
-        delta = dt.now() - player.time
-        hours = 24 * delta.days + int(delta.seconds / 3600)
-        money = int(player.bank * pow(1 + player.interest/100, hours))
         await bot.db.conn.execute(f"""
         UPDATE economy
         SET amt = amt + {arg}, bank = {money} - {arg}, time = $1
