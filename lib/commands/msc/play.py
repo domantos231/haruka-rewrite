@@ -45,7 +45,7 @@ async def _play(cmd, arg = None):
             await cmd.send(embed=em)
             start = dt.now()
             await player.play(track)
-            while player.is_connected:
+            while player.is_playing or player.is_paused:
                 await asyncio.sleep(0.5)
             end = dt.now()
             row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
