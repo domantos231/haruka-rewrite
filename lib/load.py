@@ -485,7 +485,7 @@ def add_pet_data(id, amt):
     return PetObjects[id](amt)
 
 
-class Player:
+class EconomyPlayer:
     def __init__(self, amt, time, bank, interest, pet, win, total):
         self.amt = amt
         self.time = time

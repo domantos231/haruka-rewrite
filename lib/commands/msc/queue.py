@@ -14,22 +14,18 @@ async def _queue(cmd):
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")
     else:
-        channel = cmd.author.voice.channel
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
-        if not row:
-            track_ids = []
-        else:
-            track_ids = row["queue"]
+        channel = Music(cmd.author.voice.channel)
+        track_ids = await channel.queue
         name = []
         value = []
         embed = []
         for track_obj in enumerate(track_ids):
-            track = await bot.wavelink.build_track(track_obj[1])
+            track = await bot.node.build_track(cls=wavelink.YouTubeTrack, identifier=track_obj[1])
             name.append(f"**#{track_obj[0] + 1}** {track.title}")
             value.append(track.author)
         pages = 1 + int(len(track_ids)/songs_per_page)
         for page in range(pages):
-            embed.append(discord.Embed(title=f"Music queue of channel {channel}", color=0x2ECC71))
+            embed.append(discord.Embed(title=f"Music queue of channel {channel.channel}", color=0x2ECC71))
             embed[page].set_footer(text=f"Currently has {len(track_ids)} song(s) | Page {page + 1}/{pages}")
             for i in range(songs_per_page):
                 try:

@@ -20,26 +20,26 @@ if __name__ == "__main__":
     p = multiprocessing.Process(target=lavalink_start)
     p.start()
     waiting_time = float(sys.argv[1])
-    print(f"Bot will start after {waiting_time} seconds.")
+    print(f"HARUKA | Bot will start after {waiting_time} seconds.")
     sleep(waiting_time)
-    print("Starting bot...")
+    print("HARUKA | Starting bot...")
 
 
     @bot.event
     async def on_connect():
-        print("Connected to Discord!")
+        print("HARUKA | Connected to Discord!")
         if len(bot.db._connection) < 5:
             await bot.db.connect()
 
 
     @bot.event
     async def on_ready():
-        print(f"Logged in as {bot.user}")
+        print(f"HARUKA | Logged in as {bot.user}")
 
 
     async def cancel():
         await session.close()
-        print("Side session closed.")
+        print("HARUKA | Side session closed.")
         await bot.db.close()
 
 

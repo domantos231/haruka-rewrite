@@ -28,4 +28,4 @@ async def on_command_error(cmd, error):
     elif hasattr(cmd.command, "on_error"):
         pass
     else:
-        print(f"['{cmd.message.content}'] {error}")
+        print(f"HARUKA | ['{cmd.message.content}'] {error}")

@@ -7,19 +7,24 @@ import logging
 import os
 import re
 import wavelink
+import sys
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
 from discord.ext import tasks, commands
+from typing import *
 from load import *
 
 
 # Set up logging and garbage collector
-discord_logger = logging.getLogger("discord")
-discord_logger.setLevel(logging.INFO)
-discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
-wavelink_logger = logging.getLogger("wavelink")
-wavelink_logger.setLevel(logging.INFO)
-wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
+if len(sys.argv) == 2:
+    discord_logger = logging.getLogger("discord")
+    discord_logger.setLevel(logging.DEBUG)
+    discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
+    wavelink_logger = logging.getLogger("wavelink")
+    wavelink_logger.setLevel(logging.DEBUG)
+    wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
+elif sys.argv[2] == "debug":
+    logging.basicConfig(level=logging.DEBUG)
 gc.enable()
 
 
@@ -56,7 +61,7 @@ class data:
             pet.append(add_pet_data(obj[0], obj[1]))
         win = row["win"]
         total = row["total"]
-        return Player(amt, time, bank, interest, pet, win, total)
+        return EconomyPlayer(amt, time, bank, interest, pet, win, total)
 
 
 # Load all action commands' GIFs from giphy
@@ -95,7 +100,7 @@ class db:
                 pass
             else:
                 self._connection.append(connection)
-        print(f"Established {len(self._connection)} database connection(s)!")
+        print(f"HARUKA | Established {len(self._connection)} database connection(s)!")
         await self.initialization()
     
 
@@ -105,18 +110,20 @@ class db:
         CREATE TABLE IF NOT EXISTS prefix (id text, pref text);
         CREATE TABLE IF NOT EXISTS music (id text, queue text[]);
         """)
-        print("Successfully initialized database!")
+        print("HARUKA | Successfully initialized database!")
 
 
     async def close(self):
         error = 0
+        print("HARUKA | Closing database connections...")
+        await asyncio.sleep(3.0)
         for connection in self._connection:
             try:
                 await connection.close()
-            except:
+            except Exception as ex:
+                print(ex)
                 error += 1
-            finally:
-                print(f"Closed all database connections, {error} error(s) occured.")
+        print(f"HARUKA | Attempted to close all database connections, {error} error(s) occured.")
     
 
     @property
@@ -148,8 +155,6 @@ intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
-if not hasattr(bot, "wavelink"):
-    bot.wavelink = wavelink.Client(bot=bot)
 if not hasattr(bot, "db"):
     bot.db = db()
 
@@ -157,12 +162,64 @@ if not hasattr(bot, "db"):
 # Initialize wavelink nodes
 async def start_nodes():
     await bot.wait_until_ready()
-    await bot.wavelink.initiate_node(
-        host = "127.0.0.1",
-        port = 2333,
-        rest_uri = "http://127.0.0.1:2333",
-        password = os.environ["PASSWORD"],
-        identifier = "Haruka Wavelink Client",
-        region = "hongkong",
-    )
+    if not hasattr(bot, "node"):
+        bot.node = await wavelink.NodePool.create_node(
+            bot = bot,
+            host = "127.0.0.1",
+            port = 2333,
+            password = os.environ["PASSWORD"],
+            region = "hongkong",
+        )
 bot.loop.create_task(start_nodes())
+
+
+# Music function within a channel
+class Music:
+    def __init__(self, channel: discord.VoiceChannel):
+        self.channel = channel
+    
+
+    @property
+    async def queue(self) -> List[str]:
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{self.channel.id}';")
+        if not row:
+            await bot.db.conn.execute(f"INSERT INTO music VALUES ('{self.channel.id}', array[]);")
+            track_ids = []
+        else:
+            track_ids = row["queue"]
+        return track_ids
+    
+
+    @property
+    def player(self) -> Optional[wavelink.Player]:
+        return bot.node.get_player(self.channel.guild)
+    
+
+    async def connect(self) -> None:
+        if self.player and self.player.is_connected():
+            await self.player.disconnect(force=True)
+            await asyncio.sleep(0.6)
+        await self.channel.connect(cls=wavelink.Player)
+    
+
+    async def add(self, track: wavelink.YouTubeTrack) -> None:
+        await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track.id}') WHERE id = '{self.channel.id}';")
+            
+
+    async def remove(self, pos) -> Optional[wavelink.YouTubeTrack]:
+        queue = await self.queue
+        try:
+            track_id = queue[pos - 1]
+        except KeyError:
+            pass
+        else:
+            await bot.db.conn.execute(f"UPDATE music SET queue = array_cat(queue[:{pos - 1}], queue[{pos + 1}:]) WHERE id = '{self.channel.id}';")
+            track = await bot.node.build_track(cls=wavelink.YouTubeTrack, identifier=track_id)
+            return track
+    
+
+    async def play(self, track: wavelink.YouTubeTrack) -> None:
+        if self.player is not None:
+            await self.player.play(track)
+            while self.player.is_playing() or self.player.is_paused() and self.player.is_connected():
+                await asyncio.sleep(0.4)

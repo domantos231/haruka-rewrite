@@ -31,8 +31,8 @@ async def get_wordlist():
                 obj = soup.find(name="section", attrs={"class": "col-md-12"}).find_all("p")[1]
                 return obj.get_text(separator=r"%").split(r"%")
             else:
-                print(f"Wordlist site retured status code {response.status}")
-                return ["pneumonoultramicroscopicsilicovolcanoconiosis"]
+                print(f"HARUKA | Wordlist site retured status code {response.status}")
+                return ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
 
 
 prelist = asyncio.run(get_wordlist())

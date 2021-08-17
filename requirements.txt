@@ -13,5 +13,5 @@ PyNaCl==1.4.0
 six==1.16.0
 soupsieve==2.2.1
 typing-extensions==3.10.0.0
-wavelink==0.9.10
+wavelink==1.0.0b30
 yarl==1.6.3

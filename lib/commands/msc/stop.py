@@ -4,9 +4,10 @@ from settings import *
 @bot.command(name="stop")
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _stop(cmd):
-    player = bot.wavelink.get_player(guild_id=cmd.guild.id)
+    player = bot.node.get_player(cmd.guild)
     if player.is_connected:
-        await player.destroy()
+        await player.stop()
+        await player.disconnect(force=True)
         await cmd.send("Stopped player.")
     else:
         await cmd.send("No currently connected player.")

@@ -1,5 +1,6 @@
 import asyncio
 import discord
+import wavelink
 from settings import *
 from discord.ext import commands
 
@@ -10,13 +11,11 @@ async def _add(cmd, *, query):
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")
     else:
-        channel = cmd.author.voice.channel
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
-        if row:
-            queue = row["queue"]
-            if len(queue) >= 30:
-                return await cmd.send("The maximum number of songs in a queue is 30. Please remove a song before adding another one.")
-        tracks = await bot.wavelink.get_tracks(f"ytsearch:{query}")
+        channel = Music(cmd.author.voice.channel)
+        queue = await channel.queue
+        if len(queue) >= 30:
+            return await cmd.send("The music queue for this channel has reached its maximum size.")
+        tracks = await wavelink.YouTubeTrack.search(query=query)
         if tracks:
             em = discord.Embed(title=f"Search results for {query}", color=0x2ECC71)
             em.set_author(name=f"{cmd.author.name}'s song request", icon_url=cmd.author.avatar_url)
@@ -43,12 +42,8 @@ async def _add(cmd, *, query):
         else:
             index = choices.index(str(reaction))
             track = tracks[index]
-            row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
-            if not row:
-                await bot.db.conn.execute(f"INSERT INTO music VALUES ('{channel.id}', array['{track.id}']);")
-            else:
-                await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track.id}') WHERE id = '{channel.id}';")
-            em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
+            await channel.add(track)
+            em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
             em.set_author(name=f"{cmd.author.name} added 1 song to queue", icon_url=cmd.author.avatar_url)
             em.set_thumbnail(url=track.thumb)
             await msg.delete()
@@ -59,3 +54,5 @@ async def _add(cmd, *, query):
 async def add_error(cmd, error):
     if isinstance(error, commands.UserInputError):
         await cmd.send("Please provide a searching query.")
+    else:
+        print(error)

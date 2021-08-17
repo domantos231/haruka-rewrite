@@ -7,59 +7,28 @@ from settings import *
 
 @bot.command(name="play")
 @commands.cooldown(1, 5, commands.BucketType.guild)
-async def _play(cmd, arg = None):
-    loop = False
+async def _play(cmd, *args):
     if not cmd.author.voice:
         await cmd.send("Please join a voice channel first.")
     else:
-        channel = cmd.author.voice.channel
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
-        if not row or len(row["queue"]) == 0:
-            return await cmd.send("Please add at least one song to the queue.")
-        queue = row["queue"]
-        player = bot.wavelink.get_player(guild_id=cmd.guild.id)
-        if player.channel_id == channel.id:
-            await cmd.send("Skipping to next song...")
-        else:
-            await player.destroy()
-            await asyncio.sleep(0.51)
-            player = bot.wavelink.get_player(guild_id=cmd.guild.id)
-            await player.connect(channel.id)
-            await cmd.send(f"Connected to **{channel}**")
-        if not arg:
-            pass
-        elif arg.lower() == "loop":
-            await cmd.send("Playing the current queue in a loop, any completed/skipped songs will be added back to the queue.")
+        channel = Music(cmd.author.voice.channel)
+        queue = await channel.queue
+        if len(queue) == 0:
+            return await cmd.send("Please add a song to the queue.")
+        await channel.connect()
+        await cmd.send(f"Connected to **{channel.channel}**")
+        if "loop" in args:
+            await cmd.send("Playing the current queue in a loop. Any started song will be added back to the queue.")
             loop = True
         else:
-            raise commands.UserInputError
-        while len(queue) > 0 and player.is_connected:
-            track_id = queue[0]
-            await bot.db.conn.execute(f"UPDATE music SET queue = queue[2:] WHERE id = '{channel.id}';")
+            loop = False
+        while len(queue) > 0 and channel.player.is_connected():
+            track = await channel.remove(1)
             if loop:
-                await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track_id}') WHERE id = '{channel.id}';")
-            track = await bot.wavelink.build_track(track_id)
-            em = discord.Embed(title=track.title, description=track.author, color=0x2ECC71)
-            em.set_author(name=f"Playing in {channel}")
+                await channel.add(track)
+            em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
+            em.set_author(name=f"Playing in {channel.channel}")
             em.set_thumbnail(url=track.thumb)
             await cmd.send(embed=em)
-            start = dt.now()
-            await player.play(track)
-            while player.is_playing or player.is_paused:
-                await asyncio.sleep(0.5)
-            end = dt.now()
-            row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{channel.id}';")
-            if len(row) == 0:
-                queue = []
-            else:
-                queue = row["queue"]
-            if (end - start).seconds < 3:
-                await player.destroy()
-                return await cmd.send("It seems that something went wrong with the server. Maybe try it again?") 
-        await player.destroy()
-
-
-@_play.error
-async def play_error(cmd, error):
-    if isinstance(cmd, commands.UserInputError):
-        await cmd.send(f"Valid argument after `{cmd.prefix}play` is `loop`")
+            await channel.play(track)
+        await channel.player.disconnect()
