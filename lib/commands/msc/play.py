@@ -33,5 +33,6 @@ async def _play(cmd, *args):
             try:
                 await channel.play(track)
             except AttributeError:
-                break
+                return
+            queue = await channel.queue
         await channel.player.disconnect()
