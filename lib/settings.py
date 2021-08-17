@@ -221,5 +221,5 @@ class Music:
     async def play(self, track: wavelink.YouTubeTrack) -> None:
         if self.player is not None:
             await self.player.play(track)
-            while self.player.is_playing() or self.player.is_paused() and self.player.is_connected():
+            while self.player.is_playing() or self.player.is_paused():
                 await asyncio.sleep(0.4)

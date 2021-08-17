@@ -30,5 +30,8 @@ async def _play(cmd, *args):
             em.set_author(name=f"Playing in {channel.channel}")
             em.set_thumbnail(url=track.thumb)
             await cmd.send(embed=em)
-            await channel.play(track)
+            try:
+                await channel.play(track)
+            except AttributeError:
+                break
         await channel.player.disconnect()
