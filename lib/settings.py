@@ -18,13 +18,13 @@ from load import *
 # Set up logging and garbage collector
 if len(sys.argv) == 2:
     discord_logger = logging.getLogger("discord")
-    discord_logger.setLevel(logging.DEBUG)
+    discord_logger.setLevel(logging.INFO)
     discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
     wavelink_logger = logging.getLogger("wavelink")
-    wavelink_logger.setLevel(logging.DEBUG)
+    wavelink_logger.setLevel(logging.INFO)
     wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
 elif sys.argv[2] == "debug":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 gc.enable()
 
 
