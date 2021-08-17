@@ -183,7 +183,7 @@ class Music:
     async def queue(self) -> List[str]:
         row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{self.channel.id}';")
         if not row:
-            await bot.db.conn.execute(f"INSERT INTO music VALUES ('{self.channel.id}', array[]);")
+            await bot.db.conn.execute(f"INSERT INTO music VALUES ('{self.channel.id}', $1);", [])
             track_ids = []
         else:
             track_ids = row["queue"]
