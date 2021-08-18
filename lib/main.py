@@ -49,5 +49,6 @@ if __name__ == "__main__":
     except:
         bot.loop.run_until_complete(bot.close())
     finally:
-        asyncio.run(cancel())
+        print("HARUKA | Terminating bot")
         bot.loop.close()
+        asyncio.run(cancel())
