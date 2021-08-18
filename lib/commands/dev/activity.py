@@ -24,6 +24,11 @@ async def _listening(cmd, *, desc):
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=desc))
 
 
+@_activity.command(name="custom")
+async def _custom(cmd, *, desc):
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name=desc))
+
+
 @_activity.error
 async def activity_error(cmd, error):
     if isinstance(error, commands.NotOwner):
