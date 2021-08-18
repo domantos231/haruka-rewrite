@@ -218,7 +218,7 @@ class Music:
             return track
     
 
-    async def play(self, track: wavelink.YouTubeTrack) -> wavelink.YouTubeTrack:
+    async def play(self, track: wavelink.YouTubeTrack) -> None:
         if self.player is not None:
             await self.player.play(track)
             await asyncio.sleep(0.4)
