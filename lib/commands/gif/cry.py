@@ -8,7 +8,7 @@ from settings import *
 @bot.command(name="cry")
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _cry(cmd):
-    gifs = await giphy_leech("anime-cry")
+    gifs = await bot.giphy("anime-cry")
     em = discord.Embed(description=f"**{cmd.author.name}** is crying ~~", color=0x2ECC71)
     em.set_image(url=choice(gifs))
     await cmd.send(embed=em)

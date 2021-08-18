@@ -13,7 +13,7 @@ async def _hug(cmd, user: discord.User = None):
     elif user.id == cmd.author.id:
         await cmd.send("Imagine hugging yourself...")
     else:
-        gifs = await giphy_leech("anime-hug")
+        gifs = await bot.giphy("anime-hug")
         em = discord.Embed(description=f"**{cmd.author.name}** gave **{user.name}** a warming hug!", color=0x2ECC71)
         em.set_image(url=choice(gifs))
         await cmd.send(embed=em)

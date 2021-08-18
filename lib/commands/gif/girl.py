@@ -8,7 +8,7 @@ from settings import *
 @bot.command(name="girl")
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _girl(cmd):
-    gifs = await giphy_leech("anime-girl")
+    gifs = await bot.giphy("anime-girl")
     em = discord.Embed(description=f"**{cmd.author.name}**, this is your girl!", color=0x2ECC71)
     em.set_image(url=choice(gifs))
     await cmd.send(embed=em)

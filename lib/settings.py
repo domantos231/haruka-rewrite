@@ -66,7 +66,7 @@ class data:
 
 # Load all action commands' GIFs from giphy
 giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
-async def giphy_leech(query):
+async def giphy(query):
     url = f"https://giphy.com/search/{query}"
     lst = []
     async with session.get(url) as response:
@@ -155,8 +155,12 @@ intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
 bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
+if not hasattr(bot, "giphy"):
+    bot.giphy = giphy
+    print("HARUKA | Loaded bot.giphy")
 if not hasattr(bot, "db"):
     bot.db = db()
+    print("HARUKA | Loaded bot.db")
 
 
 # Initialize wavelink nodes
@@ -170,6 +174,7 @@ async def start_nodes():
             password = os.environ["PASSWORD"],
             region = "hongkong",
         )
+        print("HARUKA | Loaded bot.node")
 bot.loop.create_task(start_nodes())
 
 
