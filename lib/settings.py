@@ -222,5 +222,5 @@ class Music:
         if self.player is not None:
             await self.player.play(track)
             await asyncio.sleep(0.4)
-            while self.player.position < track.length:
+            while self.player.is_connected() and self.player.position < track.length:
                 await asyncio.sleep(0.4)
