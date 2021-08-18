@@ -22,14 +22,20 @@ async def _play(cmd, *args):
             loop = True
         else:
             loop = False
+        if "verbose" in args:
+            await cmd.send("Playing in verbose mode. Songs will be displayed before starting.")
+            verbose = True
+        else:
+            verbose = False
         while len(queue) > 0 and channel.player.is_connected():
             track = await channel.remove(1)
             if loop:
                 await channel.add(track)
-            em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
-            em.set_author(name=f"Playing in {channel.channel}")
-            em.set_thumbnail(url=track.thumb)
-            await cmd.send(embed=em)
+            if verbose:
+                em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
+                em.set_author(name=f"Playing in {channel.channel}")
+                em.set_thumbnail(url=track.thumb)
+                await cmd.send(embed=em)
             try:
                 await channel.play(track)
             except AttributeError:

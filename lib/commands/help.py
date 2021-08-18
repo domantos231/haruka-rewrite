@@ -190,7 +190,7 @@ class pause(HelpEmbed):
 class play(HelpEmbed):
     title = "play"
     description = "Start playing music in the queue"
-    syntax = "play <loop|None>"
+    syntax = "play <loop|verbose|None>"
 
 
 class queue(HelpEmbed):
