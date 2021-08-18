@@ -9,3 +9,4 @@ async def on_wavelink_node_ready(node):
 @bot.event
 async def on_wavelink_track_exception(player, track, error):
     print(f"HARUKA | TrackException in server {player.guild}: {track.title}\n{error}")
+    await player.disconnect()
