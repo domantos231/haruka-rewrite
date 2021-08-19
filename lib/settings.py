@@ -8,6 +8,7 @@ import os
 import re
 import wavelink
 import sys
+from io import BytesIO
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
 from discord.ext import tasks, commands
@@ -16,14 +17,14 @@ from load import *
 
 
 # Set up logging and garbage collector
-if len(sys.argv) == 2:
+if len(sys.argv) == 1:
     discord_logger = logging.getLogger("discord")
     discord_logger.setLevel(logging.INFO)
     discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
     wavelink_logger = logging.getLogger("wavelink")
     wavelink_logger.setLevel(logging.INFO)
     wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
-elif sys.argv[2] == "debug":
+elif sys.argv[1] == "debug":
     logging.basicConfig(level=logging.INFO)
 gc.enable()
 
@@ -31,6 +32,7 @@ gc.enable()
 # Initialize root path and side session
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
+API_KEY = os.environ["API_KEY"]
 session = aiohttp.ClientSession()
 root = os.getcwd()
 
@@ -39,6 +41,31 @@ root = os.getcwd()
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 navigate = ["⬅️", "➡️"]
+
+
+# Define YouTube API and Invidious URLs
+youtube_api_url = "https://www.googleapis.com/youtube/v3"
+invidious_urls = [
+    "https://invidious-jp.kavin.rocks",
+    "https://invidio.xamh.de",
+    "https://invidious.exonip.de",
+    "https://invidious.silkky.cloud",
+    "https://youtube.076.ne.jp",
+    "https://invidious.namazso.eu",
+    "https://invidious.snopyta.org",
+    "https://ytb.trom.tf",
+    "https://vid.puffyan.us",
+    "https://invidious.hub.ne.kr",
+    "https://yewtu.be",
+    "https://invidious.kavin.rocks",
+    "https://ytprivate.com",
+    "https://invidious.noho.st",
+    "https://inv.riverside.rocks",
+]
+
+
+# Define giphy image URL RegEx
+giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 
 
 # Load economy data from database
@@ -64,28 +91,7 @@ class data:
         return EconomyPlayer(amt, time, bank, interest, pet, win, total)
 
 
-# Load all action commands' GIFs from giphy
-giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
-async def giphy(query):
-    url = f"https://giphy.com/search/{query}"
-    lst = []
-    async with session.get(url) as response:
-        if response.status == 200:
-            html = await response.text()
-            soup = bs(html, "html.parser")
-            obj = str(soup.find(name="body"))
-            matches = re.finditer(giphy_pattern_regex, obj)
-            for match in matches:
-                if match.group() not in lst:
-                    lst.append(match.group())
-                if len(lst) == 15:
-                    break
-            return lst
-        else:
-            return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
-
-
-# asyncpg class for database connection
+# asyncpg class for database operations
 class db:
     def __init__(self):
         self.count = -1
@@ -135,6 +141,58 @@ class db:
         return self._connection[self.count]
 
 
+# Represents a snippet from a YouTube API search result
+class YouTubeSearchResult:
+    def __init__(self, json):
+        self._json = json
+    
+
+    @property
+    def id(self):
+        return self._json["id"]["videoId"]
+    
+
+    @property
+    def title(self):
+        return self._json["snippet"]["title"]
+    
+
+    @property
+    def description(self):
+        return self._json["snippet"]["description"]
+    
+
+    @property
+    def channel(self):
+        return self._json["snippet"]["channelTitle"]
+    
+
+    @property
+    def thumbnail(self):
+        return self._json["snippet"]["thumbnails"]["high"]["url"]
+    
+
+    def embed(self, *args, **kwargs) -> discord.Embed:
+        em = discord.Embed(
+            title = self.title,
+            description = f"{self.channel}\n{self.description}",
+            url = f"https://www.youtube.com/watch?v={self.id}",
+            color = 0x2ECC71,
+        )
+        em.set_thumbnail(url=self.thumbnail)
+        if kwargs.get("footer"):
+            em.set_footer(
+                text = kwargs["footer"].get("text") or discord.Embed.Empty,
+                icon_url = kwargs["footer"].get("icon_url") or discord.Embed.Empty,
+            )
+        if kwargs.get("author"):
+            em.set_author(
+                name = kwargs["author"].get("name") or discord.Embed.Empty,
+                icon_url = kwargs["author"].get("icon_url") or discord.Embed.Empty,
+            )
+        return em
+
+
 async def prefix(bot, message):
     if str(message.channel.type) == "private":
         return "$"
@@ -149,83 +207,128 @@ async def prefix(bot, message):
         return "$" # No command invoke from on_message
 
 
+class Haruka(commands.Bot):
+    async def start(self, *args, **kwargs):
+        await bot.db.connect()
+        await super().start(*args)
+    
+
+    @staticmethod
+    async def giphy(query: str):
+        url = f"https://giphy.com/search/{query}"
+        lst = []
+        async with session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                obj = str(soup.find(name="body"))
+                matches = re.finditer(giphy_pattern_regex, obj)
+                for match in matches:
+                    if match.group() not in lst:
+                        lst.append(match.group())
+                    if len(lst) == 15:
+                        break
+                return lst
+            else:
+                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
+    
+
+    @staticmethod
+    async def search(query: str) -> List[YouTubeSearchResult]:
+        params = {
+            "q": query,
+            "type": "video",
+            "part": "snippet",
+            "key": API_KEY,
+            "maxResults": 6,
+        }
+        async with session.get(f"{youtube_api_url}/search", params=params) as response:
+            if response.status == 200:
+                json = await response.json()
+                items = [YouTubeSearchResult(data) for data in json["items"]]
+            else:
+                items = []
+            return items
+    
+
+    @staticmethod
+    async def buffer(video_id: str) -> str:
+        for url in invidious_urls:
+            async with session.get(f"{url}/api/v1/videos/{video_id}") as response:
+                if response.status == 200:
+                    json = await response.json()
+                    sources = [adaptiveFormats["url"] for adaptiveFormats in json["adaptiveFormats"] if adaptiveFormats.get("encoding") == "opus"]
+                    return sources[0]
+                else:
+                    continue
+
+
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
-bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
+bot = Haruka(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
-if not hasattr(bot, "giphy"):
-    bot.giphy = giphy
-    print("HARUKA | Loaded bot.giphy")
-if not hasattr(bot, "db"):
-    bot.db = db()
-    print("HARUKA | Loaded bot.db")
+bot.db = db()
 
 
-# Initialize wavelink nodes
-async def start_nodes():
-    await bot.wait_until_ready()
-    if not hasattr(bot, "node"):
-        bot.node = await wavelink.NodePool.create_node(
-            bot = bot,
-            host = "127.0.0.1",
-            port = 2333,
-            password = os.environ["PASSWORD"],
-            region = "hongkong",
-        )
-        print("HARUKA | Loaded bot.node")
-bot.loop.create_task(start_nodes())
-
-
-# Music function within a channel
+# Music functions within a voice channel
 class Music:
     def __init__(self, channel: discord.VoiceChannel):
-        self.channel = channel
+        self._channel = channel
     
 
     @property
     async def queue(self) -> List[str]:
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{self.channel.id}';")
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM music WHERE id = '{self._channel.id}';")
         if not row:
-            await bot.db.conn.execute(f"INSERT INTO music VALUES ('{self.channel.id}', $1);", [])
+            await bot.db.conn.execute(f"INSERT INTO music VALUES ('{self._channel.id}', $1);", [])
             track_ids = []
         else:
             track_ids = row["queue"]
         return track_ids
     
 
-    @property
-    def player(self) -> Optional[wavelink.Player]:
-        return bot.node.get_player(self.channel.guild)
+    async def add(self, video_id: str) -> None:
+        await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{video_id}') WHERE id = '{self._channel.id}';")
     
 
-    async def connect(self) -> None:
-        if self.player and self.player.is_connected():
-            await self.player.disconnect(force=True)
-            await asyncio.sleep(0.6)
-        await self.channel.connect(cls=wavelink.Player)
-    
-
-    async def add(self, track: wavelink.YouTubeTrack) -> None:
-        await bot.db.conn.execute(f"UPDATE music SET queue = array_append(queue, '{track.id}') WHERE id = '{self.channel.id}';")
-            
-
-    async def remove(self, pos) -> Optional[wavelink.YouTubeTrack]:
+    async def remove(self, pos) -> Optional[str]:
         queue = await self.queue
         try:
-            track_id = queue[pos - 1]
+            video_id = queue[pos - 1]
         except KeyError:
             pass
         else:
-            await bot.db.conn.execute(f"UPDATE music SET queue = array_cat(queue[:{pos - 1}], queue[{pos + 1}:]) WHERE id = '{self.channel.id}';")
-            track = await bot.node.build_track(cls=wavelink.YouTubeTrack, identifier=track_id)
-            return track
+            await bot.db.conn.execute(f"UPDATE music SET queue = array_cat(queue[:{pos - 1}], queue[{pos + 1}:]) WHERE id = '{self._channel.id}';")
+            return video_id
     
 
-    async def play(self, track: wavelink.YouTubeTrack) -> None:
-        if self.player is not None:
-            await self.player.play(track)
-            await asyncio.sleep(0.4)
-            while self.player.is_connected() and self.player.position < track.length:
-                await asyncio.sleep(0.4)
+    async def connect(self) -> discord.VoiceClient:
+        vc = self._channel.guild.voice_client
+        if vc:
+            await vc.disconnect()
+            await asyncio.sleep(0.6)
+        return await self._channel.connect()
+    
+
+    def is_connected(self) -> bool:
+        return self._channel.guild.voice_client is not None and self._channel.guild.voice_client.channel.id == self._channel.id
+
+
+    async def disconnect(self) -> None:
+        if self.is_connected():
+            await self._channel.guild.voice_client.disconnect()
+
+
+    async def play(self, url: str) -> None:
+        for url in invidious_urls:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    vc = self._channel.guild.voice_client
+                    buffer = await response.read()
+                    audio = discord.FFmpegOpusAudio(buffer)
+                    vc.play(audio)
+                    break
+                else:
+                    continue
