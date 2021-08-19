@@ -133,13 +133,13 @@ async def prefix(bot, message):
 
 class Haruka(commands.Bot):
     async def start(self, *args, **kwargs):
-        await bot.db.connect()
-        bot.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
-        prelist = await bot.get_wordlist()
+        await self.db.connect()
+        self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
+        prelist = await self.get_wordlist()
         for word in prelist:
-            bot.wordlist.append(word.lower())
+            self.wordlist.append(word.lower())
         del prelist
-        print(f"HARUKA | Fetched wordlist with {len(bot.wordlist)} words.")
+        print(f"HARUKA | Fetched wordlist with {len(self.wordlist)} words.")
         await super().start(*args)
     
 
