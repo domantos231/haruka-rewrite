@@ -318,13 +318,9 @@ class Music:
 
 
     async def play(self, url: str) -> None:
-        for url in invidious_urls:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    vc = self._channel.guild.voice_client
-                    buffer = await response.read()
-                    audio = await discord.FFmpegOpusAudio.from_probe(buffer, method="fallback")
-                    vc.play(audio)
-                    break
-                else:
-                    continue
+        async with session.get(url) as response:
+            if response.status == 200:
+                vc = self._channel.guild.voice_client
+                buffer = await response.read()
+                audio = discord.FFmpegOpusAudio(buffer)
+                vc.play(audio)
