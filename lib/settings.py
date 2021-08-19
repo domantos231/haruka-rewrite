@@ -6,7 +6,6 @@ import gc
 import logging
 import os
 import re
-import wavelink
 import sys
 from io import BytesIO
 from bs4 import BeautifulSoup as bs
