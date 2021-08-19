@@ -1,6 +1,5 @@
 import asyncio
 import discord
-import wavelink
 from settings import *
 from discord.ext import commands
 

@@ -20,9 +20,6 @@ if len(sys.argv) == 1:
     discord_logger = logging.getLogger("discord")
     discord_logger.setLevel(logging.INFO)
     discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
-    wavelink_logger = logging.getLogger("wavelink")
-    wavelink_logger.setLevel(logging.INFO)
-    wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
 elif sys.argv[1] == "debug":
     logging.basicConfig(level=logging.INFO)
 gc.enable()
