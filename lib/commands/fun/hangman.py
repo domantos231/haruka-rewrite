@@ -22,25 +22,6 @@ class HangmanProgress:
         return self._word
 
 
-async def get_wordlist():
-    async with aiohttp.ClientSession() as startup_session:
-        async with startup_session.get("https://www.ef.com/wwen/english-resources/english-vocabulary/top-3000-words/") as response:
-            if response.status == 200:
-                html = await response.text()
-                soup = bs(html, "html.parser")
-                obj = soup.find(name="section", attrs={"class": "col-md-12"}).find_all("p")[1]
-                return obj.get_text(separator=r"%").split(r"%")
-            else:
-                print(f"HARUKA | Wordlist site retured status code {response.status}")
-                return ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
-
-
-prelist = asyncio.run(get_wordlist())
-wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
-for word in prelist:
-    wordlist.append(word.lower())
-
-
 @bot.command()
 async def hangman(cmd, n: int = 5):
     if n < 1:
@@ -50,9 +31,9 @@ async def hangman(cmd, n: int = 5):
         await cmd.send("Initial number of lives must not exceed 15.")
         return
     if cmd.author.id not in HangmanInProgress:
-        word = choice(wordlist)
+        word = choice(bot.wordlist)
         while len(word) < 3:
-            word = choice(wordlist)
+            word = choice(bot.wordlist)
         length = len(word)
         HangmanInProgress[cmd.author.id] = HangmanProgress(word, [], n)
         em = discord.Embed(

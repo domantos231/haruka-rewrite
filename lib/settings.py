@@ -64,25 +64,8 @@ class data:
         return EconomyPlayer(amt, time, bank, interest, pet, win, total)
 
 
-# Load all action commands' GIFs from giphy
+# Define giphy RegEx pattern
 giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
-async def giphy(query):
-    url = f"https://giphy.com/search/{query}"
-    lst = []
-    async with session.get(url) as response:
-        if response.status == 200:
-            html = await response.text()
-            soup = bs(html, "html.parser")
-            obj = str(soup.find(name="body"))
-            matches = re.finditer(giphy_pattern_regex, obj)
-            for match in matches:
-                if match.group() not in lst:
-                    lst.append(match.group())
-                if len(lst) == 15:
-                    break
-            return lst
-        else:
-            return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
 
 # asyncpg class for database connection
@@ -116,7 +99,6 @@ class db:
     async def close(self):
         error = 0
         print("HARUKA | Closing database connections...")
-        await asyncio.sleep(3.0)
         for connection in self._connection:
             try:
                 await connection.close()
@@ -149,32 +131,70 @@ async def prefix(bot, message):
         return "$" # No command invoke from on_message
 
 
+class Haruka(commands.Bot):
+    async def start(self, *args, **kwargs):
+        await bot.db.connect()
+        bot.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
+        prelist = await bot.get_wordlist()
+        for word in prelist:
+            bot.wordlist.append(word.lower())
+        del prelist
+        print(f"HARUKA | Fetched wordlist with {len(bot.wordlist)} words.")
+        await super().start(*args)
+    
+
+    @staticmethod
+    async def get_wordlist():
+        async with session.get("https://www.ef.com/wwen/english-resources/english-vocabulary/top-3000-words/") as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                obj = soup.find(name="section", attrs={"class": "col-md-12"}).find_all("p")[1]
+                return obj.get_text(separator=r"%").split(r"%")
+            else:
+                print(f"HARUKA | Wordlist site retured status code {response.status}")
+                return ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
+    
+
+    @staticmethod
+    async def giphy(query: str):
+        url = f"https://giphy.com/search/{query}"
+        lst = []
+        async with session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                obj = str(soup.find(name="body"))
+                matches = re.finditer(giphy_pattern_regex, obj)
+                for match in matches:
+                    if match.group() not in lst:
+                        lst.append(match.group())
+                    if len(lst) == 15:
+                        break
+                return lst
+            else:
+                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
+
+
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
-bot = commands.Bot(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
+bot = Haruka(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
 bot.remove_command("help")
-if not hasattr(bot, "giphy"):
-    bot.giphy = giphy
-    print("HARUKA | Loaded bot.giphy")
-if not hasattr(bot, "db"):
-    bot.db = db()
-    print("HARUKA | Loaded bot.db")
+bot.db = db()
 
 
 # Initialize wavelink nodes
 async def start_nodes():
     await bot.wait_until_ready()
-    if not hasattr(bot, "node"):
-        bot.node = await wavelink.NodePool.create_node(
-            bot = bot,
-            host = "127.0.0.1",
-            port = 2333,
-            password = os.environ["PASSWORD"],
-            region = "hongkong",
-        )
-        print("HARUKA | Loaded bot.node")
+    bot.node = await wavelink.NodePool.create_node(
+        bot = bot,
+        host = "127.0.0.1",
+        port = 2333,
+        password = os.environ["PASSWORD"],
+        region = "hongkong",
+    )
 bot.loop.create_task(start_nodes())
 
 

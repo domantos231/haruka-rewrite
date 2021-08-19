@@ -28,13 +28,11 @@ if __name__ == "__main__":
     @bot.event
     async def on_connect():
         print("HARUKA | Connected to Discord!")
-        if len(bot.db._connection) < 5:
-            await bot.db.connect()
 
 
     @bot.event
     async def on_ready():
-        print(f"HARUKA | Logged in as {bot.user}")
+        print(f"HARUKA | Logged in as {bot.user} | Running in {len(bot.guilds)} servers.")
 
 
     async def cancel():
@@ -46,7 +44,8 @@ if __name__ == "__main__":
     # Run bot
     try:
         bot.loop.run_until_complete(bot.start(TOKEN))
-    except:
+    except Exception as ex:
+        print(f"HARUKA | An exception occured: {ex}")
         bot.loop.run_until_complete(bot.close())
     finally:
         print("HARUKA | Terminating bot")
