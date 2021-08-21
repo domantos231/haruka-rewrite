@@ -36,7 +36,7 @@ class UrbanSearch:
 
 async def main(word):
     url = f"https://www.urbandictionary.com/define.php?term={word}"
-    async with session.get(url) as response:
+    async with bot.session.get(url) as response:
         if response.status == 200:
             html = await response.text()
             html = html.replace("<br/>", "\n").replace("\r", "\n")

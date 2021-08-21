@@ -31,7 +31,7 @@ class SearchResult:
 
 async def get(id):
     url = f"https://myanimelist.net/anime/{id}"
-    async with session.get(url) as response:
+    async with bot.session.get(url) as response:
         if response.status == 200:
             html = await response.text()
             soup = BeautifulSoup(html, "html.parser")
@@ -108,7 +108,7 @@ async def _anime(cmd, *, query):
         return
     rslt = []
     url = f"https://myanimelist.net/anime.php?q={query}"
-    async with session.get(url) as response:
+    async with bot.session.get(url) as response:
         if response.status == 200:
             html = await response.text()
             soup = BeautifulSoup(html, "html.parser")

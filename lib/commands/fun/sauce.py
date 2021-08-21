@@ -7,7 +7,7 @@ from settings import *
 
 async def get(src):
     lst = []
-    async with session.post("https://saucenao.com/search.php", data={"url": src}) as response:
+    async with bot.session.post("https://saucenao.com/search.php", data={"url": src}) as response:
         if response.status == 200:
             html = await response.text()
             soup = bs(html, "html.parser")

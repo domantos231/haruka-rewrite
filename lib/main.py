@@ -18,8 +18,6 @@ if __name__ == "__main__":
 
 
     async def cancel():
-        await session.close()
-        print("HARUKA | Side session closed.")
         await bot.db.close()
 
 

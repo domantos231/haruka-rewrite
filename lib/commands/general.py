@@ -24,9 +24,9 @@ async def info(cmd, *, user: discord.Member = None):
         color=0x2ECC71,
     )
     info_em.set_thumbnail(url=user.avatar_url)
-    if str(cmd.message.channel.type) == "private":
+    if isinstance(cmd.message.channel, discord.DMChannel):
         info_em.set_footer(text="From private channel")
-    elif str(cmd.message.channel.type) == "text":
+    elif isinstance(cmd.message.channel, discord.TextChannel):
         info_em.set_footer(text=f"From {cmd.message.guild}")
     await cmd.send(embed=info_em)
 
@@ -84,7 +84,7 @@ async def avatar_error(cmd, error):
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def svinfo(cmd):
-    if str(cmd.message.channel.type) == "text":
+    if isinstance(cmd.message.channel, discord.TextChannel):
         sv_em = discord.Embed(
             title="Server info",
             description="**Server name** "
@@ -97,7 +97,7 @@ async def svinfo(cmd):
         )
         sv_em.set_thumbnail(url=cmd.guild.icon_url)
         await cmd.send(embed=sv_em)
-    elif str(cmd.message.channel.type) == "private":
+    elif isinstance(cmd.message.channel, discord.DMChannel):
         await cmd.send(
             embed=discord.Embed(
                 title="Server info",
