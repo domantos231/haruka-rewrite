@@ -42,4 +42,4 @@ async def _play(cmd, *args):
             except AttributeError:
                 return
             queue = await channel.queue
-        await channel.player.disconnect()
+        await channel.player.disconnect(force=True)
