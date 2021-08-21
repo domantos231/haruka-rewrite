@@ -1,7 +1,6 @@
 import aiohttp
 import asyncio
 import discord
-import gc
 from bs4 import BeautifulSoup as bs
 from settings import *
 
@@ -58,15 +57,14 @@ async def _sauce(cmd, src = None):
 
 
         def check(reaction, user):
-            nonlocal msg
-            return str(reaction) in choices[:n] and reaction.message.id == msg.id and not user.bot
+            return reaction.message.id == msg.id and str(reaction) in choices[:n] and not user.bot
         
 
         async def active():
             while True:
                 done, pending = await asyncio.wait([bot.wait_for("reaction_add", check=check),
                                                     bot.wait_for("reaction_remove", check=check)],
-                                                    return_when=asyncio.FIRST_COMPLETED)
+                                                    return_when = asyncio.FIRST_COMPLETED)
                 reaction, user = done.pop().result()
                 no = choices.index(str(reaction))
                 await msg.edit(embed=results[no])
@@ -76,8 +74,6 @@ async def _sauce(cmd, src = None):
             await asyncio.wait_for(active(), timeout=300.0)
         except asyncio.TimeoutError:
             await msg.clear_reactions()
-            del msg, results
-            gc.collect()
             return
     else:
         await cmd.send("Cannot find the image sauce")
