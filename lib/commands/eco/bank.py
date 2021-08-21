@@ -8,7 +8,7 @@ from settings import *
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _bank(cmd):
     id = cmd.author.id
-    player = await data(id).player
+    player = await bot.get_player(id)
     if not player.time:
         player.time = dt.now()
         await bot.db.conn.execute(
@@ -28,7 +28,7 @@ async def _bank(cmd):
 @_bank.command(name="deposit")
 async def _deposit(cmd, arg):
     id = cmd.author.id
-    player = await data(id).player
+    player = await bot.get_player(id)
     if not player.time:
         player.time = dt.now()
         await bot.db.conn.execute(
@@ -59,7 +59,7 @@ async def _deposit(cmd, arg):
 @_bank.command(name="withdraw")
 async def _withdraw(cmd, arg):
     id = cmd.author.id
-    player = await data(id).player
+    player = await bot.get_player(id)
     if not player.time:
         player.time = dt.now()
         await bot.db.conn.execute(

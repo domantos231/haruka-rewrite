@@ -8,7 +8,7 @@ from settings import *
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _gamble(cmd, arg):
     id = cmd.author.id
-    player = await data(id).player
+    player = await bot.get_player(id)
     try:
         arg = int(arg)
     except ValueError:

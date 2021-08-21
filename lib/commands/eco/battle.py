@@ -21,7 +21,7 @@ async def _battle(cmd, mem: discord.Member=None):
         name_lst = [cmd.author.name, mem.name]
         try:
             for id in id_lst:
-                player = await data(id).player
+                player = await bot.get_player(id)
                 if not player:
                     raise NoPet
                 if sum(pet.amt for pet in player.pet) == 0:
@@ -78,7 +78,7 @@ async def _battle(cmd, mem: discord.Member=None):
                 for i in choice:
                     try:
                         i = int(i)
-                        player = await data(id).player
+                        player = await bot.get_player(id)
                         if player.pet[i].amt == 0:
                             raise ValueError
                         else:

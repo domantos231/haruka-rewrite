@@ -13,7 +13,7 @@ async def _gacha(cmd, n: int = 1):
         await cmd.send("The maximum number of rolls you can gacha at a time is 10.")
     else:
         id = str(cmd.author.id)
-        player = await data(id).player
+        player = await bot.get_player(id)
         if player.amt < n * 300:
             await cmd.send("Not enough money. Gacha costs `💲300`/turn")
         else:

@@ -29,7 +29,7 @@ async def on_message(message):
                 VALUES ('{id}', '$');
                 """)
     id = str(message.author.id)
-    if not await data(id).player:
+    if not await bot.get_player(id):
         await bot.db.conn.execute(
             f"INSERT INTO economy VALUES ('{id}', 300, NULL, 0, 1.01, $1, 0, 0)",
             [0 for i in range(52)]

@@ -41,29 +41,6 @@ choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 navigate = ["⬅️", "➡️"]
 
 
-# Load economy data from database
-class data:
-    def __init__(self, id):
-        self.id = id
-    
-
-    @property
-    async def player(self):
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{self.id}';")
-        if not row:
-            return None
-        amt = row["amt"]
-        time = row["time"]
-        bank = row["bank"]
-        interest = row["interest"]
-        pet = []
-        for obj in enumerate(row["pet"]):
-            pet.append(add_pet_data(obj[0], obj[1]))
-        win = row["win"]
-        total = row["total"]
-        return EconomyPlayer(amt, time, bank, interest, pet, win, total)
-
-
 # Define giphy RegEx pattern
 giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 
@@ -140,7 +117,7 @@ class Haruka(commands.Bot):
             self.wordlist.append(word.lower())
         del prelist
         print(f"HARUKA | Fetched wordlist with {len(self.wordlist)} words.")
-        await super().start(*args)
+        await super().start(*args, **kwargs)
     
 
     @staticmethod
@@ -175,6 +152,23 @@ class Haruka(commands.Bot):
             else:
                 return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
+
+    @staticmethod
+    async def get_player(id):
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{id}';")
+        if not row:
+            return None
+        amt = row["amt"]
+        time = row["time"]
+        bank = row["bank"]
+        interest = row["interest"]
+        pet = []
+        for obj in enumerate(row["pet"]):
+            pet.append(add_pet_data(obj[0], obj[1]))
+        win = row["win"]
+        total = row["total"]
+        return EconomyPlayer(amt, time, bank, interest, pet, win, total)
+    
 
 # Initialize bot
 intents = discord.Intents.default()
