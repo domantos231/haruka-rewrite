@@ -16,14 +16,15 @@ from load import *
 
 
 # Set up logging and garbage collector
-if len(sys.argv) == 2:
+if len(sys.argv) == 1:
     discord_logger = logging.getLogger("discord")
     discord_logger.setLevel(logging.INFO)
     discord_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
     wavelink_logger = logging.getLogger("wavelink")
     wavelink_logger.setLevel(logging.INFO)
     wavelink_logger.addHandler(logging.FileHandler(filename="log.txt", mode="a"))
-elif sys.argv[2] == "debug":
+elif sys.argv[1] == "debug":
+    print("HARUKA | Loading all INFO to stdout.")
     logging.basicConfig(level=logging.INFO)
 gc.enable()
 
@@ -184,9 +185,9 @@ async def start_nodes():
     await bot.wait_until_ready()
     bot.node = await wavelink.NodePool.create_node(
         bot = bot,
-        host = "127.0.0.1",
-        port = 2333,
-        password = os.environ["PASSWORD"],
+        host = "lava.link",
+        port = 80,
+        password = "anything as a password",
         region = "hongkong",
     )
 bot.loop.create_task(start_nodes())
