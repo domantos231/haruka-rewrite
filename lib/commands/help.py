@@ -79,12 +79,6 @@ class hangman(HelpEmbed):
     syntax = "hangman <initial number of lives|None>"
 
 
-class math(HelpEmbed):
-    title = "math"
-    description = "Do some math questions"
-    syntax = "math"
-
-
 class sauce(HelpEmbed):
     title = "sauce"
     description = "Search for the source of images (from pixiv, for example)"
@@ -223,7 +217,7 @@ class add(HelpEmbed):
     syntax = "add <searching query>"
 
 
-command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "math", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume", "stop", "add"]
+command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume", "stop", "add"]
 embed_class_list = HelpEmbed.__subclasses__()
 
 
@@ -242,7 +236,7 @@ async def _help(cmd, help_request = None):
             inline=False,
         )
         help_em.add_field(
-            name="✨ Fun", value="```8ball, anime, hangman, math, sauce, search, roll```", inline=False
+            name="✨ Fun", value="```8ball, anime, hangman, sauce, search, roll```", inline=False
         )
         help_em.add_field(
             name="💵 Economy",
@@ -256,7 +250,7 @@ async def _help(cmd, help_request = None):
         )
         help_em.add_field(
             name="🎶 Music",
-            value="```pause, play, queue, remove, resume, stop, add```",
+            value="```add, pause, play, queue, remove, resume, stop```",
             inline=False,
         )
         await cmd.send(embed=help_em)
