@@ -229,6 +229,8 @@ class Music:
         queue = await self.queue
         try:
             track_id = queue[pos - 1]
+            if pos < 1:
+                raise IndexError
         except IndexError:
             pass
         else:
