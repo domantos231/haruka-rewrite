@@ -16,17 +16,18 @@ async def _play(cmd, *args):
         if len(queue) == 0:
             return await cmd.send("Please add a song to the queue.")
         await channel.connect()
-        await cmd.send(f"Connected to **{channel.channel}**")
-        if "loop" in args:
-            await cmd.send("Playing the current queue in a loop. Any started song will be added back to the queue.")
-            loop = True
+        loop = "loop" in args
+        verbose = "verbose" in args
+        status = ""
+        if loop:
+            status += "**Loop**: ON | Any started songs will be added back to the queue.\n"
         else:
-            loop = False
-        if "verbose" in args:
-            await cmd.send("Playing in verbose mode. Songs will be displayed before starting.")
-            verbose = True
+            status += "**Loop**: OFF"
+        if verbose:
+            status += "**Verbose**: ON | Song details will be displayed before playing.\n"
         else:
-            verbose = False
+            status += "**Verbose**: OFF"
+        await cmd.send(f"Connected to **{channel.channel}**\n{status}")
         while len(queue) > 0 and channel.player.is_connected():
             track = await channel.remove(1)
             if loop:
