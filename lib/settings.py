@@ -229,7 +229,7 @@ class Music:
         queue = await self.queue
         try:
             track_id = queue[pos - 1]
-        except KeyError:
+        except IndexError:
             pass
         else:
             await bot.db.conn.execute(f"UPDATE music SET queue = array_cat(queue[:{pos - 1}], queue[{pos + 1}:]) WHERE id = '{self.channel.id}';")
