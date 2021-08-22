@@ -4,7 +4,7 @@ from settings import *
 
 
 @bot.command(name="account", aliases=["acc"])
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _account(cmd, user: discord.Member = None):
     if user == None:
         user = cmd.author

@@ -5,7 +5,7 @@ from settings import *
 
 
 @bot.command(name="dice")
-@commands.cooldown(1, 6, commands.BucketType.user)
+@commands.cooldown(1, 10, commands.BucketType.user)
 async def _dice(cmd, arg):
     id = cmd.author.id
     player = await bot.get_player(id)

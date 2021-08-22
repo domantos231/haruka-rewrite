@@ -6,7 +6,7 @@ from settings import *
 
 
 @bot.command(name="loli")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _loli(cmd):
     loli = await bot.giphy("anime-loli")
     fbi = await bot.giphy("fbi")

@@ -101,7 +101,7 @@ async def get(id):
 
 
 @bot.command(name="anime")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _anime(cmd, *, query):
     if len(query) < 3:
         await cmd.send(f"Search query must have at least 3 characters")

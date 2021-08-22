@@ -5,7 +5,7 @@ from settings import *
 
 
 @bot.command(name="gacha")
-@commands.cooldown(1, 15, commands.BucketType.user)
+@commands.cooldown(1, 20, commands.BucketType.user)
 async def _gacha(cmd, n: int = 1):
     if n < 1:
         raise commands.UserInputError

@@ -14,7 +14,7 @@ async def addbot(cmd):
 
 
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def info(cmd, *, user: discord.Member = None):
     if user is None:
         user = cmd.author
@@ -32,7 +32,7 @@ async def info(cmd, *, user: discord.Member = None):
 
 
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.guild)
 @commands.has_permissions(administrator=True) # This also blocks prefix changing in DM channels
 async def prefix(cmd, *, arg = None):
     id = cmd.guild.id
@@ -53,7 +53,7 @@ async def say(cmd, *, arg):
 
 
 @bot.command(aliases=["ava"])
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.channel)
 async def avatar(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
@@ -65,7 +65,7 @@ async def avatar(cmd, *, user: discord.User = None):
 
 
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.channel)
 async def svinfo(cmd):
     if isinstance(cmd.message.channel, discord.TextChannel):
         sv_em = discord.Embed(

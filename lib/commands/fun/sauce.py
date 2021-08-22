@@ -40,7 +40,7 @@ async def get(src):
 
 
 @bot.command(name="sauce")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _sauce(cmd, src = None):
     if src is None:
         try:

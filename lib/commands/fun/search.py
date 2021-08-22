@@ -59,7 +59,7 @@ async def main(word):
 
 
 @bot.command(name="search")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _search(cmd, *, query):
     result = await main(query)
     if result is not None:

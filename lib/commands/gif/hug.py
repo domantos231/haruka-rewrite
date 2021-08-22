@@ -6,7 +6,7 @@ from settings import *
 
 
 @bot.command(name="hug")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _hug(cmd, user: discord.User = None):
     if user is None:
         await cmd.send(f"Who do you want to hug, {cmd.author.name}?")

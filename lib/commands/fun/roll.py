@@ -4,7 +4,7 @@ from settings import *
 
 
 @bot.command(name="roll")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _roll(cmd, i: int, j: int):
     if i < j:
         ans = randint(i, j)

@@ -7,7 +7,7 @@ from settings import *
 
 
 @bot.command(name="card")
-@commands.cooldown(1, 6, commands.BucketType.user)
+@commands.cooldown(1, 10, commands.BucketType.user)
 async def _card(cmd, n: int = 1):
     if n < 1 or n > 8:
         return await cmd.send("Invalid card number (must be from 1 to 8).")
