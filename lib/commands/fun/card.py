@@ -15,8 +15,12 @@ async def _card(cmd, n: int = 1):
     if n < 1 or n > 8:
         return await cmd.send("Invalid card number (must be from 1 to 8).")
     empty = Image.new("RGBA", (80 * n, 100))
+    lst = []
     for i in range(n):
         f = random.choice(cardlist)
+        while f in lst:
+            f = random.choice(cardlist)
+        lst.append(f)
         img = Image.open(f"{assets_dir}/{f}")
         empty.paste(img, (80 * i, 0, 80 * i + 80, 100))
     empty.save(f"{assets_dir}/{cmd.message.id}.png")
