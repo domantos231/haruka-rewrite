@@ -500,7 +500,7 @@ class EconomyPlayer:
         self.total = total
 
 
-cardlist = [f for f in os.listdir(f"./lib/assets")]
+cardlist = [f for f in os.listdir(f"./lib/assets/cards")]
 
 
 class PlayingCard:
@@ -526,7 +526,7 @@ class PlayingCard:
 
     @property
     def image(self) -> Image:
-        return Image.open(f"./lib/assets/{self.filename}")
+        return Image.open(f"./lib/assets/cards/{self.filename}")
 
 
     @classmethod
