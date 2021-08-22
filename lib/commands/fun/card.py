@@ -14,7 +14,6 @@ cardlist = [f for f in os.listdir(assets_dir)]
 async def _card(cmd, n: int = 1):
     if n < 1 or n > 6:
         return await cmd.send("Invalid card number (must be from 1 to 6).")
-    lst = []
     empty = Image.new("RGBA", (80 * n, 100))
     for i in range(n):
         f = random.choice(cardlist)
