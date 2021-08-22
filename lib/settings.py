@@ -24,10 +24,6 @@ TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 
-# Define assets directory
-assets_dir = "./lib/assets"
-
-
 # Define frequently used emoji lists
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]

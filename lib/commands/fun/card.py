@@ -6,26 +6,20 @@ from discord.ext import commands
 from settings import *
 
 
-cardlist = [f for f in os.listdir(assets_dir)]
-
-
 @bot.command(name="card")
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _card(cmd, n: int = 1):
     if n < 1 or n > 8:
         return await cmd.send("Invalid card number (must be from 1 to 8).")
-    empty = Image.new("RGBA", (80 * n, 100))
-    lst = []
+    ignore = []
+    cards = []
     for i in range(n):
-        f = random.choice(cardlist)
-        while f in lst:
-            f = random.choice(cardlist)
-        lst.append(f)
-        img = Image.open(f"{assets_dir}/{f}")
-        empty.paste(img, (80 * i, 0, 80 * i + 80, 100))
-    empty.save(f"{assets_dir}/{cmd.message.id}.png")
-    file = discord.File(f"{assets_dir}/{cmd.message.id}.png", filename = "image.png")
+        card = PlayingCard.draw(ignore)
+        ignore.append(card.filename)
+        cards.append(card)
+    PlayingHand(cards).image.save(f"./lib/assets/{cmd.message.id}.png")
+    file = discord.File(f"./lib/assets/{cmd.message.id}.png", filename = "image.png")
     embed = discord.Embed(title=f"{cmd.author.name} drew {n} card(s)!", color=0x2ECC71)
     embed.set_image(url="attachment://image.png")
     await cmd.send(file=file, embed=embed)
-    os.remove(f"{assets_dir}/{cmd.message.id}.png")
+    os.remove(f"./lib/assets/{cmd.message.id}.png")
