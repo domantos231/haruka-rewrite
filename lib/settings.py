@@ -40,7 +40,7 @@ giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 
 # asyncpg class for database connection
 class db:
-    _maximum_connections = 3
+    _maximum_connections = 10
     def __init__(self):
         self.count = -1
         self._connection = []
