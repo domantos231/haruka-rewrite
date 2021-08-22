@@ -6,6 +6,7 @@ import gc
 import logging
 import os
 import re
+import sys
 import wavelink
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
@@ -36,7 +37,7 @@ giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 
 # asyncpg class for database connection
 class db:
-    _maximum_connections = 10
+    _maximum_connections = int(sys.argv[1])
     def __init__(self):
         self.count = -1
         self._connection = []
