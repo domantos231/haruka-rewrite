@@ -219,7 +219,7 @@ class add(HelpEmbed):
 
 class card(HelpEmbed):
     title = "card"
-    description = "Draw from 1 or 6 cards"
+    description = "Draw some cards"
     syntax = "card <integer>"
 
 
