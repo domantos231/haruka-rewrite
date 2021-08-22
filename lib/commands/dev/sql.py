@@ -4,9 +4,8 @@ from settings import *
 
 
 @bot.command(name="sql")
+@commands.is_owner()
 async def _sql(cmd, *, query):
-    if not await bot.is_owner(cmd.author):
-        return await cmd.send("This command is available for developers only.")
     try:
         start = dt.now()
         await bot.db.conn.execute(query)
