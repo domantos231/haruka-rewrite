@@ -24,6 +24,10 @@ TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 
+# Define assets directory
+assets_dir = "./lib/assets"
+
+
 # Define frequently used emoji lists
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
@@ -36,7 +40,7 @@ giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 
 # asyncpg class for database connection
 class db:
-    _maximum_connections = 10
+    _maximum_connections = 3
     def __init__(self):
         self.count = -1
         self._connection = []
