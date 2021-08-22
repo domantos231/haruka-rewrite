@@ -49,9 +49,3 @@ async def _8ball(cmd, *, arg):
             await cmd.send("Most likely.")
     else:
         await cmd.send("Concentrate and ask again.")
-
-
-@_8ball.error
-async def _8ball_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please ask me something")

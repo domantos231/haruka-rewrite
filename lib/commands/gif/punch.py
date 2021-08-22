@@ -19,9 +19,3 @@ async def _punch(cmd, user: discord.User = None):
         await cmd.send(embed=em)
         del gifs, em
         gc.collect()
-
-
-@_punch.error
-async def punch_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

@@ -58,9 +58,3 @@ async def _gacha(cmd, n: int = 1):
             for key in display.keys():
                 gacha_em.add_field(name=f"{key} units", value=display[key], inline=False)
             await cmd.send(embed=gacha_em)
-
-
-@_gacha.error
-async def gacha_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

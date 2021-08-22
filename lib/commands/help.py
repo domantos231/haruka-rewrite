@@ -265,10 +265,3 @@ async def _help(cmd, help_request = None):
         await cmd.send(embed=embed_class_list[index](cmd.prefix).display)
     else:
         await cmd.send(f"No help found for `{help_request.lower()}`. Please do not use command aliases when trying to get help.")
-        
-
-
-@_help.error
-async def help_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

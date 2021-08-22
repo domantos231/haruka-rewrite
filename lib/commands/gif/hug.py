@@ -19,9 +19,3 @@ async def _hug(cmd, user: discord.User = None):
         await cmd.send(embed=em)
         del gifs, em
         gc.collect()
-
-
-@_hug.error
-async def hug_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

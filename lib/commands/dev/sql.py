@@ -15,9 +15,3 @@ async def _sql(cmd, *, query):
         await cmd.send(f"An exception occured: {ex}")
     else:
         await cmd.send(f"Process executed in {end - start}")
-
-
-@_sql.error
-async def sql_error(cmd, error):
-    if isinstance(error, comamnds.UserInputError):
-        await cmd.send("Please check your input again.")

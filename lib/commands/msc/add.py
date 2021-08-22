@@ -48,11 +48,3 @@ async def _add(cmd, *, query):
             em.set_thumbnail(url=track.thumb)
             await msg.delete()
             await cmd.send(embed=em)
-
-
-@_add.error
-async def add_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please provide a searching query.")
-    else:
-        print(error)

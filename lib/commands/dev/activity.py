@@ -27,11 +27,3 @@ async def _listening(cmd, *, desc):
 @_activity.command(name="custom")
 async def _custom(cmd, *, desc):
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name=desc))
-
-
-@_activity.error
-async def activity_error(cmd, error):
-    if isinstance(error, commands.NotOwner):
-        await cmd.send("This command is available for developers only.")
-    elif isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again")

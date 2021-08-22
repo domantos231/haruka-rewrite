@@ -177,9 +177,3 @@ async def _battle(cmd, mem: discord.Member=None):
                 await msg.edit(embed=lst[0])
                 await msg.clear_reactions()
                 return
-
-
-@_battle.error
-async def battle_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

@@ -19,9 +19,3 @@ async def _kiss(cmd, user: discord.User = None):
         await cmd.send(embed=em)
         del gifs, em
         gc.collect()
-
-
-@_kiss.error
-async def kiss_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

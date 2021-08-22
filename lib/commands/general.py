@@ -31,12 +31,6 @@ async def info(cmd, *, user: discord.Member = None):
     await cmd.send(embed=info_em)
 
 
-@info.error
-async def info_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
-
-
 @bot.command()
 @commands.cooldown(1, 3, commands.BucketType.user)
 @commands.has_permissions(administrator=True) # This also blocks prefix changing in DM channels
@@ -51,11 +45,6 @@ async def prefix(cmd, *, arg = None):
         WHERE id = '{id}';
         """)
         await cmd.send(f"Prefix has been set to `{arg}`")
-
-
-@prefix.error
-async def prefix_error(cmd, error):
-    await cmd.send("You can ping me to get prefix anytime! Changing prefix in a server requires `Administrator` permission.")
 
 
 @bot.command()
@@ -73,12 +62,6 @@ async def avatar(cmd, *, user: discord.User = None):
     )
     ava_em.set_image(url=user.avatar_url)
     await cmd.send(embed=ava_em)
-
-
-@avatar.error
-async def avatar_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
 
 
 @bot.command()

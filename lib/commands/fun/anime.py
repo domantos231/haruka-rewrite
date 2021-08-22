@@ -154,9 +154,3 @@ async def _anime(cmd, *, query):
         await cmd.send(embed=em)
         del em, id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
         gc.collect()
-
-
-@_anime.error
-async def anime_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again")

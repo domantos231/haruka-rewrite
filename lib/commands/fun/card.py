@@ -29,11 +29,3 @@ async def _card(cmd, n: int = 1):
     embed.set_image(url="attachment://image.png")
     await cmd.send(file=file, embed=embed)
     os.remove(f"{assets_dir}/{cmd.message.id}.png")
-
-
-@_card.error
-async def card_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
-    else:
-        print(f"HARUKA | '{cmd.message.content}': {error}")

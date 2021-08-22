@@ -39,9 +39,3 @@ async def _dice(cmd, arg):
             SET amt = {player.amt}
             WHERE id = '{id}';
             """)
-
-
-@_dice.error
-async def dice_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
