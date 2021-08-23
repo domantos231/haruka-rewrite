@@ -22,11 +22,11 @@ async def _play(cmd, *args):
         if loop:
             status += "**Loop**: ON | Any started songs will be added back to the queue.\n"
         else:
-            status += "**Loop**: OFF"
+            status += "**Loop**: OFF\n"
         if verbose:
             status += "**Verbose**: ON | Song details will be displayed before playing.\n"
         else:
-            status += "**Verbose**: OFF"
+            status += "**Verbose**: OFF\n"
         await cmd.send(f"Connected to **{channel.channel}**\n{status}")
         while len(queue) > 0 and channel.player.is_connected():
             track = await channel.remove(1)
@@ -42,4 +42,4 @@ async def _play(cmd, *args):
             except AttributeError:
                 return
             queue = await channel.queue
-        await channel.player.disconnect()
+        await channel.player.disconnect(force=True)

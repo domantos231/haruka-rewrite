@@ -75,9 +75,3 @@ async def _pet(cmd, user: discord.Member=None):
             del names, values
             gc.collect()
             return
-
-
-@_pet.error
-async def pet_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

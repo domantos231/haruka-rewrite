@@ -127,10 +127,10 @@ class gacha(HelpEmbed):
     syntax = "gacha <number of rolls|None>"
 
 
-class gamble(HelpEmbed):
-    title = "gamble"
-    description = "Spend some money for gambling"
-    syntax = "gamble <amount>"
+class dice(HelpEmbed):
+    title = "dice"
+    description = "Roll a dice and compete with the bot"
+    syntax = "dice <amount>"
 
 
 class pet(HelpEmbed):
@@ -217,7 +217,13 @@ class add(HelpEmbed):
     syntax = "add <searching query>"
 
 
-command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "gamble", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume", "stop", "add"]
+class card(HelpEmbed):
+    title = "card"
+    description = "Draw some cards"
+    syntax = "card <integer>"
+
+
+command_list = ["addbot", "avatar", "help", "info", "prefix", "say", "svinfo", "8ball", "anime", "hangman", "sauce", "search", "roll", "account", "bank", "battle", "daily", "gacha", "dice", "pet", "cry", "girl", "hug", "kiss", "loli", "punch", "pause", "play", "queue", "remove", "resume", "stop", "add", "card"]
 embed_class_list = HelpEmbed.__subclasses__()
 
 
@@ -236,11 +242,11 @@ async def _help(cmd, help_request = None):
             inline=False,
         )
         help_em.add_field(
-            name="✨ Fun", value="```8ball, anime, hangman, sauce, search, roll```", inline=False
+            name="✨ Fun", value="```8ball, anime, card, hangman, sauce, search, roll```", inline=False
         )
         help_em.add_field(
             name="💵 Economy",
-            value="```account, bank, battle, daily, gacha, gamble, pet```",
+            value="```account, bank, battle, daily, dice, gacha, pet```",
             inline=False,
         )
         help_em.add_field(
@@ -259,10 +265,3 @@ async def _help(cmd, help_request = None):
         await cmd.send(embed=embed_class_list[index](cmd.prefix).display)
     else:
         await cmd.send(f"No help found for `{help_request.lower()}`. Please do not use command aliases when trying to get help.")
-        
-
-
-@_help.error
-async def help_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

@@ -18,11 +18,3 @@ async def _remove(cmd, n: int = 1):
             await cmd.send(embed=em)
         else:
             await cmd.send("No song with this position.")
-
-
-@_remove.error
-async def remove_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again")
-    else:
-        print(error)

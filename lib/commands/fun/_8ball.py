@@ -4,7 +4,7 @@ from settings import *
 
 
 @bot.command(name="8ball")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _8ball(cmd, *, arg):
     if arg.lower().startswith(("what", "which", "why", "when", "how", "where", "who")):
         await cmd.send("Please ask another question.")
@@ -49,9 +49,3 @@ async def _8ball(cmd, *, arg):
             await cmd.send("Most likely.")
     else:
         await cmd.send("Concentrate and ask again.")
-
-
-@_8ball.error
-async def _8ball_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please ask me something")

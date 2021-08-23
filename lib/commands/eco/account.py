@@ -4,7 +4,7 @@ from settings import *
 
 
 @bot.command(name="account", aliases=["acc"])
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _account(cmd, user: discord.Member = None):
     if user == None:
         user = cmd.author
@@ -39,9 +39,3 @@ async def _account(cmd, user: discord.Member = None):
         )
         em.set_footer(text="This command does not show pet list")
         await cmd.send(embed=em)
-
-
-@_account.error
-async def account_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

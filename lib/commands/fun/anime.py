@@ -31,7 +31,7 @@ class SearchResult:
 
 async def get(id):
     url = f"https://myanimelist.net/anime/{id}"
-    async with session.get(url) as response:
+    async with bot.session.get(url) as response:
         if response.status == 200:
             html = await response.text()
             soup = BeautifulSoup(html, "html.parser")
@@ -101,14 +101,14 @@ async def get(id):
 
 
 @bot.command(name="anime")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _anime(cmd, *, query):
     if len(query) < 3:
         await cmd.send(f"Search query must have at least 3 characters")
         return
     rslt = []
     url = f"https://myanimelist.net/anime.php?q={query}"
-    async with session.get(url) as response:
+    async with bot.session.get(url) as response:
         if response.status == 200:
             html = await response.text()
             soup = BeautifulSoup(html, "html.parser")
@@ -154,9 +154,3 @@ async def _anime(cmd, *, query):
         await cmd.send(embed=em)
         del em, id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
         gc.collect()
-
-
-@_anime.error
-async def anime_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again")

@@ -1,5 +1,9 @@
-from copy import deepcopy
 import math
+import os
+import random
+from PIL import Image
+from typing import *
+from copy import deepcopy
 
 
 class Pet:
@@ -494,3 +498,59 @@ class EconomyPlayer:
         self.pet = pet
         self.win = win
         self.total = total
+
+
+cardlist = [f for f in os.listdir(f"./lib/assets/cards")]
+
+
+class PlayingCard:
+    def __init__(self, filename: str):
+        self._filename = filename
+        self.id = filename.split(".")[0]
+    
+
+    @property
+    def filename(self):
+        return self._filename
+    
+
+    @property
+    def value(self) -> int:
+        return int(self.id[:-1])
+    
+
+    @property
+    def suit(self) -> int:
+        return ["a", "b", "c", "d"].index(self.id[-1:])
+    
+
+    @property
+    def image(self) -> Image:
+        return Image.open(f"./lib/assets/cards/{self.filename}")
+
+
+    @classmethod
+    def draw(cls, ignore: List[str] = []):
+        f = random.choice(cardlist)
+        while f in ignore:
+            f = random.choice(cardlist)
+        return cls(f)
+
+
+class PlayingHand:
+    def __init__(self, cards: List[PlayingCard]):
+        self._cards = cards
+    
+
+    @property
+    def cards(self) -> List[PlayingCard]:
+        return self._cards
+    
+
+    @property
+    def image(self) -> Image:
+        n = len(self.cards)
+        empty = Image.new("RGBA", (80 * n, 100))
+        for card in enumerate(self.cards):
+            empty.paste(card[1].image, (80 * card[0], 0, 80 * card[0] + 80, 100))
+        return empty

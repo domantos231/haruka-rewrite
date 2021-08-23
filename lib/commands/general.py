@@ -14,7 +14,7 @@ async def addbot(cmd):
 
 
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def info(cmd, *, user: discord.Member = None):
     if user is None:
         user = cmd.author
@@ -24,21 +24,15 @@ async def info(cmd, *, user: discord.Member = None):
         color=0x2ECC71,
     )
     info_em.set_thumbnail(url=user.avatar_url)
-    if str(cmd.message.channel.type) == "private":
+    if isinstance(cmd.message.channel, discord.DMChannel):
         info_em.set_footer(text="From private channel")
-    elif str(cmd.message.channel.type) == "text":
+    elif isinstance(cmd.message.channel, discord.TextChannel):
         info_em.set_footer(text=f"From {cmd.message.guild}")
     await cmd.send(embed=info_em)
 
 
-@info.error
-async def info_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
-
-
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.guild)
 @commands.has_permissions(administrator=True) # This also blocks prefix changing in DM channels
 async def prefix(cmd, *, arg = None):
     id = cmd.guild.id
@@ -53,18 +47,13 @@ async def prefix(cmd, *, arg = None):
         await cmd.send(f"Prefix has been set to `{arg}`")
 
 
-@prefix.error
-async def prefix_error(cmd, error):
-    await cmd.send("You can ping me to get prefix anytime! Changing prefix in a server requires `Administrator` permission.")
-
-
 @bot.command()
 async def say(cmd, *, arg):
     await cmd.send(arg)
 
 
 @bot.command(aliases=["ava"])
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 3, commands.BucketType.channel)
 async def avatar(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
@@ -75,16 +64,10 @@ async def avatar(cmd, *, user: discord.User = None):
     await cmd.send(embed=ava_em)
 
 
-@avatar.error
-async def avatar_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")
-
-
 @bot.command()
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.channel)
 async def svinfo(cmd):
-    if str(cmd.message.channel.type) == "text":
+    if isinstance(cmd.message.channel, discord.TextChannel):
         sv_em = discord.Embed(
             title="Server info",
             description="**Server name** "
@@ -97,7 +80,7 @@ async def svinfo(cmd):
         )
         sv_em.set_thumbnail(url=cmd.guild.icon_url)
         await cmd.send(embed=sv_em)
-    elif str(cmd.message.channel.type) == "private":
+    elif isinstance(cmd.message.channel, discord.DMChannel):
         await cmd.send(
             embed=discord.Embed(
                 title="Server info",

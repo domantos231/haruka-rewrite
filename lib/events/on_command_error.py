@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from settings import *
 
@@ -24,8 +25,16 @@ async def on_command_error(cmd, error):
         if seconds > 0:
             time += " {:.2f}s".format(seconds)
         msg = await cmd.send(f"⏱️ <@!{cmd.author.id}> This command is on cooldown!\nYou can use it after**{time}**!")
-        await msg.delete(delay = error.retry_after)
-    elif hasattr(cmd.command, "on_error"):
-        pass
+        if seconds < 1800:
+            await msg.delete(delay = error.retry_after)
+    elif isinstance(error, commands.NotOwner):
+        await cmd.send("💻 This command is available for developers only.")
+    elif isinstance(error, commands.MissingPermissions):
+        await cmd.send("🚫 You do not have the permission to invoke this command.")
+    elif isinstance(error, commands.UserInputError):
+        await cmd.send("📜 Please check your input again.")
+    elif isinstance(error, commands.CommandInvokeError):
+        await cmd.send(f"🔧 An error occurred:\n```\n{error.original}\n```\nIf this is a bug, hopefully it will be removed in the future 😉")
+        print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")
     else:
-        print(f"HARUKA | ['{cmd.message.content}'] {error}")
+        print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")

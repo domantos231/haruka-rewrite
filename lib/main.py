@@ -1,28 +1,10 @@
 ﻿import asyncio
-import subprocess
-import multiprocessing
-import sys
-from time import sleep
-
-
-def lavalink_start():
-    subprocess.call("java -jar Lavalink.jar", shell=True)
 
 
 if __name__ == "__main__":
     from settings import *
     from events import *
     from commands import *
-
-
-    # Run lavalink server
-    multiprocessing.set_start_method("spawn")
-    p = multiprocessing.Process(target=lavalink_start)
-    p.start()
-    waiting_time = float(sys.argv[1])
-    print(f"HARUKA | Bot will start after {waiting_time} seconds.")
-    sleep(waiting_time)
-    print("HARUKA | Starting bot...")
 
 
     @bot.event
@@ -36,8 +18,6 @@ if __name__ == "__main__":
 
 
     async def cancel():
-        await session.close()
-        print("HARUKA | Side session closed.")
         await bot.db.close()
 
 

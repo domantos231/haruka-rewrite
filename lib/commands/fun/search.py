@@ -36,7 +36,7 @@ class UrbanSearch:
 
 async def main(word):
     url = f"https://www.urbandictionary.com/define.php?term={word}"
-    async with session.get(url) as response:
+    async with bot.session.get(url) as response:
         if response.status == 200:
             html = await response.text()
             html = html.replace("<br/>", "\n").replace("\r", "\n")
@@ -59,7 +59,7 @@ async def main(word):
 
 
 @bot.command(name="search")
-@commands.cooldown(1, 3, commands.BucketType.user)
+@commands.cooldown(1, 6, commands.BucketType.user)
 async def _search(cmd, *, query):
     result = await main(query)
     if result is not None:
@@ -70,9 +70,3 @@ async def _search(cmd, *, query):
         await cmd.send(embed=em)
     else:
         await cmd.send("No matching result was found.")
-
-
-@_search.error
-async def search_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again")

@@ -123,9 +123,3 @@ async def hangman(cmd, n: int = 5):
                 if display == word:
                     await message.channel.send(f"<@!{cmd.author.id}> won Hangman Game! ✨✨")
                     del HangmanInProgress[cmd.author.id]
-
-
-@hangman.error
-async def hangman_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

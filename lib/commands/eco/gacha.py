@@ -5,7 +5,7 @@ from settings import *
 
 
 @bot.command(name="gacha")
-@commands.cooldown(1, 15, commands.BucketType.user)
+@commands.cooldown(1, 20, commands.BucketType.user)
 async def _gacha(cmd, n: int = 1):
     if n < 1:
         raise commands.UserInputError
@@ -58,9 +58,3 @@ async def _gacha(cmd, n: int = 1):
             for key in display.keys():
                 gacha_em.add_field(name=f"{key} units", value=display[key], inline=False)
             await cmd.send(embed=gacha_em)
-
-
-@_gacha.error
-async def gacha_error(cmd, error):
-    if isinstance(error, commands.UserInputError):
-        await cmd.send("Please check your input again.")

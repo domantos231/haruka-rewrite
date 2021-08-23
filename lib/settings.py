@@ -6,8 +6,8 @@ import gc
 import logging
 import os
 import re
-import wavelink
 import sys
+import wavelink
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
 from discord.ext import tasks, commands
@@ -16,15 +16,13 @@ from load import *
 
 
 # Set up logging and garbage collector
-logging.basicConfig(level=logging.INFO)    
+logging.basicConfig(level=logging.INFO)
 gc.enable()
 
 
-# Initialize root path and side session
+# Initialize environment variables
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
-session = aiohttp.ClientSession()
-root = os.getcwd()
 
 
 # Define frequently used emoji lists
@@ -39,13 +37,14 @@ giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 
 # asyncpg class for database connection
 class db:
+    _maximum_connections = int(sys.argv[1])
     def __init__(self):
         self.count = -1
         self._connection = []
 
     
     async def connect(self):
-        for i in range(5):
+        for i in range(self._maximum_connections):
             try:
                 connection = await asyncpg.connect(DATABASE_URL)
             except:
@@ -79,7 +78,7 @@ class db:
 
     @property
     def conn(self):
-        if self.count == 4:
+        if self.count == self._maximum_connections - 1:
             self.count = 0
         else:
             self.count += 1
@@ -87,9 +86,9 @@ class db:
 
 
 async def prefix(bot, message):
-    if str(message.channel.type) == "private":
+    if isinstance(message.channel, discord.DMChannel):
         return "$"
-    elif str(message.channel.type) == "text":
+    elif isinstance(message.channel, discord.TextChannel):
         id = str(message.guild.id)
         row = await bot.db.conn.fetchrow(f"SELECT * FROM prefix WHERE id = '{id}';")
         if not row:
@@ -104,32 +103,32 @@ class Haruka(commands.Bot):
     async def start(self, *args, **kwargs):
         await self.db.connect()
         self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
-        prelist = await self.get_wordlist()
-        for word in prelist:
-            self.wordlist.append(word.lower())
-        del prelist
-        print(f"HARUKA | Fetched wordlist with {len(self.wordlist)} words.")
-        await super().start(*args, **kwargs)
+        async with aiohttp.ClientSession() as session:
+            self.session = session
+            prelist = await self.get_wordlist()
+            for word in prelist:
+                self.wordlist.append(word.lower())
+            del prelist
+            print(f"HARUKA | Fetched wordlist with {len(self.wordlist)} words.")
+            await super().start(*args, **kwargs)
     
 
-    @staticmethod
-    async def get_wordlist():
-        async with session.get("https://www.ef.com/wwen/english-resources/english-vocabulary/top-3000-words/") as response:
+    async def get_wordlist(self):
+        async with self.session.get("https://www.ef.com/wwen/english-resources/english-vocabulary/top-3000-words/") as response:
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
                 obj = soup.find(name="section", attrs={"class": "col-md-12"}).find_all("p")[1]
                 return obj.get_text(separator=r"%").split(r"%")
             else:
-                print(f"HARUKA | Wordlist site retured status code {response.status}")
+                print(f"HARUKA | Wordlist site retured status code {response.status}. Using default words.")
                 return ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
     
 
-    @staticmethod
-    async def giphy(query: str):
+    async def giphy(self, query: str):
         url = f"https://giphy.com/search/{query}"
         lst = []
-        async with session.get(url) as response:
+        async with self.session.get(url) as response:
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
@@ -176,9 +175,9 @@ async def start_nodes():
     await bot.wait_until_ready()
     bot.node = await wavelink.NodePool.create_node(
         bot = bot,
-        host = "127.0.0.1",
-        port = 2333,
-        password = os.environ["PASSWORD"],
+        host = "lava.link",
+        port = 80,
+        password = "anything as a password",
         region = "hongkong",
     )
 bot.loop.create_task(start_nodes())

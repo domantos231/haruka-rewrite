@@ -4,9 +4,8 @@ from settings import *
 
 
 @bot.command(name="sql")
+@commands.is_owner()
 async def _sql(cmd, *, query):
-    if not await bot.is_owner(cmd.author):
-        return await cmd.send("This command is available for developers only.")
     try:
         start = dt.now()
         await bot.db.conn.execute(query)
@@ -15,9 +14,3 @@ async def _sql(cmd, *, query):
         await cmd.send(f"An exception occured: {ex}")
     else:
         await cmd.send(f"Process executed in {end - start}")
-
-
-@_sql.error
-async def sql_error(cmd, error):
-    if isinstance(error, comamnds.UserInputError):
-        await cmd.send("Please check your input again.")
