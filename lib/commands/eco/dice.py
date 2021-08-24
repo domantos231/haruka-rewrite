@@ -7,7 +7,7 @@ from settings import *
 @bot.command(
     name = "dice",
     description = "Dice gambling",
-    usage = "dice <amount>",
+    usage = "dice <bet amount>",
 )
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def _dice(cmd, arg):

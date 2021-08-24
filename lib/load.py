@@ -530,11 +530,14 @@ class PlayingCard:
 
 
     @classmethod
-    def draw(cls, ignore: List[str] = []):
-        f = random.choice(cardlist)
-        while f in ignore:
+    def draw(cls, amount: int = 1):
+        hand = []
+        for i in range(amount):
             f = random.choice(cardlist)
-        return cls(f)
+            while f in hand:
+                f = random.choice(cardlist)
+            hand.append(cls(f))
+        return hand
 
 
 class PlayingHand:
@@ -554,3 +557,12 @@ class PlayingHand:
         for card in enumerate(self.cards):
             empty.paste(card[1].image, (80 * card[0], 0, 80 * card[0] + 80, 100))
         return empty
+    
+
+    @property
+    def value(self) -> int:
+        return sum(card.value for card in self.cards)
+    
+
+    def append(self, card: PlayingCard) -> None:
+        self._cards.append(card)
