@@ -22,8 +22,12 @@ class HangmanProgress:
         return self._word
 
 
-@bot.command()
-async def hangman(cmd, n: int = 5):
+@bot.command(
+    name = "hangman",
+    description = "Play hangman game",
+    usage = "hangman <initial number of lives | default: 5>",
+)
+async def _hangman(cmd, n: int = 5):
     if n < 1:
         await cmd.send("Initial number of lives must be greater than 0.")
         return

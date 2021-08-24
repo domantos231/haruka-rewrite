@@ -100,7 +100,11 @@ async def get(id):
         return id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
 
 
-@bot.command(name="anime")
+@bot.command(
+    name = "anime",
+    description = "Search for an anime in the MyAnimeList database",
+    usage = "anime <query>"
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _anime(cmd, *, query):
     if len(query) < 3:

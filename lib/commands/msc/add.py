@@ -5,7 +5,11 @@ from settings import *
 from discord.ext import commands
 
 
-@bot.command(name="add")
+@bot.command(
+    name = "add",
+    description = "Search for a YouTube track and add to queue.",
+    usage = "add <query>",
+)
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _add(cmd, *, query):
     if not cmd.author.voice:

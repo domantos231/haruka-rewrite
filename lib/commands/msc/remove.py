@@ -3,7 +3,11 @@ from settings import *
 from discord.ext import commands
 
 
-@bot.command(name="remove")
+@bot.command(
+    name = "remove",
+    description = "Remove a track from the current queue",
+    usage = "remove <track position>"
+)
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _remove(cmd, n: int = 1):
     if not cmd.author.voice:

@@ -10,7 +10,11 @@ class NoPet(Exception):
     pass
 
 
-@bot.command(name="battle")
+@bot.command(
+    name = "battle",
+    description = "Send your pet to the battlefield against another player!",
+    usage = "battle <user>",
+)
 @commands.cooldown(1, 15, commands.BucketType.user)
 async def _battle(cmd, mem: discord.Member=None):
     if mem == None or mem == cmd.author or mem.bot:

@@ -58,7 +58,11 @@ async def main(word):
             return None
 
 
-@bot.command(name="search")
+@bot.command(
+    name = "search",
+    description = "Search for a term from Urban Dictionary",
+    usage = "search <query>"
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _search(cmd, *, query):
     result = await main(query)

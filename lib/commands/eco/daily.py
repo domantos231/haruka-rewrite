@@ -2,7 +2,10 @@
 from settings import *
 
 
-@bot.command(name="daily")
+@bot.command(
+    name = "daily",
+    description = "Claim your daily reward",
+)
 @commands.cooldown(1, 86400, commands.BucketType.user)
 async def _daily(cmd):
     id = cmd.author.id

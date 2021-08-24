@@ -166,7 +166,6 @@ intents = discord.Intents.default()
 intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
 bot = Haruka(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
-bot.remove_command("help")
 bot.db = db()
 
 

@@ -3,7 +3,12 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="account", aliases=["acc"])
+@bot.command(
+    name = "account",
+    aliases = ["acc"],
+    description = "View a user's economy account",
+    usage = "account <user | default: yourself>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _account(cmd, user: discord.Member = None):
     if user == None:

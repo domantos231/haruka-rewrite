@@ -3,7 +3,11 @@ from random import randint
 from settings import *
 
 
-@bot.command(name="8ball")
+@bot.command(
+    name = "8ball",
+    description = "Ask the 8ball a yes/no question",
+    usage = "8ball <question>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _8ball(cmd, *, arg):
     if arg.lower().startswith(("what", "which", "why", "when", "how", "where", "who")):

@@ -2,8 +2,11 @@ import discord
 from discord.ext import commands
 from settings import *
 
-@bot.command()
-async def addbot(cmd):
+@bot.command(
+    name = "addbot",
+    description = "Get my invite link!",
+)
+async def _addbot(cmd):
     em = discord.Embed(
         title="Invite me to your server",
         description="My invitation link: https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2151018320&scope=bot",
@@ -13,9 +16,13 @@ async def addbot(cmd):
     await cmd.send(embed=em)
 
 
-@bot.command()
+@bot.command(
+    name = "info",
+    description = "Get a user's information",
+    usage = "info <user | default: yourself>"
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
-async def info(cmd, *, user: discord.Member = None):
+async def _info(cmd, *, user: discord.Member = None):
     if user is None:
         user = cmd.author
     info_em = discord.Embed(
@@ -31,10 +38,14 @@ async def info(cmd, *, user: discord.Member = None):
     await cmd.send(embed=info_em)
 
 
-@bot.command()
+@bot.command(
+    name = "prefix",
+    description = "Change the bot's prefix in this server.\nThis requires `Administrator` permission.",
+    usage = "prefix <prefix>"
+)
 @commands.cooldown(1, 6, commands.BucketType.guild)
 @commands.has_permissions(administrator=True) # This also blocks prefix changing in DM channels
-async def prefix(cmd, *, arg = None):
+async def _prefix(cmd, *, arg = None):
     id = cmd.guild.id
     if arg == None:
         await cmd.send("Please specify a prefix to change to!")
@@ -47,14 +58,23 @@ async def prefix(cmd, *, arg = None):
         await cmd.send(f"Prefix has been set to `{arg}`")
 
 
-@bot.command()
-async def say(cmd, *, arg):
+@bot.command(
+    name = "say",
+    description = "Make the bot says something",
+    usage = "say <anything>"
+)
+async def _say(cmd, *, arg):
     await cmd.send(arg)
 
 
-@bot.command(aliases=["ava"])
+@bot.command(
+    name = "avatar",
+    aliases = ["ava"],
+    description = "Get an avatar from a user",
+    usage = "avatar <user | default: yourself>",
+)
 @commands.cooldown(1, 3, commands.BucketType.channel)
-async def avatar(cmd, *, user: discord.User = None):
+async def _avatar(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
     ava_em = discord.Embed(
@@ -64,9 +84,12 @@ async def avatar(cmd, *, user: discord.User = None):
     await cmd.send(embed=ava_em)
 
 
-@bot.command()
+@bot.command(
+    name = "svinfo",
+    description = "Retrieve information about a server",
+)
 @commands.cooldown(1, 6, commands.BucketType.channel)
-async def svinfo(cmd):
+async def _svinfo(cmd):
     if isinstance(cmd.message.channel, discord.TextChannel):
         sv_em = discord.Embed(
             title="Server info",

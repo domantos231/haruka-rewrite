@@ -4,7 +4,10 @@ from datetime import datetime as dt
 from settings import *
 
 
-@bot.group(name="bank", case_insensitive=True)
+@bot.group(
+    name = "bank",
+    description = "Visit the bank",
+)
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _bank(cmd):
     id = cmd.author.id
@@ -25,7 +28,11 @@ async def _bank(cmd):
         await cmd.send(embed=em)
 
 
-@_bank.command(name="deposit")
+@_bank.command(
+    name = "deposit",
+    description = "Deposit money to your account",
+    usage = "bank deposit <amount>"
+)
 async def _deposit(cmd, arg):
     id = cmd.author.id
     player = await bot.get_player(id)
@@ -56,7 +63,11 @@ async def _deposit(cmd, arg):
         await cmd.send(f"<@!{id}> sent `💲{arg}` to the bank.")
 
 
-@_bank.command(name="withdraw")
+@_bank.command(
+    name = "withdraw",
+    description = "Withdraw money from your account",
+    usage = "bank withdraw <amount>"
+)
 async def _withdraw(cmd, arg):
     id = cmd.author.id
     player = await bot.get_player(id)

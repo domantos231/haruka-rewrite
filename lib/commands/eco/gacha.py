@@ -4,7 +4,11 @@ from random import randint
 from settings import *
 
 
-@bot.command(name="gacha")
+@bot.command(
+    name = "gacha",
+    description = "Enjoy the gacha hell.\n-----------------\nRate up details:\n**COMMON** `50%`\n**RARE** `30.33%`\n**EPIC** `15.33%`\n**LEGENDARY** `4.33%`\n**????** `0.01%`",
+    usage = "gacha <amount>"
+)
 @commands.cooldown(1, 20, commands.BucketType.user)
 async def _gacha(cmd, n: int = 1):
     if n < 1:

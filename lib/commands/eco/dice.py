@@ -4,7 +4,11 @@ from random import randint
 from settings import *
 
 
-@bot.command(name="dice")
+@bot.command(
+    name = "dice",
+    description = "Dice gambling",
+    usage = "dice <amount>",
+)
 @commands.cooldown(1, 10, commands.BucketType.user)
 async def _dice(cmd, arg):
     id = cmd.author.id

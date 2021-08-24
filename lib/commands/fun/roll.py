@@ -3,7 +3,11 @@ from random import randint
 from settings import *
 
 
-@bot.command(name="roll")
+@bot.command(
+    name = "roll",
+    description = "Generate a random integer between `i` and `j`",
+    usage = "roll <i> <j>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _roll(cmd, i: int, j: int):
     if i < j:

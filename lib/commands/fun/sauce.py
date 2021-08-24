@@ -39,7 +39,11 @@ async def get(src):
             return lst
 
 
-@bot.command(name="sauce")
+@bot.command(
+    name = "sauce",
+    description = "Find the image source with saucenao",
+    usage = "sauce <URL to image or attachment>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _sauce(cmd, src = None):
     if src is None:
