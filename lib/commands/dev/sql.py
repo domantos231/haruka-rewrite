@@ -6,6 +6,7 @@ from settings import *
 @bot.command(
     name = "sql",
     description = "Perform a SQL query",
+    usage = "sql <query>",
 )
 @commands.is_owner()
 async def _sql(cmd, *, query):
