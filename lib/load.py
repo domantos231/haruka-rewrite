@@ -568,7 +568,7 @@ class PlayingHand:
 
     def draw(self):
         f = random.choice(cardlist)
-        while f in [card.id for card in self.cards]:
+        while f in [card.filename for card in self.cards]:
             f = random.choice(cardlist)
         self._cards.append(self.cardtype(f))
 
