@@ -5,7 +5,11 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="hug")
+@bot.command(
+    name = "hug",
+    description = "Hug someone",
+    usage = "hug <user>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _hug(cmd, user: discord.User = None):
     if user is None:

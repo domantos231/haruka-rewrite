@@ -5,7 +5,11 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="punch")
+@bot.command(
+    name = "punch",
+    description = "Punch someone",
+    usage = "punch <user>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _punch(cmd, user: discord.User = None):
     if user is None:

@@ -5,7 +5,10 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="girl")
+@bot.command(
+    name = "girl",
+    description = "Get you a 2D girl",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _girl(cmd):
     gifs = await bot.giphy("anime-girl")

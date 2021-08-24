@@ -3,7 +3,10 @@ from datetime import datetime as dt
 from settings import *
 
 
-@bot.command(name="sql")
+@bot.command(
+    name = "sql",
+    description = "Perform a SQL query",
+)
 @commands.is_owner()
 async def _sql(cmd, *, query):
     try:
