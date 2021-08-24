@@ -29,6 +29,7 @@ DATABASE_URL = os.environ["DATABASE_URL"]
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 navigate = ["⬅️", "➡️"]
+bj = ["🔥", "🛑"]
 
 
 # Define giphy RegEx pattern

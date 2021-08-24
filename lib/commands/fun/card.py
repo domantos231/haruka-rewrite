@@ -18,7 +18,9 @@ _card_limit = 9
 async def _card(cmd, n: int = 1):
     if n < 1 or n > _card_limit:
         return await cmd.send(f"Invalid card number (must be from 1 to {_card_limit}).")
-    hand = PlayingHand(PlayingCard.draw(n))
+    hand = PlayingHand([])
+    for i in range(n):
+        hand.draw()
     hand.image.save(f"./lib/assets/cards/{cmd.message.id}.png")
     file = discord.File(f"./lib/assets/cards/{cmd.message.id}.png", filename = "image.png")
     embed = discord.Embed(title=f"{cmd.author.name} drew {n} card(s)!", color=0x2ECC71)

@@ -9,7 +9,7 @@ from settings import *
     description = "Dice gambling",
     usage = "dice <bet amount>",
 )
-@commands.cooldown(1, 10, commands.BucketType.user)
+@commands.cooldown(1, 15, commands.BucketType.user)
 async def _dice(cmd, arg):
     id = cmd.author.id
     player = await bot.get_player(id)

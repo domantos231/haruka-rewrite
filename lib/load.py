@@ -529,18 +529,20 @@ class PlayingCard:
         return Image.open(f"./lib/assets/cards/{self.filename}")
 
 
-    @classmethod
-    def draw(cls, amount: int = 1):
-        hand = []
-        for i in range(amount):
-            f = random.choice(cardlist)
-            while f in hand:
-                f = random.choice(cardlist)
-            hand.append(f)
-        return list(cls(f) for f in hand)
+class BlackjackCard(PlayingCard):
+    @property
+    def value(self) -> int:
+        value = super().value
+        if value < 11 and value > 1:
+            return super().value
+        elif value > 10:
+            return 10
+        else:
+            return 11
 
 
 class PlayingHand:
+    cardtype = PlayingCard
     def __init__(self, cards: List[PlayingCard]):
         self._cards = cards
     
@@ -564,5 +566,27 @@ class PlayingHand:
         return sum(card.value for card in self.cards)
     
 
-    def append(self, card: PlayingCard) -> None:
-        self._cards.append(card)
+    def draw(self):
+        f = random.choice(cardlist)
+        while f in [card.id for card in self.cards]:
+            f = random.choice(cardlist)
+        self._cards.append(self.cardtype(f))
+
+
+class BlackjackHand(PlayingHand):
+    cardtype = BlackjackCard
+    @property
+    def value(self) -> int:
+        return self.get_value()[0]
+
+
+    def get_value(self) -> Tuple[int, bool]:
+        point = super().value
+        special = False
+        for card in self.cards:
+            if card.value == 11:
+                if point > 21:
+                    point -= 10
+                else:
+                    special = True
+        return point, special

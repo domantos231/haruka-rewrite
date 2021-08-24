@@ -21,7 +21,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         )
         help_em.add_field(
             name="💵 Economy",
-            value="```account, bank, battle, daily, dice, gacha, pet```",
+            value="```account, bank, battle, blackjack, daily, dice, gacha, pet```",
             inline=False,
         )
         help_em.add_field(
