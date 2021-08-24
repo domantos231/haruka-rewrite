@@ -26,7 +26,7 @@ async def _pet(cmd, user: discord.Member=None):
     elif user.bot:
         await cmd.send(f"<@!{user.id}> is a bot user!")
     else:
-        id = str(user.id)
+        id = user.id
         player = await bot.get_player(id)
         if not player:
             return await cmd.send("This user has no data in my database!")

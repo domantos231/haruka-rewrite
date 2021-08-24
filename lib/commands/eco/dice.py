@@ -13,6 +13,8 @@ from settings import *
 async def _dice(cmd, arg):
     id = cmd.author.id
     player = await bot.get_player(id)
+    if not player:
+        return await cmd.send(f"<@!{id}> To use the economy commands, you must use `{cmd.prefix}daily` first")
     try:
         arg = int(arg)
     except ValueError:

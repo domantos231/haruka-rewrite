@@ -36,6 +36,8 @@ async def _bank(cmd):
 async def _deposit(cmd, arg):
     id = cmd.author.id
     player = await bot.get_player(id)
+    if not player:
+        return await cmd.send(f"<@!{id}> To use the economy commands, you must use `{cmd.prefix}daily` first")
     if not player.time:
         player.time = dt.now()
         await bot.db.conn.execute(
