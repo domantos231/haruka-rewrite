@@ -536,8 +536,8 @@ class PlayingCard:
             f = random.choice(cardlist)
             while f in hand:
                 f = random.choice(cardlist)
-            hand.append(cls(f))
-        return hand
+            hand.append(f)
+        return list(cls(f) for f in hand)
 
 
 class PlayingHand:
