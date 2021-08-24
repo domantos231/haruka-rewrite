@@ -10,17 +10,17 @@ from settings import *
 )
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _bank(cmd):
-    id = cmd.author.id
-    player = await bot.get_player(id)
-    if not player:
-        return await cmd.send(f"<@!{id}> To use the economy commands, you must use `{cmd.prefix}daily` first")
-    if not player.time:
-        player.time = dt.now()
-        await bot.db.conn.execute(
-            f"UPDATE economy SET time = $1 WHERE id = '{id}';",
-            dt.now()
-        )
     if cmd.invoked_subcommand is None:
+        id = cmd.author.id
+        player = await bot.get_player(id)
+        if not player:
+            return await cmd.send(f"<@!{id}> To use the economy commands, you must use `{cmd.prefix}daily` first")
+        if not player.time:
+            player.time = dt.now()
+            await bot.db.conn.execute(
+                f"UPDATE economy SET time = $1 WHERE id = '{id}';",
+                dt.now()
+            )
         delta = dt.now() - player.time
         hours = 24 * delta.days + int(delta.seconds / 3600)
         money = int(player.bank * pow(1 + player.interest/100, hours))
