@@ -123,10 +123,13 @@ async def _blackjack(cmd, amt = None):
         try:
             reaction, user = await bot.wait_for("reaction_add", timeout=300.0, check=check)
         except asyncio.TimeoutError:
-            if _playing[id][0] == cmd.message.id:
-                del _playing[id]
-                return await cmd.send(f"<@!{id}> timed out for blackjack game!")
-            else:
+            try:
+                if _playing[id][0] == cmd.message.id:
+                    del _playing[id]
+                    return await cmd.send(f"<@!{id}> timed out for blackjack game!")
+                else:
+                    return
+            except KeyError:
                 return
         else:
             if _playing[id][0] == cmd.message.id:
