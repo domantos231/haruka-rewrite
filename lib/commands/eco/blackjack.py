@@ -83,7 +83,7 @@ async def _blackjack(cmd, amt = None):
 
         em = discord.Embed(
             title = "Blackjack",
-            description = f"Hit {bj[0]} or stay {bj[1]}?",
+            description = f"You have 5 minutes to decide whether to hit {bj[0]} or stay {bj[1]}.",
             color = 0x2ECC71,
         )
         em.set_image(url = "attachment://blackjack.png")
@@ -105,12 +105,13 @@ async def _blackjack(cmd, amt = None):
         os.remove(f"./lib/assets/cards/{id}.png")
 
         if point > 21:
-            del _playing[id]
             bot_point = await get_bot_hand(cmd, id)
             if bot_point > 21:
-                return await cmd.send("Both of you lost! 💸")
+                await cmd.send(f"Both of you lost `💲{_playing[id][1]}`!")
             else:
-                return await cmd.send(f"<@!{cmd.author.id}> lost! 💸")
+                await cmd.send(f"<@!{cmd.author.id}> lost `💲{_playing[id][1]}`!")
+            del _playing[id]
+            return
 
         for emoji in bj:
             await msg.add_reaction(emoji)
@@ -125,10 +126,9 @@ async def _blackjack(cmd, amt = None):
         except asyncio.TimeoutError:
             try:
                 if _playing[id][0] == cmd.message.id:
+                    await cmd.send(f"<@!{id}> timed out for blackjack game and lost `💲{_playing[id][1]}`")
                     del _playing[id]
-                    return await cmd.send(f"<@!{id}> timed out for blackjack game!")
-                else:
-                    return
+                return
             except KeyError:
                 return
         else:
@@ -142,9 +142,9 @@ async def _blackjack(cmd, amt = None):
                         await bot.db.conn.execute(
                             f"UPDATE economy SET amt = amt + {2 * _playing[id][1]} WHERE id = '{id}';"
                         )
-                        await cmd.send(f"<@!{id}> won! 💰")
+                        await cmd.send(f"<@!{id}> won `💲{_playing[id][1]}`!")
                     elif 21 - bot_point < 21 - point:
-                        await cmd.send(f"<@!{id}> lost! 💸")
+                        await cmd.send(f"<@!{id}> lost `💲{_playing[id][1]}`!")
                     else:
                         await bot.db.conn.execute(
                             f"UPDATE economy SET amt = amt + {_playing[id][1]} WHERE id = '{id}';"
