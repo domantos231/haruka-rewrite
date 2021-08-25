@@ -69,8 +69,8 @@ async def _search(cmd, *, query):
     if result is not None:
         desc = f"{result.meaning}\n---------------\n{result.example}"
         desc.replace("*", "\*")
-        if desc > 4096:
-            desc = desc[:4093] + "..."
+        if len(desc) > 4096:
+            desc = desc[:4090] + "..."
         em = discord.Embed(
             title = f"{result.title}",
             description = desc,
