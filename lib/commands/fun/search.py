@@ -35,8 +35,11 @@ class UrbanSearch:
 
 
 async def main(word):
-    url = f"https://www.urbandictionary.com/define.php?term={word}"
-    async with bot.session.get(url) as response:
+    url = f"https://www.urbandictionary.com/define.php"
+    params = {
+        "term": word,
+    }
+    async with bot.session.get(url, params=params) as response:
         if response.status == 200:
             html = await response.text()
             html = html.replace("<br/>", "\n").replace("\r", "\n")
@@ -53,7 +56,7 @@ async def main(word):
                 example = "\n".join(i for i in obj.get_text().split("\n") if len(i) > 0)
             except:
                 example = None
-            return UrbanSearch(title, meaning, example, url)
+            return UrbanSearch(title, meaning, example, response.url)
         else:
             return None
 
@@ -70,7 +73,7 @@ async def _search(cmd, *, query):
         desc = f"{result.meaning}\n---------------\n{result.example}"
         desc.replace("*", "\*")
         if len(desc) > 4096:
-            desc = desc[:4090] + "..."
+            desc = desc[:4090] + " [...]"
         em = discord.Embed(
             title = f"{result.title}",
             description = desc,
