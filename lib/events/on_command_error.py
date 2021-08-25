@@ -32,11 +32,15 @@ async def on_command_error(cmd, error):
     elif isinstance(error, commands.MissingPermissions):
         await cmd.send("🚫 You do not have the permission to invoke this command.")
     elif isinstance(error, commands.UserInputError):
-        await cmd.send("📜 Please check your input again.")
-    elif isinstance(error, commands.CommandInvokeError):
-        await cmd.send(f"🔧 An error occurred:\n```\n{error.original}\n```")
-        print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")
-        file = discord.File("./log.txt")
-        await bot.get_user(ME).send(f"<@!{ME}> An error has just occured in `{cmd.guild}`/`{cmd.channel}`. This is the report.", file=file)
+        await cmd.send("📝 Please check your input again.")
     else:
+        try:
+            await cmd.send(f"🔧 An error occurred:\n```\n{error.original}\n```")
+        except Exception as ex:
+            exc = f"HARUKA | Error sending notification message for the above exception: {ex}"
+        else:
+            exc = "HARUKA | Notification message was successfully sent."
         print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")
+        print(exc)
+        file = discord.File("./log.txt")
+        await bot.get_user(ME).send(f"<@!{ME}> An error has just occured in `{cmd.guild}/{cmd.channel}`. This is the report.", file=file)
