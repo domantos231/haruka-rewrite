@@ -23,6 +23,8 @@ gc.enable()
 # Initialize environment variables
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
+ME = os.environ["ME"]
+ME = int(ME)
 
 
 # Define frequently used emoji lists

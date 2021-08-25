@@ -34,7 +34,9 @@ async def on_command_error(cmd, error):
     elif isinstance(error, commands.UserInputError):
         await cmd.send("📜 Please check your input again.")
     elif isinstance(error, commands.CommandInvokeError):
-        await cmd.send(f"🔧 An error occurred:\n```\n{error.original}\n```\nIf this is a bug, hopefully it will be removed in the future 😉")
+        await cmd.send(f"🔧 An error occurred:\n```\n{error.original}\n```")
         print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")
+        file = discord.File("./log.txt")
+        await bot.get_user(ME).send(f"<@!{ME}> An error has just occured in `{cmd.guild}`/`{cmd.channel}`. This is the report.", file=file)
     else:
         print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")
