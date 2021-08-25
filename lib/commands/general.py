@@ -25,16 +25,35 @@ async def _addbot(cmd):
 async def _info(cmd, *, user: discord.Member = None):
     if user is None:
         user = cmd.author
-    info_em = discord.Embed(
-        title=f"{user} Info",
-        description=f"**Name** {user.name}\n**Nickname** {user.nick}\n**ID** {user.id}",
-        color=0x2ECC71,
-    )
-    info_em.set_thumbnail(url=user.avatar_url)
     if isinstance(cmd.message.channel, discord.DMChannel):
+        info_em = discord.Embed(
+            title = f"{user} Information",
+            description = f"**Name** {user.name}\n**Created at (UTC)** {user.created_at}\n**ID** {user.id}",
+            color = 0x2ECC71,
+        )
+        info_em.set_thumbnail(url = user.avatar_url)
         info_em.set_footer(text="From private channel")
     elif isinstance(cmd.message.channel, discord.TextChannel):
-        info_em.set_footer(text=f"From {cmd.message.guild}")
+        name = user.name.replace("*", "\*")
+        if user.nick:
+            nick = user.nick.replace("*", "\*")
+        else:
+            nick = user.name
+        info_em = discord.Embed(
+            title = f"{user} Information",
+            description = f"**Name** {name}\n**Nickname** {nick}\n**Created at (UTC)** {user.created_at}\n**ID** {user.id}",
+            color = 0x2ECC71,
+        )
+        info_em.add_field(
+            name = "Joined server at (UTC)",
+            value = user.joined_at
+        )
+        info_em.add_field(
+            name = "Roles",
+            value = "\n".join(role.name.replace("*", "\*") for role in user.roles[1:])
+        )
+        info_em.set_thumbnail(url = user.avatar_url)
+        info_em.set_footer(text = f"From {cmd.message.guild}")
     await cmd.send(embed=info_em)
 
 
