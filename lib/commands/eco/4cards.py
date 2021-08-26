@@ -141,7 +141,7 @@ async def _4cards(cmd, amt = None):
                         if card.set:
                             suits.append(card.suit)
                     suits.sort()
-                    if suits == [1, 2] or suits == [3, 4]:
+                    if suits == [0, 1] or suits == [2, 3]:
                         em.set_footer(text=f"{cmd.author.name} won 💲{_playing[id][1]}!")
                         await bot.db.conn.execute(
                             f"UPDATE economy SET amt = amt + {2 * _playing[id][1]} WHERE id = '{id}';"
