@@ -568,7 +568,7 @@ class PlayingHand:
         f = random.choice(cardlist)
         while f in [card.filename for card in self.cards]:
             f = random.choice(cardlist)
-        self._cards.append(self.cardtype(f))
+        self.cards.append(self.cardtype(f))
 
 
 class BlackjackHand(PlayingHand):
