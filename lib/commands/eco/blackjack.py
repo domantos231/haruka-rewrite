@@ -16,8 +16,8 @@ async def get_bot_hand(cmd, id):
         bot_hand.draw()
     while bot_hand.value < 17:
         bot_hand.draw()
-    bot_hand.image.save(f"./lib/assets/cards/{id}_bot.png")
-    file = discord.File(f"./lib/assets/cards/{id}_bot.png", filename="blackjack.png")
+    bot_hand.image.save(f"./lib/assets/cards/{id}-bj-bot.png")
+    file = discord.File(f"./lib/assets/cards/{id}-bj-bot.png", filename="blackjack.png")
     point, special = bot_hand.get_value()
     em = discord.Embed(
         color = 0x2ECC71,
@@ -29,7 +29,7 @@ async def get_bot_hand(cmd, id):
     em.set_author(name="These are my cards!", icon_url=bot.user.avatar_url)
     em.set_image(url="attachment://blackjack.png")
     await cmd.send(file=file, embed=em)
-    os.remove(f"./lib/assets/cards/{id}_bot.png")
+    os.remove(f"./lib/assets/cards/{id}-bj-bot.png")
     return point
 
 
@@ -64,6 +64,8 @@ async def _blackjack(cmd, amt = None):
                 raise commands.UserInputError
         if amt < 0:
             raise commands.UserInputError
+        if amt > player.amt:
+            return await cmd.send("You don't have enough credits!")
         await bot.db.conn.execute(
             f"UPDATE economy SET amt = amt - {amt} WHERE id = '{id}';"
         )
@@ -98,11 +100,11 @@ async def _blackjack(cmd, amt = None):
         except NameError:
             pass
 
-        _playing[id][2].image.save(f"./lib/assets/cards/{id}.png")
-        file = discord.File(f"./lib/assets/cards/{id}.png", filename = "blackjack.png")
+        _playing[id][2].image.save(f"./lib/assets/cards/{id}-bj.png")
+        file = discord.File(f"./lib/assets/cards/{id}-bj.png", filename = "blackjack.png")
 
         msg = await cmd.send(file=file, embed=em)
-        os.remove(f"./lib/assets/cards/{id}.png")
+        os.remove(f"./lib/assets/cards/{id}-bj.png")
 
         if point > 21:
             bot_point = await get_bot_hand(cmd, id)
