@@ -504,9 +504,10 @@ cardlist = [f for f in os.listdir(f"./lib/assets/cards")]
 
 
 class PlayingCard:
-    def __init__(self, filename: str):
-        self._filename = filename
-        self.id = filename.split(".")[0]
+    def __init__(self, *args, **kwargs):
+        self._filename = args[0]
+        self.id = args[0].split(".")[0]
+        self.set = kwargs.pop("set", False)
     
 
     @property
@@ -526,6 +527,8 @@ class PlayingCard:
 
     @property
     def image(self) -> Image:
+        if self.set:
+            return Image.open("./lib/assets/misc/card_sleeve.png")
         return Image.open(f"./lib/assets/cards/{self.filename}")
 
 
@@ -544,12 +547,7 @@ class BlackjackCard(PlayingCard):
 class PlayingHand:
     cardtype = PlayingCard
     def __init__(self, cards: List[PlayingCard]):
-        self._cards = cards
-    
-
-    @property
-    def cards(self) -> List[PlayingCard]:
-        return self._cards
+        self.cards = cards
     
 
     @property
