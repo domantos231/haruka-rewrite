@@ -3,10 +3,10 @@ from discord.ext import commands
 from settings import *
 
 @bot.command(
-    name = "addbot",
+    name = "invite",
     description = "Get my invite link!",
 )
-async def _addbot(cmd):
+async def _invite(cmd):
     em = discord.Embed(
         title="Invite me to your server",
         description="My invitation link: https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2151018320&scope=bot",

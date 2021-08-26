@@ -13,7 +13,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
         help_em.set_thumbnail(url=bot.user.avatar_url)
         help_em.add_field(
             name="💬 General",
-            value="```addbot, avatar, help, info, prefix, say, svinfo```",
+            value="```avatar, help, info, invite, prefix, say, svinfo```",
             inline=False,
         )
         help_em.add_field(
