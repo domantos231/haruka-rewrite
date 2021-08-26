@@ -1,4 +1,5 @@
 import discord
+import traceback
 from discord.ext import commands
 from settings import *
 
@@ -34,13 +35,16 @@ async def on_command_error(cmd, error):
     elif isinstance(error, commands.UserInputError):
         await cmd.send("📝 Please check your input again.")
     else:
+        traceback.print_tb(error.__traceback__)
+        print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} ({error.__class__.__name__})")
+        print(f"HARUKA | {error}")
         try:
             await cmd.send(f"🔧 An error occurred:\n```\n{error.original}\n```")
         except Exception as ex:
-            exc = f"HARUKA | Error sending notification message for the above exception: {ex}"
+            print(f"HARUKA | Another exception occurred when trying to send a notification message:")
+            traceback.print_tb(ex.__traceback__)
+            print(f"HARUKA | {ex}")
         else:
-            exc = "HARUKA | Notification message was successfully sent."
-        print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} {type(error)} {error}")
-        print(exc)
+            print("HARUKA | Notification message was successfully sent.")
         file = discord.File("./log.txt")
         await bot.get_user(ME).send(f"<@!{ME}> An error has just occured in `{cmd.guild}/{cmd.channel}`. This is the report.", file=file)
