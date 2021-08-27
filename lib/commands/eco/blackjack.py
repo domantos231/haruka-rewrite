@@ -154,3 +154,5 @@ async def _blackjack(cmd, amt = None):
                         await cmd.send("Draw!")
                     del _playing[id]
                     return
+            else:
+                return
