@@ -134,7 +134,7 @@ async def _blackjack(cmd, amt = None):
             except KeyError:
                 return
         else:
-            if _playing[id][0] == cmd.message.id:
+            if id in _playing and _playing[id][0] == cmd.message.id:
                 choice = bj.index(str(reaction))
                 if choice == 0:
                     _playing[id][2].draw()
