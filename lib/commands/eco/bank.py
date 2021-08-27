@@ -7,6 +7,7 @@ from settings import *
 @bot.group(
     name = "bank",
     description = "Visit the bank",
+    usage = "bank <deposit | withdraw>"
 )
 @commands.cooldown(1, 3, commands.BucketType.user)
 async def _bank(cmd):

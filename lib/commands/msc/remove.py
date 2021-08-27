@@ -6,7 +6,7 @@ from discord.ext import commands
 @bot.command(
     name = "remove",
     description = "Remove a track from the current queue",
-    usage = "remove <track position>"
+    usage = "remove <track position | default: 1>"
 )
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _remove(cmd, n: int = 1):
