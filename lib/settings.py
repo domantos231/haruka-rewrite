@@ -230,7 +230,7 @@ class Haruka(commands.Bot):
     
 
     async def overwrite_slash_commands(self):
-        # Wait until ready so that the "user" attribute is ready
+        # Wait until ready so that the "user" attribute is available
         await self.wait_until_ready()
 
         # Now register all slash commands
