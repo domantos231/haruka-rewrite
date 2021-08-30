@@ -1,4 +1,5 @@
 ﻿import asyncio
+import traceback
 
 
 if __name__ == "__main__":
@@ -25,6 +26,7 @@ if __name__ == "__main__":
     try:
         bot.loop.run_until_complete(bot.start(TOKEN))
     except Exception as ex:
+        traceback.print_tb(ex.__traceback__)
         print(f"HARUKA | An exception occured: {ex}")
         bot.loop.run_until_complete(bot.close())
     finally:

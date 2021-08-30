@@ -108,16 +108,42 @@ class Haruka(commands.Bot):
     headers = {
         "Authorization": f"Bot {TOKEN}",
     }
+    slash_commands = {}
+    json = []
+
+
+    def register_slash_command(self, coro, json):
+        if not asyncio.iscoroutinefunction(coro):
+            raise TypeError("Slash commands must be coroutine.")
+        self.slash_commands[json["name"]] = coro
+        self.json.append(json) 
+           
+
+    def slash(self, json):
+        def decorator(coro):
+            return self.register_slash_command(coro, json)
+        return decorator
+
+
     async def start(self, *args, **kwargs):
         await self.db.connect()
-        self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
+        
+        # Create side session for other stuff
         async with aiohttp.ClientSession() as session:
             self.session = session
+
+            # Fetch wordlist from online website
+            self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
             prelist = await self.get_wordlist()
             for word in prelist:
                 self.wordlist.append(word.lower())
             del prelist
             print(f"HARUKA | Fetched wordlist with {len(self.wordlist)} words.")
+
+            # Bulk overwrite all slash commands for the current session when the bot is ready
+            self.loop.create_task(self.overwrite_slash_commands())
+
+            # Start the bot
             await super().start(*args, **kwargs)
     
 
@@ -186,9 +212,9 @@ class Haruka(commands.Bot):
                 return lst
 
 
-    @staticmethod
-    async def get_player(id):
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{id}';")
+    async def get_player(self, id):
+        await self.wait_until_ready()
+        row = await self.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{id}';")
         if not row:
             return None
         amt = row["amt"]
@@ -201,6 +227,25 @@ class Haruka(commands.Bot):
         win = row["win"]
         total = row["total"]
         return EconomyPlayer(amt, time, bank, interest, pet, win, total)
+    
+
+    async def overwrite_slash_commands(self):
+        # Wait until ready so that the "user" attribute is ready
+        await self.wait_until_ready()
+
+        # Now register all slash commands
+        print("HARUKA | Overwriting slash commands: " + ", ".join(json["name"] for json in self.json))
+        async with self.session.put(
+            f"{self.BASE_URL}/applications/{self.user.id}/commands",
+            json = self.json,
+            headers = self.headers,
+        ) as response:
+            print(f"HARUKA | Slash commands setup returned status code {response.status}:")
+            print(await response.text())
+    
+
+    async def process_slash_commands(self, data: Dict[str, Any]):
+        await self.slash_commands[data["name"]](data)
     
 
 # Initialize bot
@@ -277,37 +322,3 @@ class Music:
             await asyncio.sleep(0.4)
             while self.player.is_connected() and self.player.position < track.length:
                 await asyncio.sleep(0.4)
-
-
-# Register all slash commands
-async def slash_commands_register():
-    await bot.wait_until_ready()
-    json = [{
-        "name": "say",
-        "type": 1,
-        "description": "Say something - a very useful command",
-        "options": [{
-            "name": "content",
-            "description": "The string to repeat",
-            "type": 3,
-            "required": True,
-        }],
-    }, {
-        "name": "sauce",
-        "type": 1,
-        "description": "Find the image source with saucenao",
-        "options": [{
-            "name": "url",
-            "description": "The URL to the image",
-            "type": 3,
-            "required": True,
-        }]
-    }]
-    async with bot.session.put(
-        f"{bot.BASE_URL}/applications/{bot.user.id}/commands",
-        json = json,
-        headers = bot.headers,
-    ) as response:
-        print(f"HARUKA | Slash commands setup returned status code {response.status}:")
-        print(await response.text())
-bot.loop.create_task(slash_commands_register())
