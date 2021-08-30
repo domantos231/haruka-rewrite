@@ -10,7 +10,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
             description=f"Ping <@!{bot.user.id}> for prefix.\nTo get help on a command, type `{self.context.prefix}help <command>`",
             color=0x2ECC71,
         )
-        help_em.set_thumbnail(url=bot.user.avatar_url)
+        help_em.set_thumbnail(url=bot.user.avatar.url)
         help_em.add_field(
             name="💬 General",
             value="```avatar, help, info, invite, prefix, say, svinfo```",
@@ -45,7 +45,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
             description = f"```\n{self.context.prefix}{command.usage}\n```\n**Description**\n{command.description}\n**Aliases**\n" + ", ".join(f"`{alias}`" for alias in command.aliases),
             color = 0x2ECC71,
         )
-        em.set_author(name = f"{self.context.author.name}, this is an instruction for {command.qualified_name}!", icon_url = self.context.author.avatar_url)
+        em.set_author(name = f"{self.context.author.name}, this is an instruction for {command.qualified_name}!", icon_url = self.context.author.avatar.url)
         await self.context.send(embed = em)
 
 
@@ -57,7 +57,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
             description = f"```\n{self.context.prefix}{group.usage}\n```\n**Description**\n{group.description}\n**Aliases**\n" + ", ".join(f"`{alias}`" for alias in group.aliases),
             color = 0x2ECC71,
         )
-        em.set_author(name = f"{self.context.author.name}, this is an instruction for {group.qualified_name}!", icon_url = self.context.author.avatar_url)
+        em.set_author(name = f"{self.context.author.name}, this is an instruction for {group.qualified_name}!", icon_url = self.context.author.avatar.url)
         await self.context.send(embed = em)
 
 

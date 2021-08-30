@@ -103,6 +103,11 @@ async def prefix(bot, message):
 
 
 class Haruka(commands.Bot):
+    # Slash commands authorization
+    BASE_URL = "https://discord.com/api/v8"
+    headers = {
+        "Authorization": f"Bot {TOKEN}",
+    }
     async def start(self, *args, **kwargs):
         await self.db.connect()
         self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
@@ -145,6 +150,40 @@ class Haruka(commands.Bot):
                 return lst
             else:
                 return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
+
+
+    async def get_sauce(self, src) -> List[discord.Embed]:
+        lst = []
+        async with self.session.post("https://saucenao.com/search.php", data={"url": src}) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                results = soup.find_all(name="div", class_="result")
+                count = 1
+                for result in results:
+                    if len(lst) == 6:
+                        break
+                    try:
+                        if "hidden" in result.get("class"):
+                            break
+                        result = result.find(name="table", attrs={"class": "resulttable"})
+                        obj = result.find(name="div", attrs={"class": "resultimage"}).find(name="img")
+                        image_url = obj.get("src")
+                        obj = result.find(name="div", attrs={"class": "resultcontentcolumn"}).find(name="a")
+                        url = obj.get("href")
+                        obj = result.find(name="div", attrs={"class": "resultsimilarityinfo"})
+                        similarity = obj.get_text()
+                        em = discord.Embed(title=f"Displaying result #{count}", color=0x2ECC71)
+                        em.add_field(name="Sauce", value=url, inline=False)
+                        em.add_field(name="Similarity", value=similarity, inline=False)
+                        em.set_thumbnail(url=image_url)
+                        lst.append(em)
+                        count += 1
+                    except:
+                        continue
+                return lst
+            else:
+                return lst
 
 
     @staticmethod
@@ -238,3 +277,37 @@ class Music:
             await asyncio.sleep(0.4)
             while self.player.is_connected() and self.player.position < track.length:
                 await asyncio.sleep(0.4)
+
+
+# Register all slash commands
+async def slash_commands_register():
+    await bot.wait_until_ready()
+    json = [{
+        "name": "say",
+        "type": 1,
+        "description": "Say something - a very useful command",
+        "options": [{
+            "name": "content",
+            "description": "The string to repeat",
+            "type": 3,
+            "required": True,
+        }],
+    }, {
+        "name": "sauce",
+        "type": 1,
+        "description": "Find the image source with saucenao",
+        "options": [{
+            "name": "url",
+            "description": "The URL to the image",
+            "type": 3,
+            "required": True,
+        }]
+    }]
+    async with bot.session.put(
+        f"{bot.BASE_URL}/applications/{bot.user.id}/commands",
+        json = json,
+        headers = bot.headers,
+    ) as response:
+        print(f"HARUKA | Slash commands setup returned status code {response.status}:")
+        print(await response.text())
+bot.loop.create_task(slash_commands_register())

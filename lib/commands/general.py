@@ -8,11 +8,11 @@ from settings import *
 )
 async def _invite(cmd):
     em = discord.Embed(
-        title="Invite me to your server",
-        description="My invitation link: https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2151018320&scope=bot",
-        color=0x2ECC71
+        title = "Invite me to your server",
+        description = r"My invitation link: https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2151018320&scope=bot%20applications.commands",
+        color = 0x2ECC71,
     )
-    em.set_thumbnail(url=bot.user.avatar_url)
+    em.set_thumbnail(url=bot.user.avatar.url)
     await cmd.send(embed=em)
 
 
@@ -31,12 +31,12 @@ async def _info(cmd, *, user: discord.Member = None):
             description = f"**Name** {user.name}\n**Created at (UTC)** {user.created_at}\n**ID** {user.id}",
             color = 0x2ECC71,
         )
-        info_em.set_thumbnail(url = user.avatar_url)
+        info_em.set_thumbnail(url = user.avatar.url)
         info_em.set_footer(text="From private channel")
     elif isinstance(cmd.message.channel, discord.TextChannel):
-        name = user.name.replace("*", "\*")
+        name = user.name.replace("*", r"\*")
         if user.nick:
-            nick = user.nick.replace("*", "\*")
+            nick = user.nick.replace("*", r"\*")
         else:
             nick = user.name
         info_em = discord.Embed(
@@ -50,9 +50,9 @@ async def _info(cmd, *, user: discord.Member = None):
         )
         info_em.add_field(
             name = "Roles",
-            value = "\n".join(role.name.replace("*", "\*") for role in user.roles[1:])
+            value = "\n".join(role.name.replace("*", r"\*") for role in user.roles[1:])
         )
-        info_em.set_thumbnail(url = user.avatar_url)
+        info_em.set_thumbnail(url = user.avatar.url)
         info_em.set_footer(text = f"From {cmd.message.guild}")
     await cmd.send(embed=info_em)
 
@@ -99,7 +99,7 @@ async def _avatar(cmd, *, user: discord.User = None):
     ava_em = discord.Embed(
         description=f"This is <@!{user.id}>'s avatar:", color=0x2ECC71
     )
-    ava_em.set_image(url=user.avatar_url)
+    ava_em.set_image(url=user.avatar.url)
     await cmd.send(embed=ava_em)
 
 
@@ -120,7 +120,7 @@ async def _svinfo(cmd):
             + str(cmd.message.guild.member_count),
             color=0x2ECC71,
         )
-        sv_em.set_thumbnail(url=cmd.guild.icon_url)
+        sv_em.set_thumbnail(url=cmd.guild.icon.url)
         await cmd.send(embed=sv_em)
     elif isinstance(cmd.message.channel, discord.DMChannel):
         await cmd.send(

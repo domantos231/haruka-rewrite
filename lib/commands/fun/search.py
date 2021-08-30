@@ -71,7 +71,7 @@ async def _search(cmd, *, query):
     result = await main(query)
     if result is not None:
         desc = f"{result.meaning}\n---------------\n{result.example}"
-        desc.replace("*", "\*")
+        desc.replace("*", r"\*")
         if len(desc) > 4096:
             desc = desc[:4090] + " [...]"
         em = discord.Embed(
@@ -80,7 +80,7 @@ async def _search(cmd, *, query):
             url = result.url,
             color = 0x2ECC71,
         )
-        em.set_author(name=f"{cmd.author.name} searched for {query}", icon_url=cmd.author.avatar_url)
+        em.set_author(name=f"{cmd.author.name} searched for {query}", icon_url=cmd.author.avatar.url)
         em.set_footer(text="From Urban Dictionary")
         await cmd.send(embed=em)
     else:

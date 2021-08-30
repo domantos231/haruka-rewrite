@@ -143,7 +143,7 @@ async def _anime(cmd, *, query):
         choice = choices.index(str(reaction))
         id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url = await get(rslt[choice].id)
         em = discord.Embed(title=title, description=synopsis, color=0x2ECC71)
-        em.set_author(name=f"{cmd.author.name}'s request", icon_url=cmd.author.avatar_url)
+        em.set_author(name=f"{cmd.author.name}'s request", icon_url=cmd.author.avatar.url)
         em.set_thumbnail(url=image_url)
         em.add_field(name="Genres", value=", ".join(genres), inline=False)
         em.add_field(name="Score", value=score, inline=False)

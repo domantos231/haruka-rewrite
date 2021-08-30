@@ -64,7 +64,7 @@ async def _4cards(cmd, amt = None):
         )
         em.set_author(
             name = f"{cmd.author.name} bet 💲{_playing[id][1]} to play 4cards",
-            icon_url = cmd.author.avatar_url,
+            icon_url = cmd.author.avatar.url,
         )
         em.set_footer(text = "Please select a card")
         em.set_image(url = "attachment://4cards.png")
@@ -106,7 +106,7 @@ async def _4cards(cmd, amt = None):
     )
     em.set_author(
         name = f"{cmd.author.name} bet 💲{_playing[id][1]} to play 4cards",
-        icon_url = cmd.author.avatar_url,
+        icon_url = cmd.author.avatar.url,
     )
     lst = []
     for card in _playing[id][2].cards:
