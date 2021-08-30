@@ -4,7 +4,7 @@ from settings import *
 json = {
     "name": "avatar",
     "type": 1,
-    "description": "Find the image source with saucenao",
+    "description": "Get the avatar from a user.",
     "options": [{
         "name": "user",
         "description": "The target user to get the avatar from",
