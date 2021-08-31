@@ -17,7 +17,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
             inline=False,
         )
         help_em.add_field(
-            name="✨ Fun", value="```8ball, anime, card, hangman, sauce, search, roll```", inline=False
+            name="✨ Fun", value="```8ball, anime, card, hangman, roll, sauce, urban```", inline=False
         )
         help_em.add_field(
             name="💵 Economy",
