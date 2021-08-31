@@ -10,6 +10,28 @@ class MyAnimeListException(Exception):
     pass
 
 
+class AnimeSearchResult:
+    def __init__(self, title, id, url):
+        self._title = title
+        self._id = id
+        self._url = url
+
+
+    @property
+    def title(self):
+        return self._title
+
+
+    @property
+    def id(self):
+        return self._id
+
+
+    @property
+    def url(self):
+        return self._url
+
+
 class Pet:
     @property
     def lv(self):

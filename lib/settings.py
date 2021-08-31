@@ -212,7 +212,25 @@ class Haruka(commands.Bot):
                 return lst
     
 
-    async def get_anime(self, id):
+    async def search_anime(self, query) -> List[AnimeSearchResult]:
+        rslt = []
+        url = f"https://myanimelist.net/anime.php?q={query}"
+        async with self.session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                obj = soup.find_all(name = "a", attrs = {"class": "hoverinfo_trigger fw-b fl-l"}, limit = 6)
+                for tag in obj:
+                    url = tag.get("href")
+                    id = int(url.split("/")[4])
+                    title = tag.get_text()
+                    rslt.append(AnimeSearchResult(title, id, url))
+            else:
+                raise MyAnimeListException
+            return rslt
+    
+
+    async def get_anime(self, id) -> Tuple[str, int]:
         url = f"https://myanimelist.net/anime/{id}"
         async with self.session.get(url) as response:
             if response.status == 200:

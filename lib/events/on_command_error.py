@@ -2,6 +2,7 @@ import discord
 import traceback
 from discord.ext import commands
 from settings import *
+from load import *
 
 
 @bot.event
@@ -34,6 +35,8 @@ async def on_command_error(cmd, error):
         await cmd.send("🚫 You do not have the permission to invoke this command.")
     elif isinstance(error, commands.UserInputError):
         await cmd.send("📝 Please check your input again.")
+    elif isinstance(error, MyAnimeListException):
+        await cmd.send("🌎 Cannot connect to MyAnimeList.")
     else:
         traceback.print_tb(error.__traceback__)
         print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} ({error.__class__.__name__})")
