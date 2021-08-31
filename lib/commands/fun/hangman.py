@@ -1,7 +1,6 @@
 import asyncio
 import aiohttp
 import discord
-from bs4 import BeautifulSoup as bs
 from discord.ext import commands
 from random import choice
 from settings import *

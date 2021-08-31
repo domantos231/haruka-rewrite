@@ -2,7 +2,6 @@ import aiohttp
 import asyncio
 import discord
 from discord.ext import commands
-from bs4 import BeautifulSoup
 from settings import *
 from load import *
 
@@ -40,4 +39,9 @@ async def _anime(cmd, *, query):
         choice = choices.index(str(reaction))
         anime = await bot.get_anime(rslt[choice].id)
         await msg.delete()
-        await cmd.send(embed = anime.create_embed(user = cmd.author))
+        em = anime.create_embed()
+        em.set_author(
+            name = f"{cmd.author.name}'s request",
+            icon_url = cmd.author.avatar.url,
+        )
+        await cmd.send(embed = em)

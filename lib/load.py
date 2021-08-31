@@ -147,18 +147,12 @@ class Anime:
         return list(genre.get_text() for genre in genres_)
     
 
-    def create_embed(self, **options) -> discord.Embed:
-        user = options.get("user")
+    def create_embed(self) -> discord.Embed:
         em = discord.Embed(
             title = self.title,
             description = self.synopsis,
             color = 0x2ECC71,
         )
-        if isinstance(user, discord.User):
-            em.set_author(
-                name = f"{user.name}'s request",
-                icon_url = user.avatar.url,
-            )
         em.set_thumbnail(url = self.image_url)
         em.add_field(
             name = "Genres",
@@ -198,6 +192,35 @@ class Anime:
             inline = False,
         )
         return em
+
+
+class UrbanSearch:
+    def __init__(self, title, meaning, example, url):
+        self._title = title
+        self._meaning = meaning
+        self._example = example
+        self._url = url
+        
+        
+    @property
+    def title(self):
+        return self._title
+
+
+    @property
+    def meaning(self):
+        return self._meaning
+
+
+    @property
+    def example(self):
+        return self._example
+
+
+    @property
+    def url(self):
+        return self._url
+
 
 
 class Pet:

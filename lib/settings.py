@@ -11,7 +11,7 @@ import wavelink
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
 from discord.ext import tasks, commands
-from typing import *
+from typing import Optional, List
 from load import *
 
 
@@ -239,6 +239,33 @@ class Haruka(commands.Bot):
                 return Anime(id, soup)
             else:
                 raise MyAnimeListException("Cannot connect to MyAnimeList")
+
+
+    async def search_urban(self, word) -> Optional[UrbanSearch]:
+        url = f"https://www.urbandictionary.com/define.php"
+        params = {
+            "term": word,
+        }
+        async with self.session.get(url, params=params) as response:
+            if response.status == 200:
+                html = await response.text()
+                html = html.replace("<br/>", "\n").replace("\r", "\n")
+                soup = bs(html, "html.parser")
+                obj = soup.find(name="div", attrs={"class": "def-header"})
+                title = obj.get_text()
+                try:
+                    obj = soup.find(name="div", attrs={"class": "meaning"})
+                    meaning = "\n".join(i for i in obj.get_text().split("\n") if len(i) > 0)
+                except:
+                    meaning = None
+                try:
+                    obj = soup.find(name="div", attrs={"class": "example"})
+                    example = "\n".join(i for i in obj.get_text().split("\n") if len(i) > 0)
+                except:
+                    example = None
+                return UrbanSearch(title, meaning, example, response.url)
+            else:
+                return
 
 
     async def get_player(self, id):
