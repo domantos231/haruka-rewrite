@@ -15,40 +15,16 @@ json = {
 
 
 @bot.slash(json)
-async def sauce_(data):
-    results = await bot.get_sauce(data["options"][0]["value"])
-    id = data["id"]
-    token = data["token"]
+async def sauce_(interaction):
+    id = interaction.id
+    token = interaction.token
+    response = interaction.response
+    await response.defer()
+    results = await bot.get_sauce(interaction.data["options"][0]["value"])
     if not results:
-        json = {
-            "type": 4,
-            "data": {
-                "content": "Cannot find the image sauce.",
-            }
-        }
-        async with bot.session.post(
-            f"{bot.BASE_URL}/interactions/{id}/{token}/callback",
-            json = json,
-        ) as response:
-            if not int(response.status/100) == 2:
-                print(f"HARUKA | Response of command 'sauce' returned status code {response.status}:")
-                print(await response.text())
+        await interaction.followup.send(content = "Cannot find the image sauce.")
     else:
-        embed = results[0].to_dict()
-        embed["title"] = "Displaying the first result"
-        embed["footer"] = {
-            "text": "For all results, consider using the text command"
-        }
-        json = {
-            "type": 4,
-            "data": {
-                "embeds": [embed],
-            }
-        }
-        async with bot.session.post(
-            f"{bot.BASE_URL}/interactions/{id}/{token}/callback",
-            json = json,
-        ) as response:
-            if not int(response.status/100) == 2:
-                print(f"HARUKA | Response of command 'sauce' returned status code {response.status}:")
-                print(await response.text())
+        embed = results[0]
+        embed.title = "Displaying the first result"
+        embed.set_footer(text = "For all results, consider using the text command")
+        await interaction.followup.send(embed = embed)

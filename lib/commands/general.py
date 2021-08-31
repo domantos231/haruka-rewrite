@@ -96,11 +96,13 @@ async def _say(cmd, *, arg):
 async def _avatar(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
-    ava_em = discord.Embed(
-        description=f"This is <@!{user.id}>'s avatar:", color=0x2ECC71
+    ava_em = discord.Embed(color = 0x2ECC71)
+    ava_em.set_author(
+        name = f"This is {user.name}'s avatar",
+        icon_url = bot.user.avatar.url,
     )
-    ava_em.set_image(url=user.avatar.url)
-    await cmd.send(embed=ava_em)
+    ava_em.set_image(url = user.avatar.url)
+    await cmd.send(embed = ava_em)
 
 
 @bot.command(

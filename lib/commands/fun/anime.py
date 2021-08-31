@@ -1,7 +1,6 @@
 import aiohttp
 import asyncio
 import discord
-import gc
 from discord.ext import commands
 from bs4 import BeautifulSoup
 from settings import *
@@ -39,20 +38,6 @@ async def _anime(cmd, *, query):
         return
     else:
         choice = choices.index(str(reaction))
-        id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url = await bot.get_anime(rslt[choice].id)
-        em = discord.Embed(title=title, description=synopsis, color=0x2ECC71)
-        em.set_author(name=f"{cmd.author.name}'s request", icon_url=cmd.author.avatar.url)
-        em.set_thumbnail(url=image_url)
-        em.add_field(name="Genres", value=", ".join(genres), inline=False)
-        em.add_field(name="Score", value=score, inline=False)
-        em.add_field(name="Aired", value=aired)
-        em.add_field(name="Ranked", value=ranked)
-        em.add_field(name="Popularity", value=popularity)
-        em.add_field(name="Episodes", value=episodes)
-        em.add_field(name="Type", value=type)
-        em.add_field(name="Broadcast", value=broadcast)
-        em.add_field(name="Link reference", value=f"[MyAnimeList link]({url})", inline=False)
+        anime = await bot.get_anime(rslt[choice].id)
         await msg.delete()
-        await cmd.send(embed=em)
-        del em, id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
-        gc.collect()
+        await cmd.send(embed = anime.create_embed(user = cmd.author))

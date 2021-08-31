@@ -1,3 +1,4 @@
+import discord
 import math
 import os
 import random
@@ -30,6 +31,173 @@ class AnimeSearchResult:
     @property
     def url(self):
         return self._url
+
+
+class Anime:
+    def __init__(self, id, soup):
+        self.id = id
+        self.soup = soup
+    
+
+    @property
+    def url(self) -> str:
+        return f"https://myanimelist.net/anime/{self.id}"
+
+
+    @property
+    def title(self) -> str:
+        obj = self.soup.find(name = "h1")
+        return obj.get_text()
+    
+
+    @property
+    def image_url(self) -> str:
+        obj = self.soup.find(name="img", attrs = {"itemprop": "image"})
+        return obj.get("data-src")
+    
+
+    @property
+    def score(self) -> Optional[float]:
+        try:
+            obj = self.soup.find(name = "span", attrs = {"itemprop": "ratingValue"})
+            return float(obj.get_text())
+        except:
+            return
+    
+
+    @property
+    def ranked(self) -> Optional[int]:
+        try:
+            obj = self.soup.find(name = "span", attrs = {"itemprop": "ratingCount"})
+            return int(obj.get_text())
+        except:
+            return
+    
+
+    @property
+    def popularity(self) -> Optional[int]:
+        try:
+            obj = self.soup.find(name = "span", attrs = {"class": "numbers popularity"}).strong.extract()
+            return int(obj.get_text()[1:])
+        except:
+            return
+    
+
+    @property
+    def synopsis(self) -> Optional[str]:
+        try:
+            obj = self.soup.find(name = "meta", attrs = {"property": "og:description"})
+            return obj.get("content")
+        except:
+            return
+    
+
+    @property
+    def type(self) -> Optional[str]:
+        try:
+            obj = self.soup.find(name="span", string="Type:").parent.a.extract()
+            return obj.get_text()
+        except:
+            return
+
+
+    @property
+    def episodes(self) -> Optional[int]:
+        try:
+            obj = self.soup.find(name="span", string="Episodes:").parent
+            obj.span.extract()
+            return int(obj.get_text(strip=True))
+        except:
+            return
+    
+
+    @property
+    def status(self) -> Optional[str]:
+        try:
+            obj = self.soup.find(name="span", string="Status:").parent
+            obj.span.extract()
+            return obj.get_text(strip=True)
+        except:
+            return
+    
+
+    @property
+    def aired(self) -> Optional[str]:
+        try:
+            obj = self.soup.find(name="span", string="Aired:").parent
+            obj.span.extract()
+            return obj.get_text(strip=True)
+        except:
+            return
+    
+
+    @property
+    def broadcast(self) -> Optional[str]:
+        try:
+            obj = self.soup.find(name="span", string="Broadcast:").parent
+            obj.span.extract()
+            return obj.get_text(strip=True)
+        except:
+            return
+    
+
+    @property
+    def genres(self) -> List[str]:
+        genres_ = self.soup.find_all(name="span", attrs = {"itemprop": "genre"})
+        return list(genre.get_text() for genre in genres_)
+    
+
+    def create_embed(self, **options) -> discord.Embed:
+        user = options.get("user")
+        em = discord.Embed(
+            title = self.title,
+            description = self.synopsis,
+            color = 0x2ECC71,
+        )
+        if isinstance(user, discord.User):
+            em.set_author(
+                name = f"{user.name}'s request",
+                icon_url = user.avatar.url,
+            )
+        em.set_thumbnail(url = self.image_url)
+        em.add_field(
+            name = "Genres",
+            value = ", ".join(self.genres),
+            inline = False,
+        )
+        em.add_field(
+            name = "Score",
+            value = self.score,
+            inline = False,
+        )
+        em.add_field(
+            name = "Aired",
+            value = self.aired,
+        )
+        em.add_field(
+            name = "Ranked",
+            value = self.ranked,
+        )
+        em.add_field(
+            name = "Popularity",
+            value = self.popularity,
+        )
+        em.add_field(
+            name = "Episodes",
+            value = self.episodes,
+        )
+        em.add_field(
+            name = "Type",
+            value = self.type)
+        em.add_field(
+            name = "Broadcast",
+            value = self.broadcast)
+        em.add_field(
+            name = "Link reference",
+            value = f"[MyAnimeList link]({self.url})",
+            inline = False,
+        )
+        return em
 
 
 class Pet:
