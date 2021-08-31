@@ -217,7 +217,7 @@ class Haruka(commands.Bot):
         async with self.session.get(url) as response:
             if response.status == 200:
                 html = await response.text()
-                soup = BeautifulSoup(html, "html.parser")
+                soup = bs(html, "html.parser")
                 obj = soup.find(name = "h1")
                 title = obj.get_text()
                 obj = soup.find(name="img", attrs = {"itemprop": "image"})
