@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from settings import *
 
 
-class SearchResult:
+class AnimeSearchResult:
     def __init__(self, title, id, url):
         self._title = title
         self._id = id
@@ -27,77 +27,6 @@ class SearchResult:
     @property
     def url(self):
         return self._url
-
-
-async def get(id):
-    url = f"https://myanimelist.net/anime/{id}"
-    async with bot.session.get(url) as response:
-        if response.status == 200:
-            html = await response.text()
-            soup = BeautifulSoup(html, "html.parser")
-            obj = soup.find(name = "h1")
-            title = obj.get_text()
-            obj = soup.find(name="img", attrs = {"itemprop": "image"})
-            image_url = obj.get("data-src")
-            try:
-                obj = soup.find(name = "span", attrs = {"itemprop": "ratingValue"})
-                score = float(obj.get_text())
-            except:
-                score = None
-            try:
-                obj = soup.find(name = "span", attrs = {"itemprop": "ratingCount"})
-                ranked = int(obj.get_text())
-            except:
-                ranked = None
-            try:
-                obj = soup.find(name = "span", attrs = {"class": "numbers popularity"}).strong.extract()
-                popularity = int(obj.get_text()[1:])
-            except:
-                popularity = None
-            try:
-                obj = soup.find(name = "meta", attrs = {"property": "og:description"})
-                synopsis = obj.get("content")
-            except:
-                synopsis = None
-            try:
-                obj = soup.find(name="span", string="Type:").parent.a.extract()
-                type = obj.get_text()
-            except:
-                type = None
-            try:
-                obj = soup.find(name="span", string="Episodes:").parent
-                obj.span.extract()
-                episodes = int(obj.get_text(strip=True))
-            except:
-                episodes = None
-            try:
-                obj = soup.find(name="span", string="Status:").parent
-                obj.span.extract()
-                status = obj.get_text(strip=True)
-            except:
-                status = None
-            try:
-                obj = soup.find(name="span", string="Aired:").parent
-                obj.span.extract()
-                aired = obj.get_text(strip=True)
-            except:
-                aired = None
-            try:
-                obj = soup.find(name="span", string="Broadcast:").parent
-                obj.span.extract()
-                broadcast = obj.get_text(strip=True)
-            except:
-                broadcast = None
-            genres = []
-            try:
-                obj = soup.find_all(name="span", attrs = {"itemprop": "genre"})
-                for genre in obj:
-                    genres.append(genre.get_text())
-            except:
-                pass
-        else:
-            await cmd.send("Unable to connect to server")
-        return id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url
 
 
 @bot.command(
@@ -121,7 +50,7 @@ async def _anime(cmd, *, query):
                 url = tag.get("href")
                 id = int(url.split("/")[4])
                 title = tag.get_text()
-                rslt.append(SearchResult(title, id, url))
+                rslt.append(AnimeSearchResult(title, id, url))
     n = len(rslt)
     desc = "\n".join(f"**#{i+1}** {rslt[i].title}" for i in range(n))
     em = discord.Embed(title=f"Search results for {query}", description=desc, color=0x2ECC71)
@@ -141,7 +70,7 @@ async def _anime(cmd, *, query):
         return
     else:
         choice = choices.index(str(reaction))
-        id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url = await get(rslt[choice].id)
+        id, title, image_url, score, ranked, popularity, synopsis, type, episodes, status, aired, broadcast, genres, url = await bot.get_anime(rslt[choice].id)
         em = discord.Embed(title=title, description=synopsis, color=0x2ECC71)
         em.set_author(name=f"{cmd.author.name}'s request", icon_url=cmd.author.avatar.url)
         em.set_thumbnail(url=image_url)

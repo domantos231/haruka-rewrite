@@ -6,6 +6,10 @@ from typing import *
 from copy import deepcopy
 
 
+class MyAnimeListException(Exception):
+    pass
+
+
 class Pet:
     @property
     def lv(self):
