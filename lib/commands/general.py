@@ -134,3 +134,12 @@ async def _svinfo(cmd):
         )
     else:
         await cmd.send("Unsupported channel")
+
+
+@bot.command(
+    name = "ping",
+    description = "Measures latency between a HEARTBEAT and a HEARTBEAT_ACK (from the bot to Discord WebSocket).",
+)
+@commands.cooldown(1, 3, commands.BucketType.user)
+async def ping(cmd):
+    await cmd.send("🏓 **Pong!** | {:.2f} ms".format(1000 * bot.latency))
