@@ -222,6 +222,20 @@ class UrbanSearch:
         return self._url
 
 
+    def create_embed(self) -> discord.Embed:
+        desc = f"{self.meaning}\n---------------\n{self.example}"
+        desc.replace("*", r"\*")
+        if len(desc) > 4096:
+            desc = desc[:4090] + " [...]"
+        em = discord.Embed(
+            title = f"{self.title}",
+            description = desc,
+            url = self.url,
+            color = 0x2ECC71,
+        )
+        em.set_footer(text="From Urban Dictionary")
+        return em
+
 
 class Pet:
     @property
