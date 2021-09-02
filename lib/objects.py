@@ -7,10 +7,6 @@ from typing import *
 from copy import deepcopy
 
 
-class MyAnimeListException(Exception):
-    pass
-
-
 class AnimeSearchResult:
     def __init__(self, title, id, url):
         self._title = title

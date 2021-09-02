@@ -35,5 +35,5 @@ async def anime_(interaction):
             )
             embed.set_footer(text = "For all results, consider using the text command")
             await interaction.followup.send(embed = embed)
-        except (MyAnimeListException, IndexError):
+        except IndexError:
             await interaction.followup.send(content = "No matching results found.")

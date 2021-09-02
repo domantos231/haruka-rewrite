@@ -225,12 +225,10 @@ class Haruka(commands.Bot):
                     id = int(url.split("/")[4])
                     title = tag.get_text()
                     rslt.append(AnimeSearchResult(title, id, url))
-            else:
-                raise MyAnimeListException
             return rslt
     
 
-    async def get_anime(self, id) -> Anime:
+    async def get_anime(self, id) -> Optional[Anime]:
         url = f"https://myanimelist.net/anime/{id}"
         async with self.session.get(url) as response:
             if response.status == 200:
@@ -238,7 +236,7 @@ class Haruka(commands.Bot):
                 soup = bs(html, "html.parser")
                 return Anime(id, soup)
             else:
-                raise MyAnimeListException("Cannot connect to MyAnimeList")
+                return
 
 
     async def search_urban(self, word) -> Optional[UrbanSearch]:
