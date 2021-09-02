@@ -81,7 +81,7 @@ class db:
 
     @property
     def conn(self):
-        if self.count == self._maximum_connections - 1:
+        if self.count == len(self._connection) - 1:
             self.count = 0
         else:
             self.count += 1
@@ -166,7 +166,7 @@ class Haruka(commands.Bot):
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
-                obj = str(soup.find(name="body"))
+                obj = str(soup.find(name = "body"))
                 matches = re.finditer(giphy_pattern_regex, obj)
                 for match in matches:
                     if match.group() not in lst:
@@ -184,7 +184,7 @@ class Haruka(commands.Bot):
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
-                results = soup.find_all(name="div", class_="result")
+                results = soup.find_all(name = "div", class_ = "result")
                 count = 1
                 for result in results:
                     if len(lst) == 6:
@@ -192,17 +192,39 @@ class Haruka(commands.Bot):
                     try:
                         if "hidden" in result.get("class"):
                             break
-                        result = result.find(name="table", attrs={"class": "resulttable"})
-                        obj = result.find(name="div", attrs={"class": "resultimage"}).find(name="img")
+                        result = result.find(
+                            name = "table",
+                            attrs = {"class": "resulttable"}
+                        )
+                        obj = result.find(
+                            name = "div",
+                            attrs = {"class": "resultimage"}
+                        ).find(name = "img")
                         image_url = obj.get("src")
-                        obj = result.find(name="div", attrs={"class": "resultcontentcolumn"}).find(name="a")
+                        obj = result.find(
+                            name = "div",
+                            attrs = {"class": "resultcontentcolumn"}
+                        ).find(name = "a")
                         url = obj.get("href")
-                        obj = result.find(name="div", attrs={"class": "resultsimilarityinfo"})
+                        obj = result.find(
+                            name = "div",
+                            attrs = {"class": "resultsimilarityinfo"}
+                        )
                         similarity = obj.get_text()
-                        em = discord.Embed(title=f"Displaying result #{count}", color=0x2ECC71)
-                        em.add_field(name="Sauce", value=url, inline=False)
-                        em.add_field(name="Similarity", value=similarity, inline=False)
-                        em.set_thumbnail(url=image_url)
+                        em = discord.Embed(
+                            title = f"Displaying result #{count}",
+                            color = 0x2ECC71)
+                        em.add_field(
+                            name = "Sauce",
+                            value = url,
+                            inline = False
+                        )
+                        em.add_field(
+                            name = "Similarity",
+                            value = similarity,
+                            inline = False
+                        )
+                        em.set_thumbnail(url = image_url)
                         lst.append(em)
                         count += 1
                     except:
@@ -219,7 +241,11 @@ class Haruka(commands.Bot):
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
-                obj = soup.find_all(name = "a", attrs = {"class": "hoverinfo_trigger fw-b fl-l"}, limit = 6)
+                obj = soup.find_all(
+                    name = "a",
+                    attrs = {"class": "hoverinfo_trigger fw-b fl-l"},
+                    limit = 6,
+                )
                 for tag in obj:
                     url = tag.get("href")
                     id = int(url.split("/")[4])

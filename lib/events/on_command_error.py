@@ -60,6 +60,7 @@ async def on_command_error(cmd, error):
             if isinstance(cmd.channel, discord.TextChannel):
                 await cmd.send("🔒 I'm currently not having enough permissions to function properly.")
             else:
+                error = error.original
                 await notify_error(cmd, error)
                 report = True
     else:
