@@ -5,8 +5,28 @@ from settings import *
 from objects import *
 
 
+async def notify_error(cmd, error):
+    try:
+        await cmd.send(f"🔧 An error has just occurred, hope it will be fixed soon.")
+    except Exception as ex:
+        print(f"HARUKA | An exception occurred when trying to send a notification message:")
+        traceback.print_tb(ex.__traceback__)
+        print(f"HARUKA | {ex}")
+    else:
+        print("HARUKA | Notification message was successfully sent.")
+
+
+async def report_error(cmd, error):
+    traceback.print_tb(error.__traceback__)
+    print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} ({error.__class__.__name__})")
+    print(f"HARUKA | {error}")
+    file = discord.File("./log.txt")
+    await bot.get_user(ME).send(f"<@!{ME}> An error has just occured in `{cmd.guild}/{cmd.channel}`. This is the report.", file=file)
+
+
 @bot.event
 async def on_command_error(cmd, error):
+    report = False
     if isinstance(error, commands.CommandNotFound):
         pass
     elif isinstance(error, commands.CommandOnCooldown):
@@ -35,22 +55,16 @@ async def on_command_error(cmd, error):
         await cmd.send("🚫 You do not have the permission to invoke this command.")
     elif isinstance(error, commands.UserInputError):
         await cmd.send("📝 Please check your input again.")
-    elif isinstance(error, discord.Forbidden):
-        if isinstance(cmd.channel, discord.TextChannel):
-            await cmd.send("🔒 I'm currently not having enough permissions to function properly.")
-        else:
-            pass
+    elif isinstance(error, commands.CommandInvokeError):
+        if isinstance(error.original, discord.Forbidden):
+            if isinstance(cmd.channel, discord.TextChannel):
+                await cmd.send("🔒 I'm currently not having enough permissions to function properly.")
+            else:
+                await notify_error(cmd, error)
+                report = True
     else:
-        traceback.print_tb(error.__traceback__)
-        print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} ({error.__class__.__name__})")
-        print(f"HARUKA | {error}")
-        try:
-            await cmd.send(f"🔧 An error has just occurred, hope it will be fixed soon.")
-        except Exception as ex:
-            print(f"HARUKA | Another exception occurred when trying to send a notification message:")
-            traceback.print_tb(ex.__traceback__)
-            print(f"HARUKA | {ex}")
-        else:
-            print("HARUKA | Notification message was successfully sent.")
-        file = discord.File("./log.txt")
-        await bot.get_user(ME).send(f"<@!{ME}> An error has just occured in `{cmd.guild}/{cmd.channel}`. This is the report.", file=file)
+        await notify_error(cmd, error)
+        report = True
+    
+    if report:
+        await report_error(cmd, error)
