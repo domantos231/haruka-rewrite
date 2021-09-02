@@ -1,5 +1,5 @@
 from settings import *
-from load import *
+from objects import *
 
 
 @bot.event

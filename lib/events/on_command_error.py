@@ -2,7 +2,7 @@ import discord
 import traceback
 from discord.ext import commands
 from settings import *
-from load import *
+from objects import *
 
 
 @bot.event

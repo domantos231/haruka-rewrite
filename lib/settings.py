@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
 from discord.ext import tasks, commands
 from typing import Optional, List
-from load import *
+from objects import *
 
 
 # Set up logging and garbage collector

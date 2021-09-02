@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from settings import *
-from load import *
+from objects import *
 
 
 @bot.command(
