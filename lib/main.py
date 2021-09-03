@@ -18,18 +18,5 @@ if __name__ == "__main__":
         print(f"HARUKA | Logged in as {bot.user} | Running in {len(bot.guilds)} servers.")
 
 
-    async def cancel():
-        await bot.db.close()
-
-
-    # Run bot
-    try:
-        bot.loop.run_until_complete(bot.start(TOKEN))
-    except Exception as ex:
-        traceback.print_tb(ex.__traceback__)
-        print(f"HARUKA | An exception occured: {ex}")
-        bot.loop.run_until_complete(bot.close())
-    finally:
-        print("HARUKA | Terminating bot")
-        bot.loop.close()
-        asyncio.run(cancel())
+    # Run the bot
+    bot.run(TOKEN)

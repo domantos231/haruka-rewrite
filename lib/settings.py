@@ -10,13 +10,13 @@ import sys
 import wavelink
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
-from discord.ext import tasks, commands
+from discord.ext import commands
 from typing import Optional, List
 from objects import *
 
 
 # Set up logging and garbage collector
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level = logging.INFO)
 gc.enable()
 
 
@@ -41,7 +41,8 @@ giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 # asyncpg class for database connection
 class db:
     _maximum_connections = int(sys.argv[1])
-    def __init__(self):
+    def __init__(self, url):
+        self.DATABASE_URL = url
         self.count = -1
         self._connection = []
 
@@ -49,7 +50,7 @@ class db:
     async def connect(self):
         for i in range(self._maximum_connections):
             try:
-                connection = await asyncpg.connect(DATABASE_URL)
+                connection = await asyncpg.connect(self.DATABASE_URL)
             except:
                 pass
             else:
@@ -103,6 +104,7 @@ async def prefix(bot, message):
 
 
 class Haruka(commands.Bot):
+    db = db(DATABASE_URL)
     # Slash commands authorization
     BASE_URL = "https://discord.com/api/v8"
     headers = {
@@ -164,6 +166,13 @@ class Haruka(commands.Bot):
 
             # Start the bot
             await super().start(*args, **kwargs)
+    
+
+    async def close(self):
+        await self.db.close()
+        file = discord.File("./log.txt")
+        await self.get_user(ME).send(f"<@!{ME}> Powering off. This is the final report.", file = file)
+        await super().close()
     
 
     async def get_wordlist(self):
@@ -333,7 +342,6 @@ intents = discord.Intents.default()
 intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
 bot = Haruka(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
-bot.db = db()
 
 
 # Initialize wavelink nodes
