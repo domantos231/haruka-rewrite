@@ -125,6 +125,25 @@ class Haruka(commands.Bot):
         return decorator
 
 
+    async def overwrite_slash_commands(self):
+        # Wait until ready so that the "user" attribute is available
+        await self.wait_until_ready()
+
+        # Now register all slash commands
+        print("HARUKA | Overwriting slash commands: " + ", ".join(json["name"] for json in self.json))
+        async with self.session.put(
+            f"{self.BASE_URL}/applications/{self.user.id}/commands",
+            json = self.json,
+            headers = self.headers,
+        ) as response:
+            print(f"HARUKA | Slash commands setup returned status code {response.status}:")
+            print(await response.text())
+    
+
+    async def process_slash_commands(self, interaction: discord.Interaction):
+        await self.slash_commands[interaction.data["name"]](interaction)
+    
+
     async def start(self, *args, **kwargs):
         await self.db.connect()
         
@@ -307,25 +326,6 @@ class Haruka(commands.Bot):
         win = row["win"]
         total = row["total"]
         return EconomyPlayer(amt, time, bank, interest, pet, win, total)
-    
-
-    async def overwrite_slash_commands(self):
-        # Wait until ready so that the "user" attribute is available
-        await self.wait_until_ready()
-
-        # Now register all slash commands
-        print("HARUKA | Overwriting slash commands: " + ", ".join(json["name"] for json in self.json))
-        async with self.session.put(
-            f"{self.BASE_URL}/applications/{self.user.id}/commands",
-            json = self.json,
-            headers = self.headers,
-        ) as response:
-            print(f"HARUKA | Slash commands setup returned status code {response.status}:")
-            print(await response.text())
-    
-
-    async def process_slash_commands(self, interaction: discord.Interaction):
-        await self.slash_commands[interaction.data["name"]](interaction)
     
 
 # Initialize bot

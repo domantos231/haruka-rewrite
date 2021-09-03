@@ -18,8 +18,8 @@ async def notify_error(cmd, error):
 
 async def record_error(cmd, error):
     traceback.print_tb(error.__traceback__)
-    print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel} ({error.__class__.__name__})")
-    print(f"HARUKA | {error}")
+    print(f"HARUKA | '{cmd.message.content}' in {cmd.guild}/{cmd.channel}:")
+    print(f"HARUKA | {error.__class__.__name__}: {error}")
 
 
 async def report_error():
@@ -32,22 +32,16 @@ async def on_command_error(cmd, error):
     report = False
 
     if isinstance(error, commands.CommandNotFound):
-        """
-        Exception raised when a command is attempted to be invoked but no command under that name is found.
-        This is not raised for invalid subcommands, rather just the initial main command that is attempted to be invoked.
-        """
+        """Exception raised when a command is attempted to be invoked but no command under that name is found.
+        This is not raised for invalid subcommands, rather just the initial main command that is attempted to be invoked."""
         pass
 
     elif isinstance(error, commands.UserInputError):
-        """
-        The base exception type for errors that involve errors regarding user input.
-        """
+        """The base exception type for errors that involve errors regarding user input."""
         await cmd.send("📝 Please check your input again.")
 
     elif isinstance(error, commands.CommandOnCooldown):
-        """
-        Exception raised when the command being invoked is on cooldown.
-        """
+        """Exception raised when the command being invoked is on cooldown."""
         seconds = error.retry_after
         days = int(seconds / 86400)
         seconds -= days * 86400
@@ -70,26 +64,21 @@ async def on_command_error(cmd, error):
     
     # These are the subclasses of commands.CheckFailure
     elif isinstance(error, commands.NotOwner):
-        """
-        Exception raised when the message author is not the owner of the bot.
-        """
+        """Exception raised when the message author is not the owner of the bot."""
         await cmd.send("💻 This command is available for developers only.")
     elif isinstance(error, commands.MissingPermissions):
-        """
-        Exception raised when the command invoker lacks permissions to run a command.
-        """
+        """Exception raised when the command invoker lacks permissions to run a command."""
         await cmd.send("🚫 You do not have the permission to invoke this command.")
+    elif isinstance(error, commands.CheckFailure):
+        """Exception raised when the predicates in commands.Command.checks have failed."""
+        pass
     
     elif isinstance(error, discord.Forbidden):
-        """
-        Exception that’s raised for when status code 403 occurs.
-        """
+        """Exception that’s raised for when status code 403 occurs."""
         pass
 
     elif isinstance(error, commands.CommandInvokeError):
-        """
-        Exception raised when the command being invoked raised an exception.
-        """
+        """Exception raised when the command being invoked raised an exception."""
         if isinstance(error.original, discord.Forbidden):
             pass
         else:
