@@ -60,7 +60,7 @@ class db:
 
     async def initialization(self):
         await self.conn.execute("""
-        CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float, pet int[], win int, total int);
+        CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamptz, bank int, interest float, pet int[], win int, total int);
         CREATE TABLE IF NOT EXISTS prefix (id text, pref text);
         CREATE TABLE IF NOT EXISTS music (id text, queue text[]);
         """)
