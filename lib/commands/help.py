@@ -6,35 +6,37 @@ from settings import *
 class CustomHelpCommand(commands.MinimalHelpCommand):
     async def send_bot_help(self, mapping):
         help_em = discord.Embed(
-            title=f"{bot.user} command list",
-            description=f"Ping <@!{bot.user.id}> for prefix.\nTo get help on a command, type `{self.context.prefix}help <command>`",
-            color=0x2ECC71,
+            title = f"{bot.user} command list",
+            description = f"Ping <@!{bot.user.id}> for prefix.\nTo get help on a command, type `{self.context.prefix}help <command>`",
+            color = 0x2ECC71,
         )
         help_em.set_thumbnail(url=bot.user.avatar.url)
         help_em.add_field(
-            name="💬 General",
-            value="```avatar, emoji, help, info, invite, ping, prefix, say, svinfo```",
-            inline=False,
+            name = "💬 General",
+            value = "```avatar, emoji, help, info, invite, ping, prefix, say, svinfo```",
+            inline = False,
         )
         help_em.add_field(
-            name="✨ Fun", value="```8ball, anime, card, hangman, roll, sauce, urban```", inline=False
+            name = "✨ Fun",
+            value = "```8ball, anime, card, hangman, roll, sauce, urban```",
+            inline = False
         )
         help_em.add_field(
-            name="💵 Economy",
-            value="```4cards, account, bank, battle, blackjack, daily, dice, gacha, pet```",
-            inline=False,
+            name = "💵 Economy",
+            value = "```4cards, account, bank, battle, blackjack, daily, dice, gacha, pet```",
+            inline = False,
         )
         help_em.add_field(
-            name="🖼️ GIFs",
-            value="```cry, girl, hug, kiss, loli, punch```",
-            inline=False,
+            name = "🖼️ GIFs",
+            value = "```cry, girl, hug, kiss, loli, punch```",
+            inline = False,
         )
         help_em.add_field(
-            name="🎶 Music",
-            value="```add, pause, play, queue, remove, resume, stop```",
-            inline=False,
+            name = "🎶 Music",
+            value = "```add, pause, play, queue, remove, resume, stop```",
+            inline = False,
         )
-        await self.context.send(embed=help_em)
+        await self.context.send(embed = help_em)
     
 
     async def send_command_help(self, command: commands.Command):

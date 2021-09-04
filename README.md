@@ -6,21 +6,21 @@
 See the built-in `help` command for more details.
 ### General
 ```
-addbot, avatar, help, info, prefix, ...
+avatar, emoji, help, info, invite, ping, prefix, say, svinfo
 ```
 ### Fun
 ```
-8ball, anime, hangman, math, ...
+8ball, anime, card, hangman, roll, sauce, urban
 ```
 ### Economy
 ```
-account, bank, battle, daily, ...
+4cards, account, bank, battle, blackjack, daily, dice, gacha, pet
 ```
 ### GIFs
 ```
-cry, girl, hug, kiss, ...
+cry, girl, hug, kiss, loli, punch
 ```
 ### Music
 ```
-pause, play, queue, remove, ...
+add, pause, play, queue, remove, resume, stop
 ```
