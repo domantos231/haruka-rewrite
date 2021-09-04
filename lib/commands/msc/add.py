@@ -5,7 +5,11 @@ from settings import *
 from discord.ext import commands
 
 
-@bot.command(name="add")
+@bot.command(
+    name = "add",
+    description = "Search for a YouTube track and add to queue.",
+    usage = "add <query>",
+)
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _add(cmd, *, query):
     if not cmd.author.voice:
@@ -18,7 +22,7 @@ async def _add(cmd, *, query):
         tracks = await wavelink.YouTubeTrack.search(query=query)
         if tracks:
             em = discord.Embed(title=f"Search results for {query}", color=0x2ECC71)
-            em.set_author(name=f"{cmd.author.name}'s song request", icon_url=cmd.author.avatar_url)
+            em.set_author(name=f"{cmd.author.name}'s song request", icon_url=cmd.author.avatar.url)
             em.set_footer(text="This messagge will expire after 5 minutes.")
             for obj in enumerate(tracks[:6]):
                 track = obj[1]
@@ -44,7 +48,7 @@ async def _add(cmd, *, query):
             track = tracks[index]
             await channel.add(track)
             em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
-            em.set_author(name=f"{cmd.author.name} added 1 song to queue", icon_url=cmd.author.avatar_url)
+            em.set_author(name=f"{cmd.author.name} added 1 song to queue", icon_url=cmd.author.avatar.url)
             em.set_thumbnail(url=track.thumb)
             await msg.delete()
             await cmd.send(embed=em)

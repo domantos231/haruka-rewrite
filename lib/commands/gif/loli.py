@@ -5,7 +5,10 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="loli")
+@bot.command(
+    name = "loli",
+    description = "Get you a 2D loli but be aware of the FBI",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _loli(cmd):
     loli = await bot.giphy("anime-loli")

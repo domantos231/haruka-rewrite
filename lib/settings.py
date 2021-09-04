@@ -10,25 +10,28 @@ import sys
 import wavelink
 from bs4 import BeautifulSoup as bs
 from datetime import datetime as dt
-from discord.ext import tasks, commands
-from typing import *
-from load import *
+from discord.ext import commands
+from typing import Optional, List
+from objects import *
 
 
 # Set up logging and garbage collector
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level = logging.INFO)
 gc.enable()
 
 
 # Initialize environment variables
 TOKEN = os.environ["TOKEN"]
 DATABASE_URL = os.environ["DATABASE_URL"]
+ME = os.environ["ME"]
+ME = int(ME)
 
 
 # Define frequently used emoji lists
 checker = ["❌", "✔️"]
 choices = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣"]
 navigate = ["⬅️", "➡️"]
+bj = ["🔥", "🛑"]
 
 
 # Define giphy RegEx pattern
@@ -38,7 +41,8 @@ giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
 # asyncpg class for database connection
 class db:
     _maximum_connections = int(sys.argv[1])
-    def __init__(self):
+    def __init__(self, url):
+        self.DATABASE_URL = url
         self.count = -1
         self._connection = []
 
@@ -46,7 +50,7 @@ class db:
     async def connect(self):
         for i in range(self._maximum_connections):
             try:
-                connection = await asyncpg.connect(DATABASE_URL)
+                connection = await asyncpg.connect(self.DATABASE_URL)
             except:
                 pass
             else:
@@ -57,7 +61,7 @@ class db:
 
     async def initialization(self):
         await self.conn.execute("""
-        CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamp, bank int, interest float, pet int[], win int, total int);
+        CREATE TABLE IF NOT EXISTS economy (id text, amt int, time timestamptz, bank int, interest float, pet int[], win int, total int);
         CREATE TABLE IF NOT EXISTS prefix (id text, pref text);
         CREATE TABLE IF NOT EXISTS music (id text, queue text[]);
         """)
@@ -78,7 +82,7 @@ class db:
 
     @property
     def conn(self):
-        if self.count == self._maximum_connections - 1:
+        if self.count == len(self._connection) - 1:
             self.count = 0
         else:
             self.count += 1
@@ -100,17 +104,75 @@ async def prefix(bot, message):
 
 
 class Haruka(commands.Bot):
+    db = db(DATABASE_URL)
+    # Slash commands authorization
+    BASE_URL = "https://discord.com/api/v8"
+    headers = {
+        "Authorization": f"Bot {TOKEN}",
+    }
+    slash_commands = {}
+    json = []
+
+
+    def register_slash_command(self, coro, json):
+        if not asyncio.iscoroutinefunction(coro):
+            raise TypeError("Slash commands must be coroutine.")
+        self.slash_commands[json["name"]] = coro
+        self.json.append(json) 
+           
+
+    def slash(self, json):
+        def decorator(coro):
+            return self.register_slash_command(coro, json)
+        return decorator
+
+
+    async def overwrite_slash_commands(self):
+        # Wait until ready so that the "user" attribute is available
+        await self.wait_until_ready()
+
+        # Now register all slash commands
+        print("HARUKA | Overwriting slash commands: " + ", ".join(json["name"] for json in self.json))
+        async with self.session.put(
+            f"{self.BASE_URL}/applications/{self.user.id}/commands",
+            json = self.json,
+            headers = self.headers,
+        ) as response:
+            print(f"HARUKA | Slash commands setup returned status code {response.status}:")
+            print(await response.text())
+    
+
+    async def process_slash_commands(self, interaction: discord.Interaction):
+        await self.slash_commands[interaction.data["name"]](interaction)
+    
+
     async def start(self, *args, **kwargs):
         await self.db.connect()
-        self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
+        
+        # Create side session for other stuff
         async with aiohttp.ClientSession() as session:
             self.session = session
+
+            # Fetch wordlist from online website
+            self.wordlist = ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
             prelist = await self.get_wordlist()
             for word in prelist:
                 self.wordlist.append(word.lower())
             del prelist
             print(f"HARUKA | Fetched wordlist with {len(self.wordlist)} words.")
+
+            # Bulk overwrite all slash commands for the current session when the bot is ready
+            self.loop.create_task(self.overwrite_slash_commands())
+
+            # Start the bot
             await super().start(*args, **kwargs)
+    
+
+    async def close(self):
+        await self.db.close()
+        file = discord.File("./log.txt")
+        await self.get_user(ME).send(f"<@!{ME}> Powering off. This is the final report.", file = file)
+        await super().close()
     
 
     async def get_wordlist(self):
@@ -132,7 +194,7 @@ class Haruka(commands.Bot):
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
-                obj = str(soup.find(name="body"))
+                obj = str(soup.find(name = "body"))
                 matches = re.finditer(giphy_pattern_regex, obj)
                 for match in matches:
                     if match.group() not in lst:
@@ -144,9 +206,123 @@ class Haruka(commands.Bot):
                 return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
 
-    @staticmethod
-    async def get_player(id):
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{id}';")
+    async def get_sauce(self, src) -> List[discord.Embed]:
+        lst = []
+        async with self.session.post("https://saucenao.com/search.php", data={"url": src}) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                results = soup.find_all(name = "div", class_ = "result")
+                count = 1
+                for result in results:
+                    if len(lst) == 6:
+                        break
+                    try:
+                        if "hidden" in result.get("class"):
+                            break
+                        result = result.find(
+                            name = "table",
+                            attrs = {"class": "resulttable"}
+                        )
+                        obj = result.find(
+                            name = "div",
+                            attrs = {"class": "resultimage"}
+                        ).find(name = "img")
+                        image_url = obj.get("src")
+                        obj = result.find(
+                            name = "div",
+                            attrs = {"class": "resultcontentcolumn"}
+                        ).find(name = "a")
+                        url = obj.get("href")
+                        obj = result.find(
+                            name = "div",
+                            attrs = {"class": "resultsimilarityinfo"}
+                        )
+                        similarity = obj.get_text()
+                        em = discord.Embed(
+                            title = f"Displaying result #{count}",
+                            color = 0x2ECC71)
+                        em.add_field(
+                            name = "Sauce",
+                            value = url,
+                            inline = False
+                        )
+                        em.add_field(
+                            name = "Similarity",
+                            value = similarity,
+                            inline = False
+                        )
+                        em.set_thumbnail(url = image_url)
+                        lst.append(em)
+                        count += 1
+                    except:
+                        continue
+                return lst
+            else:
+                return lst
+    
+
+    async def search_anime(self, query) -> List[AnimeSearchResult]:
+        rslt = []
+        url = f"https://myanimelist.net/anime.php?q={query}"
+        async with self.session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                obj = soup.find_all(
+                    name = "a",
+                    attrs = {"class": "hoverinfo_trigger fw-b fl-l"},
+                    limit = 6,
+                )
+                for tag in obj:
+                    url = tag.get("href")
+                    id = int(url.split("/")[4])
+                    title = tag.get_text()
+                    rslt.append(AnimeSearchResult(title, id, url))
+            return rslt
+    
+
+    async def get_anime(self, id) -> Optional[Anime]:
+        url = f"https://myanimelist.net/anime/{id}"
+        async with self.session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                return Anime(id, soup)
+            else:
+                return
+
+
+    async def search_urban(self, word) -> Optional[UrbanSearch]:
+        url = f"https://www.urbandictionary.com/define.php"
+        params = {
+            "term": word,
+        }
+        async with self.session.get(url, params=params) as response:
+            if response.status == 200:
+                html = await response.text()
+                html = html.replace("<br/>", "\n").replace("\r", "\n")
+                soup = bs(html, "html.parser")
+                obj = soup.find(name="div", attrs={"class": "def-header"})
+                title = obj.get_text()
+                try:
+                    obj = soup.find(name="div", attrs={"class": "meaning"})
+                    meaning = "\n".join(i for i in obj.get_text().split("\n") if len(i) > 0)
+                except:
+                    meaning = None
+                try:
+                    obj = soup.find(name="div", attrs={"class": "example"})
+                    example = "\n".join(i for i in obj.get_text().split("\n") if len(i) > 0)
+                except:
+                    example = None
+                return UrbanSearch(title, meaning, example, response.url)
+            else:
+                return
+
+
+    async def get_player(self, id):
+        await self.wait_until_ready()
+        row = await self.db.conn.fetchrow(f"SELECT * FROM economy WHERE id = '{id}';")
         if not row:
             return None
         amt = row["amt"]
@@ -166,8 +342,6 @@ intents = discord.Intents.default()
 intents.members = True
 activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
 bot = Haruka(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
-bot.remove_command("help")
-bot.db = db()
 
 
 # Initialize wavelink nodes

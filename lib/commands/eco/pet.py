@@ -10,7 +10,11 @@ pets_per_page = 9
 inline = True
 
 
-@bot.command(name="pet")
+@bot.command(
+    name = "pet",
+    description = "See you or another user's pets",
+    usage = "pet <user | default: yourself>",
+)
 @commands.cooldown(1, 15, commands.BucketType.user)
 async def _pet(cmd, user: discord.Member=None):
     if user == None:
@@ -22,7 +26,7 @@ async def _pet(cmd, user: discord.Member=None):
     elif user.bot:
         await cmd.send(f"<@!{user.id}> is a bot user!")
     else:
-        id = str(user.id)
+        id = user.id
         player = await bot.get_player(id)
         if not player:
             return await cmd.send("This user has no data in my database!")

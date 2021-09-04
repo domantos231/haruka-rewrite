@@ -5,7 +5,10 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="cry")
+@bot.command(
+    name = "cry",
+    description = "Burst in tear?",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _cry(cmd):
     gifs = await bot.giphy("anime-cry")

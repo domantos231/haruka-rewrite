@@ -3,7 +3,11 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.group(name="activity", case_insensitive=True)
+@bot.group(
+    name = "activity",
+    description = "Change bot activity",
+    usage = "activity <watching/playing/listening> <description>",
+)
 @commands.is_owner()
 async def _activity(cmd):
     pass

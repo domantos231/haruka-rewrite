@@ -5,7 +5,11 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="play")
+@bot.command(
+    name = "play",
+    description = "Start playing the queue in a voice channel.\nPossible playing options are:\n`loop` - Any started songs will be added back to the queue.\n`verbose` - Song details will be displayed before playing.",
+    usage = "play <options>",
+)
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _play(cmd, *args):
     if not cmd.author.voice:

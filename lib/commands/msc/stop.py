@@ -1,7 +1,10 @@
 from settings import *
 
 
-@bot.command(name="stop")
+@bot.command(
+    name = "stop",
+    description = "Stop the playing audio and disconnect from the voice channel"
+)
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def _stop(cmd):
     player = bot.node.get_player(cmd.guild)

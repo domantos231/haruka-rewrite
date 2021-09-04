@@ -14,5 +14,5 @@ async def on_wavelink_track_exception(player, track, error):
 
 @bot.event
 async def on_wavelink_websocket_closed(player, reason, code):
-    print(f"HARUKA | WebsocketClosed in server '{player.guild}' while playing '{track.title}' ({reason}): {code}")
+    print(f"HARUKA | WebsocketClosed in server '{player.guild}' ({reason}): {code}")
     await player.disconnect(force=True)

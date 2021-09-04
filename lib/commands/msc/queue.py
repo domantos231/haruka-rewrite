@@ -8,7 +8,10 @@ songs_per_page = 8
 inline = False
 
 
-@bot.command(name="queue")
+@bot.command(
+    name = "queue",
+    description = "View the music queue of a voice channel"
+)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 async def _queue(cmd):
     if not cmd.author.voice:

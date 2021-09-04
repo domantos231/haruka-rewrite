@@ -1,45 +1,14 @@
 import aiohttp
 import asyncio
 import discord
-from bs4 import BeautifulSoup as bs
 from settings import *
 
 
-async def get(src):
-    lst = []
-    async with bot.session.post("https://saucenao.com/search.php", data={"url": src}) as response:
-        if response.status == 200:
-            html = await response.text()
-            soup = bs(html, "html.parser")
-            results = soup.find_all(name="div", class_="result")
-            count = 1
-            for result in results:
-                if len(lst) == 6:
-                    break
-                try:
-                    if "hidden" in result.get("class"):
-                        break
-                    result = result.find(name="table", attrs={"class": "resulttable"})
-                    obj = result.find(name="div", attrs={"class": "resultimage"}).find(name="img")
-                    image_url = obj.get("src")
-                    obj = result.find(name="div", attrs={"class": "resultcontentcolumn"}).find(name="a")
-                    url = obj.get("href")
-                    obj = result.find(name="div", attrs={"class": "resultsimilarityinfo"})
-                    similarity = obj.get_text()
-                    em = discord.Embed(title=f"Displaying result #{count}", color=0x2ECC71)
-                    em.add_field(name="Sauce", value=url, inline=False)
-                    em.add_field(name="Similarity", value=similarity, inline=False)
-                    em.set_thumbnail(url=image_url)
-                    lst.append(em)
-                    count += 1
-                except:
-                    continue
-            return lst
-        else:
-            return lst
-
-
-@bot.command(name="sauce")
+@bot.command(
+    name = "sauce",
+    description = "Find the image source with saucenao",
+    usage = "sauce <URL to image or attachment>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _sauce(cmd, src = None):
     if src is None:
@@ -48,7 +17,7 @@ async def _sauce(cmd, src = None):
         except:
             await cmd.send("Please attach or provide a URL to the image.")
             return
-    results = await get(src)
+    results = await bot.get_sauce(src)
     n = len(results)
     if n > 0:
         msg = await cmd.send(embed=results[0])

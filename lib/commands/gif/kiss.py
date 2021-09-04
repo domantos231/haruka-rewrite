@@ -5,7 +5,11 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="kiss")
+@bot.command(
+    name = "kiss",
+    description = "Kiss someone",
+    usage = "kiss <user>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _kiss(cmd, user: discord.User = None):
     if user is None:

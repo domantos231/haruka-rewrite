@@ -3,7 +3,12 @@ from discord.ext import commands
 from settings import *
 
 
-@bot.command(name="account", aliases=["acc"])
+@bot.command(
+    name = "account",
+    aliases = ["acc"],
+    description = "View a user's economy account",
+    usage = "account <user | default: yourself>",
+)
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _account(cmd, user: discord.Member = None):
     if user == None:
@@ -19,7 +24,7 @@ async def _account(cmd, user: discord.Member = None):
         await cmd.send(f"<@!{user.id}> is a bot user!")
         return
     else:
-        id = str(user.id)
+        id = user.id
         player = await bot.get_player(id)
         if not player:
             return await cmd.send("This user has no account in my database!")

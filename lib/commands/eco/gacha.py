@@ -4,7 +4,11 @@ from random import randint
 from settings import *
 
 
-@bot.command(name="gacha")
+@bot.command(
+    name = "gacha",
+    description = "Enjoy the gacha hell.\n-----------------\nRate up details:\n**COMMON** `50%`\n**RARE** `30.33%`\n**EPIC** `15.33%`\n**LEGENDARY** `4.33%`\n**????** `0.01%`",
+    usage = "gacha <amount | default: 1>"
+)
 @commands.cooldown(1, 20, commands.BucketType.user)
 async def _gacha(cmd, n: int = 1):
     if n < 1:
@@ -12,8 +16,10 @@ async def _gacha(cmd, n: int = 1):
     elif n > 10 and not await bot.is_owner(cmd.author):
         await cmd.send("The maximum number of rolls you can gacha at a time is 10.")
     else:
-        id = str(cmd.author.id)
+        id = cmd.author.id
         player = await bot.get_player(id)
+        if not player:
+            return await cmd.send(f"<@!{id}> To use the economy commands, you must use `{cmd.prefix}daily` first")
         if player.amt < n * 300:
             await cmd.send("Not enough money. Gacha costs `💲300`/turn")
         else:

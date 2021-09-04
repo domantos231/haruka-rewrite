@@ -1,1 +1,1 @@
-#!/lib/commands/act
+#!/lib/commands/gif
