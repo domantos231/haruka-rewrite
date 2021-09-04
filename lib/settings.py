@@ -34,8 +34,9 @@ navigate = ["⬅️", "➡️"]
 bj = ["🔥", "🛑"]
 
 
-# Define giphy RegEx pattern
+# Define giphy and tenor RegEx pattern
 giphy_pattern_regex = r'(?=(http://|https://))[^"|?]+giphy[.]gif'
+tenor_pattern_regex = r'(?=(http://|https://))[^"|?]+[.]gif'
 
 
 # asyncpg class for database connection
@@ -187,7 +188,7 @@ class Haruka(commands.Bot):
                 return ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
     
 
-    async def giphy(self, query: str):
+    async def giphy(self, query: str) -> List[str]:
         url = f"https://giphy.com/search/{query}"
         lst = []
         async with self.session.get(url) as response:
@@ -196,6 +197,24 @@ class Haruka(commands.Bot):
                 soup = bs(html, "html.parser")
                 obj = str(soup.find(name = "body"))
                 matches = re.finditer(giphy_pattern_regex, obj)
+                for match in matches:
+                    if match.group() not in lst:
+                        lst.append(match.group())
+                    if len(lst) == 15:
+                        break
+                return lst
+            else:
+                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
+    
+
+    async def tenor(self, query: str) -> List[str]:
+        url = f"https://tenor.com/search/{query}-gifs"
+        lst = []
+        async with self.session.get(url) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = bs(html, "html.parser")
+                matches = re.finditer(tenor_pattern_regex, str(soup))
                 for match in matches:
                     if match.group() not in lst:
                         lst.append(match.group())
