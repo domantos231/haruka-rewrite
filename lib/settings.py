@@ -337,6 +337,29 @@ class Haruka(commands.Bot):
         return EconomyPlayer(amt, time, bank, interest, pet, win, total)
     
 
+    def user_info(self, user: discord.Member) -> discord.Embed:
+        name = user.name.replace("*", r"\*")
+        if user.nick:
+            nick = user.nick.replace("*", r"\*")
+        else:
+            nick = user.name
+        info_em = discord.Embed(
+            title = f"{user} Information",
+            description = f"**Name** {name}\n**Nickname** {nick}\n**Created** {(discord.utils.utcnow() - user.created_at).days} days ago\n**ID** {user.id}",
+            color = 0x2ECC71,
+        )
+        info_em.add_field(
+            name = "Joined server",
+            value = f"{(discord.utils.utcnow() - user.joined_at).days} days ago"
+        )
+        info_em.add_field(
+            name = "Roles",
+            value = "\n".join(role.name.replace("*", r"\*") for role in user.roles[1:])
+        )
+        info_em.set_thumbnail(url = user.avatar.url)
+        return info_em
+    
+
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True

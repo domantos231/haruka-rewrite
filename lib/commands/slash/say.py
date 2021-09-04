@@ -16,7 +16,5 @@ json = {
 
 @bot.slash(json)
 async def say_(interaction):
-    id = interaction.id
-    token = interaction.token
     response = interaction.response
     await response.send_message(content = interaction.data["options"][0]["value"])

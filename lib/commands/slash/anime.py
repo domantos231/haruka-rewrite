@@ -17,8 +17,6 @@ json = {
 
 @bot.slash(json)
 async def anime_(interaction):
-    id = interaction.id
-    token = interaction.token
     response = interaction.response
     await response.defer()
     query = interaction.data["options"][0]["value"]

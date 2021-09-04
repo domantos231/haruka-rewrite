@@ -17,8 +17,6 @@ json = {
 
 @bot.slash(json)
 async def avatar_(interaction):
-    id = interaction.id
-    token = interaction.token
     response = interaction.response
     user_id = int(list(interaction.data["resolved"]["users"].keys())[0])
     user = bot.get_user(user_id)

@@ -14,9 +14,10 @@ if __name__ == "__main__":
 
     @bot.event
     async def on_ready():
+        print(f"HARUKA | Logged in as {bot.user} | Running in {len(bot.guilds)} servers.")
+        await bot.wait_until_ready()
         file = discord.File("./log.txt")
         await bot.get_user(ME).send(f"<@!{ME}> Bot has just started. This is the report.", file = file)
-        print(f"HARUKA | Logged in as {bot.user} | Running in {len(bot.guilds)} servers.")
 
 
     # Run the bot

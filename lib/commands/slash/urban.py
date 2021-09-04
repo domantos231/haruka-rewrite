@@ -15,9 +15,7 @@ json = {
 
 
 @bot.slash(json)
-async def say_(interaction):
-    id = interaction.id
-    token = interaction.token
+async def urban_(interaction):
     response = interaction.response
     query = interaction.data["options"][0]["value"]
     await response.defer()

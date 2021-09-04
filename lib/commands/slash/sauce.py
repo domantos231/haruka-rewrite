@@ -16,8 +16,6 @@ json = {
 
 @bot.slash(json)
 async def sauce_(interaction):
-    id = interaction.id
-    token = interaction.token
     response = interaction.response
     await response.defer()
     results = await bot.get_sauce(interaction.data["options"][0]["value"])

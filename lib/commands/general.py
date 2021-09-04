@@ -28,25 +28,7 @@ async def _invite(cmd):
 async def _info(cmd, *, user: discord.Member = None):
     if user is None:
         user = cmd.author
-    name = user.name.replace("*", r"\*")
-    if user.nick:
-        nick = user.nick.replace("*", r"\*")
-    else:
-        nick = user.name
-    info_em = discord.Embed(
-        title = f"{user} Information",
-        description = f"**Name** {name}\n**Nickname** {nick}\n**Created** {(discord.utils.utcnow() - user.created_at).days} days ago\n**ID** {user.id}",
-        color = 0x2ECC71,
-    )
-    info_em.add_field(
-        name = "Joined server",
-        value = f"{(discord.utils.utcnow() - user.joined_at).days} days ago"
-    )
-    info_em.add_field(
-        name = "Roles",
-        value = "\n".join(role.name.replace("*", r"\*") for role in user.roles[1:])
-    )
-    info_em.set_thumbnail(url = user.avatar.url)
+    info_em = bot.user_info(user)
     info_em.set_footer(text = f"From {cmd.message.guild}")
     await cmd.send(embed=info_em)
 
@@ -57,7 +39,7 @@ async def _info(cmd, *, user: discord.Member = None):
     usage = "prefix <prefix>"
 )
 @commands.cooldown(1, 6, commands.BucketType.guild)
-@commands.has_permissions(administrator=True) # This also blocks prefix changing in DM channels
+@commands.has_permissions(administrator = True) # This also blocks prefix changing in DM channels
 async def _prefix(cmd, *, arg = None):
     id = cmd.guild.id
     if arg == None:
