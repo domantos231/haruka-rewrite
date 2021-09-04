@@ -208,13 +208,17 @@ class Haruka(commands.Bot):
     
 
     async def tenor(self, query: str) -> List[str]:
-        url = f"https://tenor.com/search/{query}-gifs"
+        url = f"https://tenor.com/search/{query}-gif-gifs"
         lst = []
         async with self.session.get(url) as response:
             if response.status == 200:
                 html = await response.text()
                 soup = bs(html, "html.parser")
-                matches = re.finditer(tenor_pattern_regex, str(soup))
+                obj = str(soup.find(
+                    name = "div",
+                    attrs = {"class": "GifList"},
+                ))
+                matches = re.finditer(tenor_pattern_regex, obj)
                 for match in matches:
                     if match.group() not in lst:
                         lst.append(match.group())
