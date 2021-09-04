@@ -17,7 +17,7 @@ async def _kiss(cmd, user: discord.User = None):
     elif user.id == cmd.author.id:
         await cmd.send("Are you kissing a mirror?")
     else:
-        gifs = await bot.tenor("anime-kiss")
+        gifs = await bot.gif("anime-kiss")
         em = discord.Embed(description=f"**{cmd.author.name}** kissed **{user.name}** 💞💞", color=0x2ECC71)
         em.set_image(url=choice(gifs))
         await cmd.send(embed=em)

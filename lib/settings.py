@@ -188,6 +188,17 @@ class Haruka(commands.Bot):
                 return ["pneumonoultramicroscopicsilicovolcanoconiosis", "antidisestablishmentarianism"]
     
 
+    async def gif(self, query: str) -> List[str]:
+        urls = ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
+        try:
+            lst = await self.tenor(query)
+        except:
+            lst = await self.giphy(query)
+        if lst:
+            urls = lst
+        return urls
+    
+
     async def giphy(self, query: str) -> List[str]:
         url = f"https://giphy.com/search/{query}"
         lst = []
@@ -203,8 +214,6 @@ class Haruka(commands.Bot):
                     if len(lst) == 15:
                         break
                 return lst
-            else:
-                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
     
 
     async def tenor(self, query: str) -> List[str]:
@@ -225,8 +234,6 @@ class Haruka(commands.Bot):
                     if len(lst) == 15:
                         break
                 return lst
-            else:
-                return ["https://media3.giphy.com/media/hv5AEBpH3ZyNoRnABG/giphy.gif"]
 
 
     async def get_sauce(self, src) -> List[discord.Embed]:

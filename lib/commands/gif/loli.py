@@ -11,8 +11,8 @@ from settings import *
 )
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _loli(cmd):
-    loli = await bot.tenor("anime-loli")
-    fbi = await bot.tenor("fbi")
+    loli = await bot.gif("anime-loli")
+    fbi = await bot.gif("fbi")
     url = choice([*loli, *fbi])
     if url in loli:
         em = discord.Embed(description=f"**{cmd.author.name}**, this is your loli!", color=0x2ECC71)
