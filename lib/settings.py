@@ -126,7 +126,9 @@ class Haruka(commands.Bot):
             headers = self.headers,
         ) as response:
             print(f"HARUKA | Slash commands setup returned status code {response.status}:")
-            print(await response.text())
+            json = await response.json()
+            print(f"JSON type: {json.__class__.__name__}")
+            print(json)
     
 
     async def process_slash_commands(self, interaction: discord.Interaction):
@@ -374,6 +376,40 @@ class Haruka(commands.Bot):
         )
         info_em.set_thumbnail(url = user.avatar.url)
         return info_em
+    
+
+    def server_info(self, guild: discord.Guild) -> discord.Embed:
+        name = guild.name.replace("*", r"\*")
+        sv_em = discord.Embed(
+            title = "Server info",
+            description = f"**Server name** {name}\n**Server ID** {guild.id}\n**Member count** {guild.member_count}",
+            color = 0x2ECC71,
+        )
+        sv_em.add_field(
+            name = "Server owner",
+            value = guild.owner.name,
+            inline = False,
+        )
+        sv_em.add_field(
+            name = "Created",
+            value = f"{(discord.utils.utcnow() - guild.created_at).days} days ago"
+        )
+        sv_em.add_field(
+            name = "Text channels",
+            value = len(guild.text_channels)
+        )
+        sv_em.add_field(
+            name = "Voice channels",
+            value = len(guild.voice_channels)
+        )
+        sv_em.add_field(
+            name = "Emojis",
+            value = len(guild.emojis)
+        )
+        sv_em.set_thumbnail(url = guild.icon.url)
+        if guild.banner:
+            sv_em.set_image(url = guild.banner.url)
+        return sv_em
     
 
 async def prefix(bot, message):

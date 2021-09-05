@@ -39,7 +39,8 @@ async def _info(cmd, *, user: discord.Member = None):
     usage = "prefix <prefix>"
 )
 @commands.cooldown(1, 6, commands.BucketType.guild)
-@commands.has_permissions(administrator = True) # This also blocks prefix changing in DM channels
+@checks.channelCheck()
+@commands.has_permissions(administrator = True)
 async def _prefix(cmd, *, arg = None):
     id = cmd.guild.id
     if arg == None:
@@ -89,37 +90,7 @@ async def _avatar(cmd, *, user: discord.User = None):
 @checks.channelCheck()
 @commands.cooldown(1, 6, commands.BucketType.user)
 async def _svinfo(cmd):
-    guild = cmd.guild
-    name = guild.name.replace("*", r"\*")
-    sv_em = discord.Embed(
-        title = "Server info",
-        description = f"**Server name** {name}\n**Server ID** {guild.id}\n**Member count** {guild.member_count}",
-        color = 0x2ECC71,
-    )
-    sv_em.add_field(
-        name = "Server owner",
-        value = guild.owner.name,
-        inline = False,
-    )
-    sv_em.add_field(
-        name = "Created",
-        value = f"{(discord.utils.utcnow() - guild.created_at).days} days ago"
-    )
-    sv_em.add_field(
-        name = "Text channels",
-        value = len(guild.text_channels)
-    )
-    sv_em.add_field(
-        name = "Voice channels",
-        value = len(guild.voice_channels)
-    )
-    sv_em.add_field(
-        name = "Emojis",
-        value = len(guild.emojis)
-    )
-    sv_em.set_thumbnail(url = guild.icon.url)
-    if guild.banner:
-        sv_em.set_image(url = guild.banner.url)
+    sv_em = bot.server_info(cmd.guild)
     await cmd.send(embed = sv_em)
 
 
