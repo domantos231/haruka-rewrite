@@ -5,12 +5,23 @@ from settings import *
 
 class CustomHelpCommand(commands.MinimalHelpCommand):
     async def send_bot_help(self, mapping):
+        # Fetch server's prefix
+        if isinstance(self.context.channel, discord.TextChannel):
+            id = self.context.guild.id
+            row = await bot.db.conn.fetchrow(f"SELECT * FROM prefix WHERE id = '{id}';")
+            pref = row["pref"]
+        elif isinstance(self.context.channel, discord.DMChannel):
+            pref = "$"
+        else:
+            pref = "None"
+        
+        # Make help embed
         help_em = discord.Embed(
             title = f"{bot.user} command list",
-            description = f"Ping <@!{bot.user.id}> for prefix.\nTo get help on a command, type `{self.context.prefix}help <command>`",
+            description = f"To get help on a command, type `{pref}help <command>`",
             color = 0x2ECC71,
         )
-        help_em.set_thumbnail(url=bot.user.avatar.url)
+        help_em.set_thumbnail(url = bot.user.avatar.url)
         help_em.add_field(
             name = "💬 General",
             value = "```avatar, emoji, help, info, invite, ping, prefix, say, svinfo```",
@@ -36,6 +47,7 @@ class CustomHelpCommand(commands.MinimalHelpCommand):
             value = "```add, pause, play, queue, remove, resume, stop```",
             inline = False,
         )
+        help_em.set_footer(text = f"Current prefix: {pref}")
         await self.context.send(embed = help_em)
     
 

@@ -90,20 +90,6 @@ class db:
         return self._connection[self.count]
 
 
-async def prefix(bot, message):
-    if isinstance(message.channel, discord.DMChannel):
-        return "$"
-    elif isinstance(message.channel, discord.TextChannel):
-        id = str(message.guild.id)
-        row = await bot.db.conn.fetchrow(f"SELECT * FROM prefix WHERE id = '{id}';")
-        if not row:
-            return "$"
-        else:
-            return row["pref"]
-    else:
-        return "$" # No command invoke from on_message
-
-
 class Haruka(commands.Bot):
     db = db(DATABASE_URL)
     # Slash commands authorization
@@ -390,11 +376,38 @@ class Haruka(commands.Bot):
         return info_em
     
 
+async def prefix(bot, message):
+    if isinstance(message.channel, discord.DMChannel):
+        return "$"
+    elif isinstance(message.channel, discord.TextChannel):
+        id = str(message.guild.id)
+        row = await bot.db.conn.fetchrow(f"SELECT * FROM prefix WHERE id = '{id}';")
+        if not row:
+            return "$"
+        else:
+            return row["pref"]
+    else:
+        return "$" # No command invoke from on_message
+
+
+async def get_prefix(bot, message):
+    prefixes = await prefix(bot, message)
+    return commands.when_mentioned_or(*prefixes)(bot, message)
+
+
 # Initialize bot
 intents = discord.Intents.default()
 intents.members = True
-activity = discord.Activity(type=discord.ActivityType.watching, name="5-year-old animated girls")
-bot = Haruka(activity=activity, command_prefix=prefix, intents=intents, case_insensitive=True)
+activity = discord.Activity(
+    type = discord.ActivityType.watching,
+    name = "5-year-old animated girls",
+)
+bot = Haruka(
+    activity = activity,
+    command_prefix = get_prefix,
+    intents = intents,
+    case_insensitive = True,
+)
 
 
 # Initialize wavelink nodes
