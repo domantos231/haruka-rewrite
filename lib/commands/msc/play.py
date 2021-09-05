@@ -37,13 +37,22 @@ async def _play(cmd, *args):
             if loop:
                 await channel.add(track)
             if verbose:
-                em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
-                em.set_author(name=f"Playing in {channel.channel}")
-                em.set_thumbnail(url=track.thumb)
-                await cmd.send(embed=em)
+                em = discord.Embed(
+                    title = track.title,
+                    description = track.author,
+                    url = track.uri,
+                    color = 0x2ECC71,
+                )
+                em.set_author(
+                    name = f"Playing in {channel.channel}",
+                    icon_url = bot.user.avatar.url,
+                )
+                em.set_thumbnail(url = track.thumb)
+                await cmd.send(embed = em)
             try:
                 await channel.play(track)
             except AttributeError:
                 return
             queue = await channel.queue
-        await channel.player.disconnect(force=True)
+        if channel.player and channel.player.is_connected():
+            await channel.player.disconnect(force = True)
