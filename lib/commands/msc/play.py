@@ -32,7 +32,7 @@ async def _play(cmd, *args):
         else:
             status += "**Verbose**: OFF\n"
         await cmd.send(f"Connected to **{channel.channel}**\n{status}")
-        while len(queue) > 0 and channel.player.is_connected():
+        while len(queue) > 0 and channel.player and channel.player.is_connected():
             track = await channel.remove(1)
             if loop:
                 await channel.add(track)
