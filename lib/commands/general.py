@@ -14,7 +14,7 @@ async def _invite(cmd):
         description = r"My invitation link: https://discord.com/api/oauth2/authorize?client_id=848178172536946708&permissions=2151018320&scope=bot%20applications.commands",
         color = 0x2ECC71,
     )
-    em.set_thumbnail(url=bot.user.avatar.url)
+    em.set_thumbnail(url = bot.user.avatar.url)
     await cmd.send(embed=em)
 
 
@@ -74,6 +74,8 @@ async def _say(cmd, *, arg):
 async def _avatar(cmd, *, user: discord.User = None):
     if user == None:
         user = cmd.author
+    if not user.avatar:
+        return await cmd.send("This user hasn't uploaded an avatar yet.")
     ava_em = discord.Embed(color = 0x2ECC71)
     ava_em.set_author(
         name = f"This is {user.name}'s avatar",
@@ -112,9 +114,9 @@ async def _emoji(cmd):
         )
         em.set_author(
             name = "These are the server's emojis!",
-            icon_url = cmd.author.avatar.url,
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
         )
-        em.set_thumbnail(url = cmd.guild.icon.url)
+        em.set_thumbnail(url = cmd.guild.icon.url if cmd.guild.icon else None)
         em.set_footer(text = f"Showing page {page + 1}/{pages}")
         embeds.append(em)
     msg = await cmd.send(embed = embeds[0])

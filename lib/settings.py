@@ -374,7 +374,7 @@ class Haruka(commands.Bot):
             name = "Roles",
             value = "\n".join(role.name.replace("*", r"\*") for role in user.roles[1:])
         )
-        info_em.set_thumbnail(url = user.avatar.url)
+        info_em.set_thumbnail(url = user.avatar.url if user.avatar else None)
         return info_em
     
 
@@ -406,9 +406,8 @@ class Haruka(commands.Bot):
             name = "Emojis",
             value = len(guild.emojis)
         )
-        sv_em.set_thumbnail(url = guild.icon.url)
-        if guild.banner:
-            sv_em.set_image(url = guild.banner.url)
+        sv_em.set_thumbnail(url = guild.icon.url if guild.icon else None)
+        sv_em.set_image(url = guild.banner.url if guild.banner else None)
         return sv_em
     
 

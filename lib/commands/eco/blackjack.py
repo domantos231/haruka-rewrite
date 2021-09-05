@@ -25,10 +25,13 @@ async def get_bot_hand(cmd, id):
     footer = f"Current points: {point}"
     if special:
         footer += "*"
-    em.set_footer(text=footer)
-    em.set_author(name="These are my cards!", icon_url=bot.user.avatar.url)
-    em.set_image(url="attachment://blackjack.png")
-    await cmd.send(file=file, embed=em)
+    em.set_footer(text = footer)
+    em.set_author(
+        name = "These are my cards!",
+        icon_url = bot.user.avatar.url
+    )
+    em.set_image(url = "attachment://blackjack.png")
+    await cmd.send(file = file, embed = em)
     os.remove(f"./lib/assets/cards/{id}-bj-bot.png")
     return point
 
@@ -91,7 +94,7 @@ async def _blackjack(cmd, amt = None):
         em.set_image(url = "attachment://blackjack.png")
         em.set_author(
             name = f"{cmd.author.name} bet 💲{_playing[id][1]} to play blackjack",
-            icon_url = cmd.author.avatar.url,
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
         )
         em.set_footer(text=footer)
 

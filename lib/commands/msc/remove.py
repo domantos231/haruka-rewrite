@@ -16,9 +16,17 @@ async def _remove(cmd, n: int = 1):
         channel = Music(cmd.author.voice.channel)
         track = await channel.remove(n)
         if track:
-            em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
-            em.set_author(name=f"{cmd.author.name} removed 1 song from channel {channel.channel}", icon_url=cmd.author.avatar.url)
-            em.set_thumbnail(url=track.thumb)
+            em = discord.Embed(
+                title = track.title,
+                description = track.author,
+                url = track.uri,
+                color = 0x2ECC71,
+            )
+            em.set_author(
+                name = f"{cmd.author.name} removed 1 song from channel {channel.channel}",
+                icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+            )
+            em.set_thumbnail(url = track.thumb)
             await cmd.send(embed=em)
         else:
             await cmd.send("No song with this position.")

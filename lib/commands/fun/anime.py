@@ -42,6 +42,6 @@ async def _anime(cmd, *, query):
         em = anime.create_embed()
         em.set_author(
             name = f"{cmd.author.name}'s request",
-            icon_url = cmd.author.avatar.url,
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
         )
         await cmd.send(embed = em)

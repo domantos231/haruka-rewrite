@@ -40,13 +40,16 @@ async def _hangman(cmd, n: int = 5):
         length = len(word)
         HangmanInProgress[cmd.author.id] = HangmanProgress(word, [], n)
         em = discord.Embed(
-            title="Hangman Game",
-            description="".join("-" for i in range(length)) + "\nSend any character or send the entire word to guess!",
-            color=0x2ECC71
+            title = "Hangman Game",
+            description = "".join("-" for i in range(length)) + "\nSend any character or send the entire word to guess!",
+            color = 0x2ECC71,
         )
-        em.set_author(name=f"{cmd.author.name} started Hangman Game!", icon_url=cmd.author.avatar.url)
-        em.set_footer(text=f"💖 {n} left")
-        msg = await cmd.send(embed=em)
+        em.set_author(
+            name = f"{cmd.author.name} started Hangman Game!",
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else None
+        )
+        em.set_footer(text = f"💖 {n} left")
+        msg = await cmd.send(embed = em)
 
 
         def check(message):
@@ -73,12 +76,15 @@ async def _hangman(cmd, n: int = 5):
                         else:
                             display += char
                     em = discord.Embed(
-                        title="Hangman Game",
-                        description=f"{display}\nSend any character or send the entire word to guess!",
-                        color=0x2ECC71
+                        title = "Hangman Game",
+                        description = f"{display}\nSend any character or send the entire word to guess!",
+                        color = 0x2ECC71,
                     )
-                    em.set_author(name=f"{cmd.author.name} guessed 1 more character!", icon_url=cmd.author.avatar.url)
-                    em.set_footer(text=f"💖 {game.life} left")
+                    em.set_author(
+                        name = f"{cmd.author.name} guessed 1 more character!",
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                    )
+                    em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
                 elif len(guess) == 1:
                     game.life -= 1
@@ -88,22 +94,28 @@ async def _hangman(cmd, n: int = 5):
                         else:
                             display += char
                     em = discord.Embed(
-                        title="Hangman Game",
-                        description=f"{display}\nSend any character or send the entire word to guess!",
-                        color=0x2ECC71
+                        title = "Hangman Game",
+                        description = f"{display}\nSend any character or send the entire word to guess!",
+                        color = 0x2ECC71,
                     )
-                    em.set_author(name=f"{cmd.author.name} guessed incorrectly!", icon_url=cmd.author.avatar.url)
-                    em.set_footer(text=f"💖 {game.life} left")
+                    em.set_author(
+                        name = f"{cmd.author.name} guessed incorrectly!",
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                    )
+                    em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
                 elif guess == game.word:
                     display = word
                     em = discord.Embed(
-                        title="Hangman Game",
-                        description=f"{display}\nSend any character or send the entire word to guess!",
-                        color=0x2ECC71
+                        title = "Hangman Game",
+                        description = f"{display}\nSend any character or send the entire word to guess!",
+                        color = 0x2ECC71,
                     )
-                    em.set_author(name=f"{cmd.author.name} guessed the word!", icon_url=cmd.author.avatar.url)
-                    em.set_footer(text=f"💖 {game.life} left")
+                    em.set_author(
+                        name = f"{cmd.author.name} guessed the word!",
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                    )
+                    em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
                 else:
                     game.life -= 1
@@ -113,12 +125,15 @@ async def _hangman(cmd, n: int = 5):
                         else:
                             display += char
                     em = discord.Embed(
-                        title="Hangman Game",
-                        description=f"{display}\nSend any character or send the entire word to guess!",
-                        color=0x2ECC71
+                        title = "Hangman Game",
+                        description = f"{display}\nSend any character or send the entire word to guess!",
+                        color = 0x2ECC71
                     )
-                    em.set_author(name=f"{cmd.author.name} guessed incorrectly!", icon_url=cmd.author.avatar.url)
-                    em.set_footer(text=f"💖 {game.life} left")
+                    em.set_author(
+                        name = f"{cmd.author.name} guessed incorrectly!",
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                    )
+                    em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
                 if game.life == 0:
                     await message.channel.send(f"<@!{cmd.author.id}> lost Hangman Game! The answer is **{word}**")
