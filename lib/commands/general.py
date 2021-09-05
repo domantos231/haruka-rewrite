@@ -44,14 +44,13 @@ async def _prefix(cmd, *, arg = None):
     id = cmd.guild.id
     if arg == None:
         await cmd.send("Please specify a prefix to change to!")
-    elif ";" in arg or "--" in arg or "'" in arg:
-        await cmd.send("Stop trying to SQL inject me, will you?")
     else:
         await bot.db.conn.execute(f"""
-        UPDATE prefix
-        SET pref = '{arg}'
-        WHERE id = '{id}';
-        """)
+            UPDATE prefix
+            SET pref = $1
+            WHERE id = '{id}';
+            """, str(arg)
+        )
         await cmd.send(f"Prefix has been set to `{arg}`")
 
 
