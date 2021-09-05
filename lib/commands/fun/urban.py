@@ -17,7 +17,7 @@ async def _urban(cmd, *, query):
         em = result.create_embed()
         em.set_author(
             name = f"{cmd.author.name} searched for {query}",
-            icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
         )
         await cmd.send(embed=em)
     else:

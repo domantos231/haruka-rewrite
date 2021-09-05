@@ -27,7 +27,7 @@ async def _add(cmd, *, query):
             )
             em.set_author(
                 name = f"{cmd.author.name}'s song request",
-                icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
             )
             em.set_footer(text = "This messagge will expire after 5 minutes.")
             for obj in enumerate(tracks[:6]):
@@ -60,7 +60,7 @@ async def _add(cmd, *, query):
             em = discord.Embed(title=track.title, description=track.author, url=track.uri, color=0x2ECC71)
             em.set_author(
                 name = f"{cmd.author.name} added 1 song to queue",
-                icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
             )
             em.set_thumbnail(url=track.thumb)
             await msg.delete()

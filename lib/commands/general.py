@@ -114,9 +114,9 @@ async def _emoji(cmd):
         )
         em.set_author(
             name = "These are the server's emojis!",
-            icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
         )
-        em.set_thumbnail(url = cmd.guild.icon.url if cmd.guild.icon else None)
+        em.set_thumbnail(url = cmd.guild.icon.url if cmd.guild.icon else discord.Embed.Empty)
         em.set_footer(text = f"Showing page {page + 1}/{pages}")
         embeds.append(em)
     msg = await cmd.send(embed = embeds[0])

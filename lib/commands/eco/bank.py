@@ -27,7 +27,7 @@ async def _bank(cmd):
         em = discord.Embed(title="🏦 WELCOME TO THE BANK", description=f"Your bank account `💲{money}`\nInterest `{player.interest}%/h`", color=0x2ECC71)
         em.set_author(
             name = cmd.author.name,
-            icon_url = cmd.author.avatar.url if cmd.author.avatar else None)
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty)
         em.set_footer(text = f"{hours} hours since last transaction.")
         await cmd.send(embed=em)
 

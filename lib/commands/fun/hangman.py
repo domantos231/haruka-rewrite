@@ -46,7 +46,7 @@ async def _hangman(cmd, n: int = 5):
         )
         em.set_author(
             name = f"{cmd.author.name} started Hangman Game!",
-            icon_url = cmd.author.avatar.url if cmd.author.avatar else None
+            icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty
         )
         em.set_footer(text = f"💖 {n} left")
         msg = await cmd.send(embed = em)
@@ -82,7 +82,7 @@ async def _hangman(cmd, n: int = 5):
                     )
                     em.set_author(
                         name = f"{cmd.author.name} guessed 1 more character!",
-                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
                     )
                     em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
@@ -100,7 +100,7 @@ async def _hangman(cmd, n: int = 5):
                     )
                     em.set_author(
                         name = f"{cmd.author.name} guessed incorrectly!",
-                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
                     )
                     em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
@@ -113,7 +113,7 @@ async def _hangman(cmd, n: int = 5):
                     )
                     em.set_author(
                         name = f"{cmd.author.name} guessed the word!",
-                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
                     )
                     em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
@@ -131,7 +131,7 @@ async def _hangman(cmd, n: int = 5):
                     )
                     em.set_author(
                         name = f"{cmd.author.name} guessed incorrectly!",
-                        icon_url = cmd.author.avatar.url if cmd.author.avatar else None,
+                        icon_url = cmd.author.avatar.url if cmd.author.avatar else discord.Embed.Empty,
                     )
                     em.set_footer(text = f"💖 {game.life} left")
                     msg = await message.channel.send(embed=em)
