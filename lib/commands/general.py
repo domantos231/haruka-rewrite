@@ -1,6 +1,7 @@
 import asyncio
 import checks
 import discord
+import io
 from discord.ext import commands
 from settings import *
 
@@ -60,8 +61,12 @@ async def _prefix(cmd, *, arg = None):
     description = "Make the bot says something",
     usage = "say <anything>"
 )
-async def _say(cmd, *, arg):
-    await cmd.send(arg)
+async def _say(cmd, *, content: str):
+    files = []
+    for attachment in cmd.message.attachments:
+        data = await attachment.read()
+        files.append(discord.File(io.BytesIO(data), filename = attachment.filename))
+    await cmd.send(content, files = files)
 
 
 @bot.command(
